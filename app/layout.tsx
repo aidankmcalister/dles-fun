@@ -22,6 +22,19 @@ export const metadata: Metadata = {
   title: "Daily Games - Your Daily Puzzle Collection",
   description:
     "A curated collection of daily puzzles and games. Play word games, trivia, geography challenges, and more. Progress resets at midnight.",
+  openGraph: {
+    title: "Daily Games - Your Daily Puzzle Collection",
+    description:
+      "A curated collection of daily puzzles and games. Play word games, trivia, geography challenges, and more.",
+    images: ["/og-image.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Daily Games - Your Daily Puzzle Collection",
+    description:
+      "A curated collection of daily puzzles and games. Play word games, trivia, geography challenges, and more.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
