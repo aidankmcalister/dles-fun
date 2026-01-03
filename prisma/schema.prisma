@@ -17,7 +17,8 @@ model Game {
   id        String   @id @default(uuid())
   title     String
   link      String   @unique
-  topic     Topic    @default(games)
+  topic     Topic    @default(puzzle)
+  played    Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -26,9 +27,12 @@ model Game {
 
 enum Topic {
   words
-  history
-  movies
-  music
-  games
-  math
+  puzzle
+  geography
+  trivia
+  entertainment
+  gaming
+  nature
+  food
+  sports
 }
