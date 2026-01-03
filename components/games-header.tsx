@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -21,13 +22,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { ThemeToggle } from "@/components/theme-toggle";
 import type { Topic } from "@/app/generated/prisma/client";
 import { TOPICS } from "@/lib/constants";
-import { Search, X, RotateCcw, Plus } from "lucide-react";
+import { Search, X, RotateCcw, Plus, Database } from "lucide-react";
 
 type SortOption = "title" | "topic" | "played";
 
@@ -87,48 +86,42 @@ export function GamesHeader({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-3">
-        <Badge variant="outline" className="text-sm">
-          {playedCount}/{totalCount} played
-        </Badge>
+    <div className="space-y-4">
+      {/* Top bar: Title/progress left, main actions right */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-muted-foreground">
+            {playedCount}/{totalCount} played
+          </span>
+          {playedCount > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="h-8 gap-1.5">
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Clear
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Clear all progress?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This will reset your played status for all games today.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={onClear}>Clear</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
 
-        {playedCount > 0 && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-7 gap-1.5 text-xs text-muted-foreground hover:text-foreground"
-              >
-                <RotateCcw className="h-3 w-3" />
-                Clear
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Clear all progress?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This will reset your played status for all games today.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={onClear}>Clear</AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
-
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <AlertDialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
             <AlertDialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-8 gap-1.5 text-xs"
-              >
-                <Plus className="h-3 w-3" />
+              <Button variant="outline" size="sm" className="h-8 gap-1.5">
+                <Plus className="h-3.5 w-3.5" />
                 Add Game
               </Button>
             </AlertDialogTrigger>
@@ -193,12 +186,18 @@ export function GamesHeader({
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
-          <ThemeToggle />
+
+          <Button variant="outline" size="icon" className="h-8 w-8" asChild>
+            <Link href="/studio">
+              <Database className="h-4 w-4" />
+            </Link>
+          </Button>
         </div>
       </div>
 
+      {/* Search and filters row */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
+        <div className="relative w-full sm:max-w-[calc(75%-0.5rem)] lg:max-w-[calc(75%-0.75rem)]">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search games..."
@@ -216,9 +215,9 @@ export function GamesHeader({
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:shrink-0">
+        <div className="flex shrink-0 gap-2 sm:ml-auto">
           <Select value={topicFilter} onValueChange={onTopicFilterChange}>
-            <SelectTrigger className="w-full sm:w-[150px]">
+            <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
@@ -235,7 +234,7 @@ export function GamesHeader({
             value={sortBy}
             onValueChange={(v) => onSortChange(v as SortOption)}
           >
-            <SelectTrigger className="w-full sm:w-[160px]">
+            <SelectTrigger className="w-[130px]">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>

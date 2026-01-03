@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { createPrismaPostgresHttpClient } from "@prisma/studio-core/data/ppg";
 import { serializeError } from "@prisma/studio-core/data/bff";
 
