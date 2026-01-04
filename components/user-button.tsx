@@ -27,6 +27,7 @@ import {
   Eye,
   Check,
   Settings,
+  BarChart3,
 } from "lucide-react";
 import type { Role } from "@/app/generated/prisma/client";
 
@@ -184,6 +185,15 @@ export function UserButton() {
 
         <DropdownMenuSeparator />
 
+        <DropdownMenuItem asChild>
+          <a href="/dashboard">
+            <BarChart3 className="mr-2 h-4 w-4" />
+            Dashboard
+          </a>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
         {["owner", "coowner", "admin"].includes(
           viewAsRole || currentUser?.role || ""
         ) && (
@@ -194,9 +204,9 @@ export function UserButton() {
                 Admin Panel
               </a>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
           </>
         )}
+        <DropdownMenuSeparator />
 
         <DropdownMenuItem onClick={() => signOut()}>
           <LogOut className="mr-2 h-4 w-4" />

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { GameGrid, GameGridSkeleton } from "@/components/game-grid";
 import { GamesHeader } from "@/components/games-header";
 import type { Game } from "@/app/generated/prisma/client";
-import { getPlayedIds, savePlayedIds, isNewDay } from "@/lib/played-state";
+import { usePlayedGames } from "@/lib/use-played-games";
+import { useLists } from "@/lib/use-lists";
 
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -22,51 +23,56 @@ const FeelingLuckyModal = dynamic(
   }
 );
 
+const GuestSyncBanner = dynamic(
+  () =>
+    import("@/components/guest-sync-banner").then((mod) => mod.GuestSyncBanner),
+  {
+    ssr: false,
+  }
+);
+
 type SortOption = "title" | "topic" | "played";
 
 export function GamesClient({ games: initialGames }: { games: Game[] }) {
   const [games, setGames] = useState<Game[]>(initialGames);
-  const [playedIds, setPlayedIds] = useState<Set<string>>(new Set());
-  const [isLoaded, setIsLoaded] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("title");
   const [topicFilter, setTopicFilter] = useState("all");
+  const [listFilter, setListFilter] = useState("all");
+  const [showHidden, setShowHidden] = useState(false);
   const [isLuckyModalOpen, setIsLuckyModalOpen] = useState(false);
 
+  const { lists } = useLists();
+
+  const gameIds = useMemo(() => games.map((g) => g.id), [games]);
+
+  const {
+    playedIds,
+    hiddenIds,
+    currentStreak,
+    isLoading,
+    isAuthenticated,
+    markAsPlayed,
+    toggleHidden,
+    syncFromLocalStorage,
+    clearLocalPlayed,
+  } = usePlayedGames(gameIds);
+
+  // Sync localStorage to server on sign-in
   useEffect(() => {
-    const validIds = new Set<string>();
-    const storedIds = getPlayedIds();
+    if (isAuthenticated && !isLoading) {
+      syncFromLocalStorage();
+    }
+  }, [isAuthenticated, isLoading, syncFromLocalStorage]);
 
-    // Filter out IDs that no longer exist
-    storedIds.forEach((id) => {
-      if (games.some((g) => g.id === id)) {
-        validIds.add(id);
-      }
-    });
-
-    setPlayedIds(validIds);
-    setIsLoaded(true);
-  }, [games]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (isNewDay()) setPlayedIds(new Set());
-    }, 60000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handlePlay = (id: string) => {
-    setPlayedIds((prev) => {
-      const next = new Set(prev).add(id);
-      savePlayedIds(next);
-      return next;
-    });
+  const handlePlay = async (id: string) => {
+    await markAsPlayed(id);
 
     const gameIndex = games.findIndex((g) => g.id === id);
     if (gameIndex !== -1) {
       const game = games[gameIndex];
 
-      // Optimistic update
+      // Optimistic update for play count
       const updatedGames = [...games];
       updatedGames[gameIndex] = {
         ...game,
@@ -74,21 +80,24 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
       };
       setGames(updatedGames);
 
-      // API call
-      fetch(`/api/games/${id}/play`, { method: "PATCH" }).catch((err) => {
-        console.error("Failed to update play count:", err);
-        // Revert on failure (optional, but good practice. For now keeping simple)
-      });
-
       toast.success("Game played", {
         description: `Marked ${game.title} as played.`,
       });
     }
   };
 
+  const handleHide = async (id: string) => {
+    await toggleHidden(id, true);
+    const game = games.find((g) => g.id === id);
+    if (game) {
+      toast.success("Game hidden", {
+        description: `${game.title} is now hidden.`,
+      });
+    }
+  };
+
   const handleClear = () => {
-    setPlayedIds(new Set());
-    savePlayedIds(new Set());
+    clearLocalPlayed();
     toast.success("Progress reset", {
       description: "All daily progress has been cleared.",
     });
@@ -97,6 +106,7 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
   const handleClearFilters = () => {
     setSearchQuery("");
     setTopicFilter("all");
+    setListFilter("all");
     setSortBy("title");
   };
 
@@ -107,13 +117,25 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
   const filteredGames = useMemo(() => {
     const query = searchQuery.toLowerCase();
     return games
-      .filter(
-        (g) =>
+      .filter((g) => {
+        // Hide games if not showing hidden
+        if (!showHidden && hiddenIds.has(g.id)) return false;
+
+        // Filter by list
+        if (listFilter !== "all" && lists.length > 0) {
+          const list = lists.find((l) => l.id === listFilter);
+          if (list && !list.games.includes(g.id)) {
+            return false;
+          }
+        }
+
+        return (
           (topicFilter === "all" || g.topic === topicFilter) &&
           (query === "" ||
             g.title.toLowerCase().includes(query) ||
             g.topic.toLowerCase().includes(query))
-      )
+        );
+      })
       .sort((a, b) => {
         if (sortBy === "topic")
           return (
@@ -126,12 +148,24 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
           );
         return a.title.localeCompare(b.title);
       });
-  }, [games, searchQuery, topicFilter, sortBy, playedIds]);
+  }, [
+    games,
+    searchQuery,
+    topicFilter,
+    listFilter,
+    lists,
+    sortBy,
+    playedIds,
+    hiddenIds,
+    showHidden,
+  ]);
 
-  if (!isLoaded) return <GameGridSkeleton count={games.length} />;
+  if (isLoading) return <GameGridSkeleton count={games.length} />;
 
   return (
     <div className="space-y-6">
+      {!isAuthenticated && <GuestSyncBanner />}
+
       <GamesHeader
         playedCount={playedIds.size}
         totalCount={games.length}
@@ -140,10 +174,18 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
         onSearchChange={setSearchQuery}
         topicFilter={topicFilter}
         onTopicFilterChange={setTopicFilter}
+        listFilter={listFilter}
+        onListFilterChange={setListFilter}
+        lists={lists}
         sortBy={sortBy}
         onSortChange={setSortBy}
         onClear={handleClear}
         onRandom={handleRandomGame}
+        currentStreak={currentStreak}
+        showHidden={showHidden}
+        onShowHiddenChange={setShowHidden}
+        hiddenCount={hiddenIds.size}
+        isAuthenticated={isAuthenticated}
       />
 
       <FeelingLuckyModal
@@ -162,9 +204,11 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
             link: g.link,
             topic: g.topic,
             playCount: g.playCount || 0,
+            createdAt: g.createdAt,
           }))}
           playedIds={playedIds}
           onPlay={handlePlay}
+          onHide={isAuthenticated ? handleHide : undefined}
         />
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">

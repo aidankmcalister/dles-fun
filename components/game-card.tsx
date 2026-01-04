@@ -5,18 +5,18 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
-import { TOPIC_COLORS, extractDomain } from "@/lib/constants";
-import { ExternalLink } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { TOPIC_COLORS, extractDomain } from "@/lib/constants";
+import { ExternalLink, EyeOff } from "lucide-react";
+import { ListsDropdown } from "./lists-dropdown";
 
 const TOPIC_SHADOWS: Record<string, string> = {
   words: "hover:shadow-blue-500/25 dark:hover:shadow-blue-500/10",
@@ -30,6 +30,15 @@ const TOPIC_SHADOWS: Record<string, string> = {
   sports: "hover:shadow-cyan-500/25 dark:hover:shadow-cyan-500/10",
 };
 
+/**
+ * Check if a date is within the last N days
+ */
+function isWithinDays(date: Date, days: number): boolean {
+  const now = new Date();
+  const diff = now.getTime() - date.getTime();
+  return diff < days * 24 * 60 * 60 * 1000;
+}
+
 export interface GameCardProps {
   id: string;
   title: string;
@@ -38,6 +47,8 @@ export interface GameCardProps {
   playCount: number;
   isPlayed: boolean;
   onPlay: (id: string) => void;
+  onHide?: (id: string) => void;
+  createdAt?: Date;
   index?: number;
 }
 
@@ -46,15 +57,23 @@ export function GameCard({
   title,
   link,
   topic,
-  playCount,
   isPlayed,
   onPlay,
+  onHide,
+  createdAt,
   index = 0,
 }: GameCardProps) {
   const handleClick = () => {
     onPlay(id);
     window.open(link, "_blank", "noopener,noreferrer");
   };
+
+  const handleHide = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onHide?.(id);
+  };
+
+  const isNew = createdAt && isWithinDays(new Date(createdAt), 7);
 
   return (
     <Card
@@ -71,12 +90,54 @@ export function GameCard({
         isPlayed ? "bg-muted/40 opacity-60 grayscale" : "bg-card"
       )}
     >
+      {/* Corner NEW ribbon */}
+      {isNew && !isPlayed && (
+        <div
+          className={cn(
+            "absolute top-2 -right-11 w-32 h-5 text-white text-[9px] font-bold flex items-center justify-center rotate-45",
+            TOPIC_COLORS[topic]
+          )}
+        >
+          NEW
+        </div>
+      )}
+
       <CardHeader className="p-4 pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="space-y-1.5 flex-1 min-w-0">
-            <CardTitle className="flex items-center gap-2 text-base md:text-lg leading-tight">
-              <span className="truncate">{title}</span>
-              <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+            <CardTitle className="flex items-center gap-2 text-base md:text-lg leading-tight justify-between">
+              <div className="flex items-center gap-2">
+                <span className="truncate">{title}</span>
+                <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+              </div>
+              {/* Hide button inline with title */}
+              <div
+                className="flex items-center gap-1"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ListsDropdown gameId={id} />
+                {onHide && (
+                  <TooltipProvider delayDuration={200}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={handleHide}
+                          className={cn(
+                            "p-1 rounded-md text-muted-foreground shrink-0",
+                            "opacity-0 group-hover:opacity-100 transition-opacity",
+                            "hover:bg-muted hover:text-foreground"
+                          )}
+                        >
+                          <EyeOff className="h-3.5 w-3.5" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="text-xs">
+                        Hide game
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
             </CardTitle>
             <CardDescription className="truncate font-mono text-xs">
               {extractDomain(link)}

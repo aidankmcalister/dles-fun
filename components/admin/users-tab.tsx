@@ -159,7 +159,7 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 min-h-8">
         <h2 className="text-lg font-semibold">
           All Users ({filteredUsers.length})
         </h2>

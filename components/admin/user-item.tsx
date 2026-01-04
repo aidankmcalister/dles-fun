@@ -66,6 +66,26 @@ export function UserItem({
 }: UserItemProps) {
   return (
     <div className="flex items-center gap-4 w-full">
+      {/* Avatar */}
+      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+        {user.image ? (
+          <img
+            src={user.image}
+            alt={user.name}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <span className="text-xs font-medium text-muted-foreground">
+            {user.name
+              ?.split(" ")
+              .map((n) => n[0])
+              .join("")
+              .slice(0, 2)
+              .toUpperCase() || "?"}
+          </span>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-[180px_200px_minmax(0,1fr)] gap-4 items-center flex-1 min-w-0">
         <span className="text-sm font-medium truncate" title={user.name}>
           {user.name}

@@ -278,6 +278,24 @@ async function main() {
   });
 
   console.log(`\n✅ Seeded ${rawGames.length} games successfully!`);
+
+  // Auto-promote owner
+  const ownerEmail = "aidankmcalister@gmail.com";
+  const ownerUser = await prisma.user.findUnique({
+    where: { email: ownerEmail },
+  });
+
+  if (ownerUser) {
+    await prisma.user.update({
+      where: { email: ownerEmail },
+      data: { role: "owner" },
+    });
+    console.log(`\n👑 Promoted ${ownerEmail} to owner`);
+  } else {
+    console.log(
+      `\n⏳ Owner user not found yet (${ownerEmail}) - will be promoted on next seed after sign-in`
+    );
+  }
 }
 
 main()

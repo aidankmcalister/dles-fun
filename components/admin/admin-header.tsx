@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { UserButton } from "@/components/user-button";
 import { useImpersonation } from "@/components/impersonation-provider";
+import { PageHeader } from "@/components/page-header";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/app/generated/prisma/client";
 
@@ -26,36 +25,26 @@ export function AdminHeader({ canManageUsers }: { canManageUsers: boolean }) {
   const { effectiveRole, viewAsRole } = useImpersonation();
 
   return (
-    <header className="mb-8 flex items-start justify-between">
-      <div>
-        <div className="flex items-center gap-3 mb-2">
-          <Link
-            href="/"
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-          <h1 className="text-2xl font-bold tracking-tight md:text-3xl">
-            Admin Dashboard
-          </h1>
-          <Badge
-            className={cn(
-              "capitalize text-xs",
-              ROLE_COLORS[effectiveRole || "member"],
-              viewAsRole && "ring-2 ring-amber-500/50"
-            )}
-          >
-            {viewAsRole && "👁 "}
-            {ROLE_LABELS[effectiveRole || "member"]}
-          </Badge>
-        </div>
-        <p className="text-muted-foreground">
-          Manage games{canManageUsers && " and users"}.
-        </p>
-      </div>
+    <div className="flex items-start justify-between">
+      <PageHeader
+        title="Admin Dashboard"
+        subtitle={`Manage games${canManageUsers ? " and users" : ""}.`}
+        backHref="/"
+      >
+        <Badge
+          className={cn(
+            "capitalize text-xs",
+            ROLE_COLORS[effectiveRole || "member"],
+            viewAsRole && "ring-2 ring-amber-500/50"
+          )}
+        >
+          {viewAsRole && "👁 "}
+          {ROLE_LABELS[effectiveRole || "member"]}
+        </Badge>
+      </PageHeader>
       <div className="flex items-center gap-2">
         <UserButton />
       </div>
-    </header>
+    </div>
   );
 }

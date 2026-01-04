@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { useImpersonation } from "@/components/impersonation-provider";
 import { AdminHeader } from "@/components/admin/admin-header";
-import { Gamepad2, Users, Loader2, Shield } from "lucide-react";
+import { Gamepad2, Users, Loader2, Shield, Settings } from "lucide-react";
 import Link from "next/link";
 
 export default function AdminLayout({
@@ -23,6 +23,9 @@ export default function AdminLayout({
     canManageUsers,
   } = useImpersonation();
   const [isLoading, setIsLoading] = useState(true);
+
+  const canManageSettings =
+    effectiveRole === "owner" || effectiveRole === "coowner";
 
   useEffect(() => {
     if (!impersonationLoading) {
@@ -61,6 +64,7 @@ export default function AdminLayout({
 
   const isGamesTab = pathname === "/admin/games";
   const isUsersTab = pathname === "/admin/users";
+  const isSettingsTab = pathname === "/admin/settings";
 
   return (
     <main className="min-h-screen px-4 py-8 md:px-8 lg:px-12">
@@ -86,6 +90,17 @@ export default function AdminLayout({
               >
                 <Users className="h-4 w-4" />
                 Users
+              </Button>
+            </Link>
+          )}
+          {canManageSettings && (
+            <Link href="/admin/settings">
+              <Button
+                variant={isSettingsTab ? "default" : "outline"}
+                className="gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                Settings
               </Button>
             </Link>
           )}

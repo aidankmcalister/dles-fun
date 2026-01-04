@@ -5,15 +5,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardHeader, CardFooter } from "@/components/ui/card";
 
 interface GameGridProps {
-  games: Omit<GameCardProps, "isPlayed" | "onPlay">[];
+  games: Omit<GameCardProps, "isPlayed" | "onPlay" | "onHide">[];
   playedIds: Set<string>;
   onPlay: (id: string) => void;
+  onHide?: (id: string) => void;
 }
 
 const GRID_CLASSES =
   "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 
-export function GameGrid({ games, playedIds, onPlay }: GameGridProps) {
+export function GameGrid({ games, playedIds, onPlay, onHide }: GameGridProps) {
   return (
     <div className={GRID_CLASSES}>
       {games.map((game, index) => (
@@ -23,6 +24,7 @@ export function GameGrid({ games, playedIds, onPlay }: GameGridProps) {
           {...game}
           isPlayed={playedIds.has(game.id)}
           onPlay={onPlay}
+          onHide={onHide}
         />
       ))}
     </div>
