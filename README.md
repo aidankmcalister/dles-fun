@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Daily Games
+
+A curated hub for discovering and tracking daily puzzle games. Users can browse games by category, mark games as played, and use the "Feeling Lucky" feature to randomly select an unplayed game.
+
+## Tech Stack
+
+| Layer         | Technology                                                                     |
+| ------------- | ------------------------------------------------------------------------------ |
+| Framework     | [Next.js 16](https://nextjs.org) (App Router)                                  |
+| Language      | TypeScript                                                                     |
+| UI            | React 19, [shadcn/ui](https://ui.shadcn.com), [Radix UI](https://radix-ui.com) |
+| Styling       | [Tailwind CSS 4](https://tailwindcss.com)                                      |
+| Database      | PostgreSQL via [Prisma ORM](https://prisma.io)                                 |
+| Auth          | [Better Auth](https://better-auth.com) (Google OAuth)                          |
+| Notifications | [Sonner](https://sonner.emilkowal.ski)                                         |
+| Effects       | [canvas-confetti](https://github.com/catdad/canvas-confetti)                   |
+
+## File Structure
+
+```
+daily-games/
+├── app/                      # Next.js App Router
+│   ├── api/                  # API routes
+│   │   ├── auth/             # Better Auth endpoints
+│   │   └── games/            # Game CRUD + play tracking
+│   ├── admin/                # Admin panel pages
+│   ├── generated/            # Prisma generated client
+│   ├── layout.tsx            # Root layout with providers
+│   ├── page.tsx              # Home page
+│   └── globals.css           # Global styles + Tailwind
+│
+├── components/               # React components
+│   ├── ui/                   # shadcn/ui primitives (Button, Card, etc.)
+│   ├── admin/                # Admin-specific components
+│   ├── game-card.tsx         # Individual game card
+│   ├── game-grid.tsx         # Grid layout for games
+│   ├── games-client.tsx      # Main games page client logic
+│   ├── games-header.tsx      # Search, filters, sorting
+│   ├── feeling-lucky-modal.tsx # Random game picker modal
+│   ├── user-button.tsx       # Auth/user dropdown
+│   └── theme-*.tsx           # Dark/light theme components
+│
+├── lib/                      # Utilities and config
+│   ├── auth.ts               # Better Auth server config
+│   ├── auth-client.ts        # Auth client hooks
+│   ├── prisma.ts             # Prisma client singleton
+│   ├── constants.ts          # Topics, colors, helpers
+│   ├── played-state.ts       # LocalStorage play tracking
+│   └── utils.ts              # cn() and helpers
+│
+├── prisma/                   # Database
+│   ├── schema.prisma         # Data models (Game, User, Session, etc.)
+│   ├── seed.ts               # Seed script for games
+│   └── migrations/           # Database migrations
+│
+└── public/                   # Static assets
+```
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
+# Install dependencies
+bun install
+
+# Set up your .env with DATABASE_URL and auth credentials
+
+# Run database migrations
+bunx prisma migrate dev
+
+# Seed the database (optional)
+bunx tsx prisma/seed.ts
+
+# Start dev server
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Open [http://localhost:3000](http://localhost:3000) to view the app.
