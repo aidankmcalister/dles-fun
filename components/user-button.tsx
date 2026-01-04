@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useSession, signIn, signOut } from "@/lib/auth-client";
 import { useTheme } from "next-themes";
 import { useImpersonation } from "@/components/impersonation-provider";
@@ -99,11 +100,15 @@ export function UserButton() {
           className="h-8 w-8 overflow-hidden rounded-full p-0"
         >
           {session.user.image ? (
-            <img
-              src={session.user.image}
-              alt={session.user.name || "User"}
-              className="h-full w-full object-cover"
-            />
+            <div className="relative h-full w-full">
+              <Image
+                src={session.user.image}
+                alt={session.user.name || "User"}
+                fill
+                className="object-cover"
+                sizes="32px"
+              />
+            </div>
           ) : (
             <User className="h-4 w-4" />
           )}
