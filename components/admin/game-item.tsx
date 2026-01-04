@@ -1,0 +1,199 @@
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { TOPICS, TOPIC_COLORS } from "@/lib/constants";
+import { cn } from "@/lib/utils";
+import { Pencil, Trash2 } from "lucide-react";
+import type { Topic } from "@/app/generated/prisma/client";
+import { useState } from "react";
+
+interface Game {
+  id: string;
+  title: string;
+  link: string;
+  topic: string;
+  playCount: number;
+  createdAt: string;
+}
+
+interface GameItemProps {
+  game: Game;
+  isEditing: boolean;
+  canManage: boolean;
+  onEdit: (game: Game) => void;
+  onDelete: (id: string) => void;
+  onUpdate: (
+    id: string,
+    data: { title: string; link: string; topic: Topic }
+  ) => Promise<void>;
+  onCancelEdit: () => void;
+}
+
+export function GameItem({
+  game,
+  isEditing,
+  canManage,
+  onEdit,
+  onDelete,
+  onUpdate,
+  onCancelEdit,
+}: GameItemProps) {
+  const [title, setTitle] = useState(game.title);
+  const [link, setLink] = useState(game.link);
+  const [topic, setTopic] = useState<Topic>(game.topic as Topic);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSave = async () => {
+    setIsSubmitting(true);
+    try {
+      await onUpdate(game.id, { title, link, topic });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  if (isEditing) {
+    return (
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 flex-1 w-full">
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="h-8"
+            placeholder="Title"
+          />
+          <Input
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            className="h-8"
+            placeholder="Link"
+          />
+          <Select value={topic} onValueChange={(v) => setTopic(v as Topic)}>
+            <SelectTrigger className="h-8 capitalize">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {TOPICS.map((t) => (
+                <SelectItem key={t} value={t} className="capitalize">
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center gap-2 mt-2 sm:mt-0">
+          <Button
+            size="sm"
+            className="h-8"
+            onClick={handleSave}
+            disabled={isSubmitting}
+          >
+            Save
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8"
+            onClick={onCancelEdit}
+          >
+            Cancel
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-4 w-full">
+      <div className="grid grid-cols-1 md:grid-cols-[180px_200px_minmax(0,1fr)_100px] gap-4 items-center flex-1 min-w-0">
+        <span className="text-sm font-medium truncate" title={game.title}>
+          {game.title}
+        </span>
+
+        <div className="flex items-center">
+          <Badge
+            className={cn(
+              "capitalize text-xs shrink-0",
+              TOPIC_COLORS[game.topic]
+            )}
+            variant="secondary"
+          >
+            {game.topic}
+          </Badge>
+        </div>
+
+        <span
+          className="text-xs text-muted-foreground truncate font-mono"
+          title={game.link}
+        >
+          {game.link}
+        </span>
+
+        <span className="text-xs text-muted-foreground truncate">
+          {game.playCount || 0} plays
+        </span>
+      </div>
+
+      {canManage && (
+        <div className="flex items-center gap-1 shrink-0 ml-auto">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8"
+            onClick={() => {
+              setTitle(game.title);
+              setLink(game.link);
+              setTopic(game.topic as Topic);
+              onEdit(game);
+            }}
+          >
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete {game.title}?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => onDelete(game.id)}>
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/select";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -21,12 +20,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { TOPICS, TOPIC_COLORS } from "@/lib/constants";
-import { cn } from "@/lib/utils";
-import { Pencil, Trash2, Plus, Loader2 } from "lucide-react";
+import { TOPICS } from "@/lib/constants";
+import { Plus, Loader2 } from "lucide-react";
 import type { Topic } from "@/app/generated/prisma/client";
+import { GameItem } from "./game-item";
 
 interface Game {
   id: string;
@@ -50,11 +48,13 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
   const [gameSortOrder, setGameSortOrder] = useState<"asc" | "desc">("asc");
 
   // Game form state
-  const [editingGame, setEditingGame] = useState<Game | null>(null);
+  const [editingGameId, setEditingGameId] = useState<string | null>(null);
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [formTitle, setFormTitle] = useState("");
-  const [formLink, setFormLink] = useState("");
-  const [formTopic, setFormTopic] = useState<Topic>("puzzle");
+
+  // New game form state
+  const [newTitle, setNewTitle] = useState("");
+  const [newLink, setNewLink] = useState("");
+  const [newTopic, setNewTopic] = useState<Topic>("puzzle");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -74,20 +74,22 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
   };
 
   const handleAddGame = async () => {
-    if (!formTitle || !formLink) return;
+    if (!newTitle || !newLink) return;
     setIsSubmitting(true);
     try {
       const res = await fetch("/api/games", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: formTitle,
-          link: formLink,
-          topic: formTopic,
+          title: newTitle,
+          link: newLink,
+          topic: newTopic,
         }),
       });
       if (res.ok) {
-        resetForm();
+        setNewTitle("");
+        setNewLink("");
+        setNewTopic("puzzle");
         setShowAddDialog(false);
         fetchGames();
       }
@@ -96,26 +98,22 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
     }
   };
 
-  const handleUpdateGame = async () => {
-    if (!editingGame || !formTitle || !formLink) return;
-    setIsSubmitting(true);
+  const handleUpdateGame = async (
+    id: string,
+    data: { title: string; link: string; topic: Topic }
+  ) => {
     try {
-      const res = await fetch(`/api/games/${editingGame.id}`, {
+      const res = await fetch(`/api/games/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: formTitle,
-          link: formLink,
-          topic: formTopic,
-        }),
+        body: JSON.stringify(data),
       });
       if (res.ok) {
-        resetForm();
-        setEditingGame(null);
+        setEditingGameId(null);
         fetchGames();
       }
-    } finally {
-      setIsSubmitting(false);
+    } catch (error) {
+      console.error("Failed to update game:", error);
     }
   };
 
@@ -128,20 +126,6 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
     } catch (error) {
       console.error("Failed to delete game:", error);
     }
-  };
-
-  const startEditing = (game: Game) => {
-    setEditingGame(game);
-    setFormTitle(game.title);
-    setFormLink(game.link);
-    setFormTopic(game.topic as Topic);
-  };
-
-  const resetForm = () => {
-    setFormTitle("");
-    setFormLink("");
-    setFormTopic("puzzle");
-    setEditingGame(null);
   };
 
   const filteredGames = useMemo(() => {
@@ -210,8 +194,8 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
                   <Input
                     id="game-title"
                     placeholder="Game name"
-                    value={formTitle}
-                    onChange={(e) => setFormTitle(e.target.value)}
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
                   />
                 </Field>
                 <Field>
@@ -219,15 +203,15 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
                   <Input
                     id="game-link"
                     placeholder="https://example.com/game"
-                    value={formLink}
-                    onChange={(e) => setFormLink(e.target.value)}
+                    value={newLink}
+                    onChange={(e) => setNewLink(e.target.value)}
                   />
                 </Field>
                 <Field>
                   <FieldLabel htmlFor="game-topic">Category</FieldLabel>
                   <Select
-                    value={formTopic}
-                    onValueChange={(v) => setFormTopic(v as Topic)}
+                    value={newTopic}
+                    onValueChange={(v) => setNewTopic(v as Topic)}
                   >
                     <SelectTrigger
                       id="game-topic"
@@ -246,14 +230,12 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
                 </Field>
               </div>
               <AlertDialogFooter>
-                <AlertDialogCancel onClick={resetForm}>
+                <AlertDialogCancel onClick={() => setShowAddDialog(false)}>
                   Cancel
                 </AlertDialogCancel>
                 <Button
                   onClick={handleAddGame}
-                  disabled={
-                    isSubmitting || !formTitle.trim() || !formLink.trim()
-                  }
+                  disabled={isSubmitting || !newTitle.trim() || !newLink.trim()}
                 >
                   {isSubmitting ? "Adding..." : "Add Game"}
                 </Button>
@@ -263,14 +245,13 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
         )}
       </div>
 
-      {/* Game search and filters */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1">
           <Input
             placeholder="Search games..."
             value={gameSearch}
             onChange={(e) => setGameSearch(e.target.value)}
-            className="max-w-md"
+            className="max-w-md h-9"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -280,8 +261,8 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
               setGameTopicFilter(value as Topic | "all")
             }
           >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by topic" />
+            <SelectTrigger className="w-[140px] h-9 text-xs">
+              <SelectValue placeholder="Topic" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Topics</SelectItem>
@@ -303,145 +284,40 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
               setGameSortOrder(order);
             }}
           >
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[140px] h-9 text-xs">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="title-asc">Title (A-Z)</SelectItem>
               <SelectItem value="title-desc">Title (Z-A)</SelectItem>
-              <SelectItem value="topic-asc">Topic (A-Z)</SelectItem>
-              <SelectItem value="topic-desc">Topic (Z-A)</SelectItem>
               <SelectItem value="playCount-desc">Most Played</SelectItem>
-              <SelectItem value="playCount-asc">Least Played</SelectItem>
               <SelectItem value="createdAt-desc">Newest First</SelectItem>
-              <SelectItem value="createdAt-asc">Oldest First</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <div className="rounded-md border">
-        <div className="divide-y">
+      <div className="rounded-md border bg-card">
+        <div className="divide-y relative">
           {filteredGames.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              No games found matching your criteria.
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              No games found.
             </div>
           ) : (
             filteredGames.map((game) => (
               <div
                 key={game.id}
-                className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/50"
+                className="px-4 py-3 hover:bg-muted/40 transition-colors"
               >
-                {editingGame?.id === game.id ? (
-                  <div className="flex-1 flex items-center gap-2">
-                    <Input
-                      value={formTitle}
-                      onChange={(e) => setFormTitle(e.target.value)}
-                      className="h-8 flex-1"
-                      placeholder="Title"
-                    />
-                    <Input
-                      value={formLink}
-                      onChange={(e) => setFormLink(e.target.value)}
-                      className="h-8 flex-1"
-                      placeholder="Link"
-                    />
-                    <Select
-                      value={formTopic}
-                      onValueChange={(v) => setFormTopic(v as Topic)}
-                    >
-                      <SelectTrigger className="h-8 w-[120px] capitalize">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TOPICS.map((t) => (
-                          <SelectItem key={t} value={t} className="capitalize">
-                            {t}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      size="sm"
-                      className="h-8"
-                      onClick={handleUpdateGame}
-                      disabled={isSubmitting}
-                    >
-                      Save
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-8"
-                      onClick={resetForm}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="flex items-center gap-3 min-w-0">
-                      <span className="font-medium whitespace-nowrap">
-                        {game.title}
-                      </span>
-                      <Badge
-                        className={cn(
-                          "capitalize text-xs",
-                          TOPIC_COLORS[game.topic]
-                        )}
-                      >
-                        {game.topic}
-                      </Badge>
-                      <span className="text-sm text-muted-foreground">
-                        {game.link}
-                      </span>
-                      <span className="text-xs text-muted-foreground ml-2">
-                        {game.playCount || 0} plays
-                      </span>
-                    </div>
-                    {canManageGames && (
-                      <div className="flex items-center gap-1 ml-4">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-7 w-7"
-                          onClick={() => startEditing(game)}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              className="h-7 w-7 text-destructive hover:text-destructive"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Delete {game.title}?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                This action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDeleteGame(game.id)}
-                              >
-                                Delete
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    )}
-                  </>
-                )}
+                <GameItem
+                  game={game}
+                  isEditing={editingGameId === game.id}
+                  canManage={canManageGames}
+                  onEdit={() => setEditingGameId(game.id)}
+                  onCancelEdit={() => setEditingGameId(null)}
+                  onUpdate={handleUpdateGame}
+                  onDelete={handleDeleteGame}
+                />
               </div>
             ))
           )}

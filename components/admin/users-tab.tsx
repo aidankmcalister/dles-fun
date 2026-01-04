@@ -9,23 +9,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useImpersonation } from "@/components/impersonation-provider";
-import { cn } from "@/lib/utils";
-import { Trash2, Loader2, Shield } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { Role } from "@/app/generated/prisma/client";
+import { UserItem } from "./user-item";
 
 interface User {
   id: string;
@@ -38,13 +25,6 @@ interface User {
 }
 
 const ROLES: Role[] = ["owner", "coowner", "admin", "member"];
-
-const ROLE_COLORS: Record<Role, string> = {
-  owner: "bg-amber-500/20 text-amber-700 dark:text-amber-300",
-  coowner: "bg-violet-500/20 text-violet-700 dark:text-violet-300",
-  admin: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
-  member: "bg-gray-500/20 text-gray-700 dark:text-gray-300",
-};
 
 const ROLE_LABELS: Record<Role, string> = {
   owner: "Owner",
@@ -192,7 +172,7 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
             placeholder="Search users..."
             value={userSearch}
             onChange={(e) => setUserSearch(e.target.value)}
-            className="max-w-md"
+            className="max-w-md h-9"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -200,8 +180,8 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
             value={userRoleFilter}
             onValueChange={(value) => setUserRoleFilter(value as Role | "all")}
           >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Filter by role" />
+            <SelectTrigger className="w-[140px] h-9 text-xs">
+              <SelectValue placeholder="Role" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Roles</SelectItem>
@@ -223,7 +203,7 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
               setUserSortOrder(order);
             }}
           >
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[140px] h-9 text-xs">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -234,99 +214,32 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
               <SelectItem value="role-asc">Role (Asc)</SelectItem>
               <SelectItem value="role-desc">Role (Desc)</SelectItem>
               <SelectItem value="createdAt-desc">Newest First</SelectItem>
-              <SelectItem value="createdAt-asc">Oldest First</SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <div className="divide-y">
           {filteredUsers.length === 0 ? (
-            <div className="p-8 text-center text-muted-foreground">
-              No users found matching your criteria.
+            <div className="p-8 text-center text-muted-foreground text-sm">
+              No users found.
             </div>
           ) : (
             filteredUsers.map((user) => (
               <div
                 key={user.id}
-                className="flex items-center justify-between px-4 py-2.5 hover:bg-muted/50"
+                className="px-4 py-3 hover:bg-muted/40 transition-colors"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">{user.name}</span>
-                      <Badge
-                        className={cn(
-                          "capitalize text-xs",
-                          ROLE_COLORS[user.role]
-                        )}
-                      >
-                        {ROLE_LABELS[user.role]}
-                      </Badge>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {user.email}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {canChangeUserRole(user.role) && (
-                    <Select
-                      value={user.role}
-                      onValueChange={(val) =>
-                        handleUpdateRole(user.id, val as Role)
-                      }
-                    >
-                      <SelectTrigger className="h-8 w-[130px] capitalize">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {getAssignableRoles().map((role) => (
-                          <SelectItem
-                            key={role}
-                            value={role}
-                            className="capitalize"
-                          >
-                            {ROLE_LABELS[role]}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-
-                  {canDeleteUser(user.role) && (
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete User?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete {user.name}? This
-                            action cannot be undone.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDeleteUser(user.id)}
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  )}
-                </div>
+                <UserItem
+                  user={user}
+                  currentUserRole={effectiveRole as Role}
+                  assignableRoles={getAssignableRoles()}
+                  canChangeRole={canChangeUserRole}
+                  canDelete={canDeleteUser}
+                  onUpdateRole={handleUpdateRole}
+                  onDelete={handleDeleteUser}
+                />
               </div>
             ))
           )}
