@@ -10,7 +10,17 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 
-import { FeelingLuckyModal } from "@/components/feeling-lucky-modal";
+import dynamic from "next/dynamic";
+
+const FeelingLuckyModal = dynamic(
+  () =>
+    import("@/components/feeling-lucky-modal").then(
+      (mod) => mod.FeelingLuckyModal
+    ),
+  {
+    ssr: false,
+  }
+);
 
 type SortOption = "title" | "topic" | "played";
 
