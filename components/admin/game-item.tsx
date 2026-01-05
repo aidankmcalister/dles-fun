@@ -98,8 +98,8 @@ export function GameItem({
             </SelectTrigger>
             <SelectContent>
               {TOPICS.map((t) => (
-                <SelectItem key={t} value={t} className="capitalize">
-                  {t}
+                <SelectItem key={t} value={t}>
+                  <DlesTopic topic={t} className="text-[10px] px-1.5 h-4" />
                 </SelectItem>
               ))}
             </SelectContent>

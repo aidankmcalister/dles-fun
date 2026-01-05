@@ -37,7 +37,7 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
   const [games, setGames] = useState<Game[]>(initialGames);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("title");
-  const [topicFilter, setTopicFilter] = useState("all");
+  const [topicFilter, setTopicFilter] = useState<string[]>([]);
   const [listFilter, setListFilter] = useState("all");
   const [showHidden, setShowHidden] = useState(false);
   const [isLuckyModalOpen, setIsLuckyModalOpen] = useState(false);
@@ -186,7 +186,7 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
 
   const handleClearFilters = () => {
     setSearchQuery("");
-    setTopicFilter("all");
+    setTopicFilter([]);
     setListFilter("all");
     setSortBy("title");
   };
@@ -197,6 +197,11 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
 
   const filteredGames = useMemo(() => {
     const query = searchQuery.toLowerCase();
+    const activeTopics =
+      topicFilter.length === 0 || topicFilter.includes("all")
+        ? []
+        : topicFilter;
+
     return games
       .filter((g) => {
         // Hide games if not showing hidden
@@ -210,11 +215,15 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
           }
         }
 
+        // Filter by topic
+        if (activeTopics.length > 0 && !activeTopics.includes(g.topic)) {
+          return false;
+        }
+
         return (
-          (topicFilter === "all" || g.topic === topicFilter) &&
-          (query === "" ||
-            g.title.toLowerCase().includes(query) ||
-            g.topic.toLowerCase().includes(query))
+          query === "" ||
+          g.title.toLowerCase().includes(query) ||
+          g.topic.toLowerCase().includes(query)
         );
       })
       .sort((a, b) => {
@@ -279,6 +288,7 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
 
       {filteredGames.length > 0 ? (
         <GameGrid
+          key={topicFilter.join(",")}
           games={filteredGames.map((g) => ({
             id: g.id,
             title: g.title,

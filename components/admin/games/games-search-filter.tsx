@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DlesTopic } from "@/components/dles-topic";
 import { TOPICS } from "@/lib/constants";
 import type { Topic } from "@/app/generated/prisma/client";
 
@@ -64,8 +65,8 @@ export function GamesSearchFilter({
           <SelectContent>
             <SelectItem value="all">All Topics</SelectItem>
             {TOPICS.map((topic) => (
-              <SelectItem key={topic} value={topic} className="capitalize">
-                {topic}
+              <SelectItem key={topic} value={topic}>
+                <DlesTopic topic={topic} className="text-[10px] px-1.5 h-4" />
               </SelectItem>
             ))}
           </SelectContent>

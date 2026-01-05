@@ -21,6 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DlesTopic } from "@/components/dles-topic";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { TOPICS } from "@/lib/constants";
 import { formatTopic } from "@/lib/utils";
@@ -106,8 +107,8 @@ export function AddGameDialog({ onAdd }: AddGameDialogProps) {
               </SelectTrigger>
               <SelectContent>
                 {TOPICS.map((t) => (
-                  <SelectItem key={t} value={t} className="capitalize">
-                    {formatTopic(t)}
+                  <SelectItem key={t} value={t}>
+                    <DlesTopic topic={t} className="text-[10px] px-1.5 h-4" />
                   </SelectItem>
                 ))}
               </SelectContent>

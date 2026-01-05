@@ -19,8 +19,8 @@ interface GamesHeaderProps {
   filteredCount: number;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  topicFilter: string;
-  onTopicFilterChange: (topic: string) => void;
+  topicFilter: string[];
+  onTopicFilterChange: (topic: string[]) => void;
   listFilter: string;
   onListFilterChange: (listId: string) => void;
   lists: GameList[];

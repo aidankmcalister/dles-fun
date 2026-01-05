@@ -7,15 +7,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { MultiSelect } from "@/components/ui/multi-select";
+import { DlesTopic } from "@/components/dles-topic";
 import { TOPICS } from "@/lib/constants";
-import { Tag, Library, ArrowDownAZ, LayoutGrid, Clock } from "lucide-react";
+import { Tag, Library, ArrowDownAZ, LayoutGrid, Clock, X } from "lucide-react";
 import { GameList } from "@/lib/use-lists";
+import { cn, formatTopic } from "@/lib/utils";
 
 type SortOption = "title" | "topic" | "played";
 
 interface HeaderFiltersProps {
-  topicFilter: string;
-  onTopicFilterChange: (topic: string) => void;
+  topicFilter: string[];
+  onTopicFilterChange: (topic: string[]) => void;
   listFilter: string;
   onListFilterChange: (listId: string) => void;
   lists: GameList[];
@@ -36,17 +39,47 @@ export function HeaderFilters({
   isAuthenticated,
   isCompact = false,
 }: HeaderFiltersProps) {
+  const handleTopicChange = (newTopics: string[]) => {
+    // Normalize: treat empty topicFilter as ["all"] for comparison purposes
+    const effectiveCurrentTopics =
+      topicFilter.length === 0 ? ["all"] : topicFilter;
+
+    // If "all" is newly selected (it wasn't in previous filter), clear others
+    if (newTopics.includes("all") && !effectiveCurrentTopics.includes("all")) {
+      onTopicFilterChange(["all"]);
+      return;
+    }
+
+    // If "all" was present and we selected something else, remove "all"
+    if (effectiveCurrentTopics.includes("all") && newTopics.length > 1) {
+      onTopicFilterChange(newTopics.filter((t) => t !== "all"));
+      return;
+    }
+
+    // If we deselected everything, revert to empty (which displays as "all")
+    if (newTopics.length === 0) {
+      onTopicFilterChange([]);
+      return;
+    }
+
+    onTopicFilterChange(newTopics);
+  };
+
+  const topicOptions = [
+    { value: "all", label: "All Topics" },
+    ...TOPICS.map((t) => ({ value: t, label: formatTopic(t) })),
+  ];
+
   return (
     <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
       {isAuthenticated && lists.length > 0 && (
         <Select value={listFilter} onValueChange={onListFilterChange}>
           <SelectTrigger
             size="lg"
-            className={`w-[160px] h-10 text-sm ${
-              !isCompact && listFilter !== "all"
-                ? "border-primary bg-primary/5 text-primary"
-                : ""
-            }`}
+            className={cn(
+              "w-[160px] h-10 text-sm border-primary/20 hover:border-primary/50 hover:bg-primary/5",
+              !isCompact && listFilter !== "all" && "bg-primary/5"
+            )}
           >
             <SelectValue placeholder="All Games" />
           </SelectTrigger>
@@ -66,31 +99,41 @@ export function HeaderFilters({
         </Select>
       )}
 
-      <Select value={topicFilter} onValueChange={onTopicFilterChange}>
-        <SelectTrigger
-          size="lg"
-          className={`w-[160px] h-10 text-sm ${
-            !isCompact && topicFilter !== "all"
-              ? "border-primary bg-primary/5 text-primary"
-              : ""
-          }`}
-        >
-          <SelectValue placeholder="Category" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">
-            <div className="flex items-center gap-2">
-              <Tag className="h-4 w-4" />
-              <span>All Topics</span>
-            </div>
-          </SelectItem>
-          {TOPICS.map((t) => (
-            <SelectItem key={t} value={t}>
-              {t.charAt(0).toUpperCase() + t.slice(1)}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <MultiSelect
+        options={topicOptions}
+        value={topicFilter.length === 0 ? ["all"] : topicFilter}
+        onChange={handleTopicChange}
+        placeholder="Category"
+        className={cn(
+          "w-[200px] sm:w-[300px]",
+          !isCompact && topicFilter.length > 0 && !topicFilter.includes("all")
+            ? "bg-primary/5"
+            : ""
+        )}
+        renderLabel={(option) => (
+          <DlesTopic
+            topic={option.value}
+            className="text-[10px] px-1.5 h-5 pointer-events-none"
+          />
+        )}
+        renderSelectedItem={(option, onUnselect) => (
+          <DlesTopic topic={option.value} className="gap-1 pointer-events-auto">
+            {option.value !== "all" && (
+              <button
+                type="button"
+                className="h-3 w-3 flex items-center justify-center opacity-60 hover:opacity-100 cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onUnselect();
+                }}
+              >
+                <X className="size-2" />
+              </button>
+            )}
+          </DlesTopic>
+        )}
+      />
 
       <Select
         value={sortBy}
@@ -98,11 +141,10 @@ export function HeaderFilters({
       >
         <SelectTrigger
           size="lg"
-          className={`w-[110px] h-10 text-sm ${
-            !isCompact && sortBy !== "title"
-              ? "border-primary bg-primary/5 text-primary"
-              : ""
-          }`}
+          className={cn(
+            "w-[110px] h-10 text-sm border-primary/20 hover:border-primary/50 hover:bg-primary/5",
+            !isCompact && sortBy !== "title" && "bg-primary/5"
+          )}
         >
           <SelectValue placeholder="Sort" />
         </SelectTrigger>

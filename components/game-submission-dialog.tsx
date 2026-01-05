@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { DlesTopic } from "@/components/dles-topic";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { TOPICS } from "@/lib/constants";
 import { formatTopic } from "@/lib/utils";
@@ -138,8 +139,11 @@ export function GameSubmissionDialog({
               </SelectTrigger>
               <SelectContent>
                 {TOPICS.map((topic) => (
-                  <SelectItem key={topic} value={topic} className="capitalize">
-                    {formatTopic(topic)}
+                  <SelectItem key={topic} value={topic}>
+                    <DlesTopic
+                      topic={topic}
+                      className="text-[10px] px-1.5 h-4"
+                    />
                   </SelectItem>
                 ))}
               </SelectContent>
