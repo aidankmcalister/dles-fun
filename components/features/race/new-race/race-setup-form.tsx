@@ -1,28 +1,58 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { DlesButton } from "@/components/design/dles-button";
 import {
   Select,
   SelectContent,
-  SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Badge } from "@/components/ui/badge";
-import { ChevronRight } from "lucide-react";
 import { type GameList } from "@/lib/use-lists";
-import { Tag, Library, Trophy, Dices } from "lucide-react";
+import { Tag, Library, Trophy, Dices, Gamepad, Globe } from "lucide-react";
 
 export const SYSTEM_TEMPLATES = [
-  { id: "sys-words", name: "Word Nerd Sprint", topic: "words", icon: Tag },
-  { id: "sys-logic", name: "Logic Master", topic: "logic", icon: Library },
-  { id: "sys-trivia", name: "Trivia Showdown", topic: "trivia", icon: Trophy },
-  { id: "sys-quick5", name: "The Fast Five", count: 5, icon: Dices },
+  {
+    id: "sys-words",
+    name: "Words",
+    topic: "words",
+    icon: Tag,
+    count: 5,
+    description: "5 random word games",
+  },
+  {
+    id: "sys-logic",
+    name: "Logic",
+    topic: "logic",
+    icon: Library,
+    count: 5,
+    description: "5 random logic games",
+  },
+  {
+    id: "sys-trivia",
+    name: "Trivia",
+    topic: "trivia",
+    icon: Trophy,
+    count: 5,
+    description: "5 random trivia games",
+  },
+  {
+    id: "sys-geography",
+    name: "Geography",
+    topic: "geography",
+    icon: Globe,
+    count: 5,
+    description: "5 random geography games",
+  },
 ];
 
 interface RaceSetupFormProps {
@@ -33,6 +63,7 @@ interface RaceSetupFormProps {
   isGuest: boolean;
   lists: GameList[];
   onTemplateSelect: (id: string) => void;
+  onRandomSelect: (count: number) => void;
   onManualSelect: () => void;
   onStepFocus: () => void;
 }
@@ -45,105 +76,135 @@ export function RaceSetupForm({
   isGuest,
   lists,
   onTemplateSelect,
-  onManualSelect,
-  onStepFocus,
+  onRandomSelect,
 }: RaceSetupFormProps) {
   return (
-    <section className="transition-all duration-300">
-      <Card className="border border-border transition-all duration-300 shadow-none bg-card">
-        <CardHeader className="border-b border-border">
-          <CardTitle className="text-sm font-bold flex items-center gap-3">
-            <div className="flex items-center justify-center w-6 h-6 rounded-md bg-muted text-muted-foreground text-[10px] font-black">
-              1
-            </div>
-            Race Setup
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-4 space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">
-              Race Name
-            </label>
+    <section className="space-y-6">
+      {/* Race Details */}
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label
+            htmlFor="raceName"
+            className="text-xs font-medium text-muted-foreground"
+          >
+            Race Name
+          </Label>
+          <Input
+            id="raceName"
+            value={name}
+            onChange={(e) => onNameChange(e.target.value)}
+            placeholder="dles.fun race"
+            className="h-11 text-sm font-medium bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted rounded-lg px-4 transition-colors"
+          />
+        </div>
+
+        {isGuest && (
+          <div className="space-y-2">
+            <Label
+              htmlFor="guestName"
+              className="text-xs font-medium text-muted-foreground"
+            >
+              Your Name
+            </Label>
             <Input
-              value={name}
-              onChange={(e) => onNameChange(e.target.value)}
-              placeholder="dles.fun race"
-              className="h-10 text-sm font-medium bg-muted border-border focus:border-primary/30 rounded-md px-3 shadow-none"
-              onFocus={onStepFocus}
+              id="guestName"
+              value={guestName}
+              onChange={(e) => onGuestNameChange(e.target.value)}
+              placeholder="Enter your name"
+              className="h-11 text-sm font-medium bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted rounded-lg px-4 transition-colors"
             />
           </div>
+        )}
+      </div>
 
-          {isGuest && (
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-muted-foreground">
-                Your Name (Guest)
-              </label>
-              <Input
-                value={guestName}
-                onChange={(e) => onGuestNameChange(e.target.value)}
-                placeholder="Enter your name"
-                className="h-10 text-sm font-medium bg-muted border-border focus:border-primary/30 rounded-md px-3 shadow-none"
-              />
-            </div>
-          )}
+      {/* Quick Start Section */}
+      <div className="p-4 rounded-xl border border-border/50 bg-muted/20 space-y-4">
+        <h2 className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+          Quick Start — Pick a preset
+        </h2>
+        <TooltipProvider delayDuration={300}>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {/* Random buttons */}
+            {[3, 5, 10, 15].map((count) => (
+              <Tooltip key={count}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-10 gap-2 text-xs font-medium bg-background hover:bg-muted border-border/50"
+                    onClick={() => onRandomSelect(count)}
+                  >
+                    <Dices className="h-4 w-4 text-primary" />
+                    {count}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p className="text-xs">
+                    {count} random games from any category
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
 
-          <div className="flex items-center h-fit gap-3">
-            <div className="flex-1">
-              <Select onValueChange={onTemplateSelect}>
-                <SelectTrigger className="w-full bg-muted border-border focus:border-primary/30 rounded-md text-sm px-3 shadow-none">
-                  <SelectValue placeholder="Apply Template or List" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel className="text-[9px] uppercase tracking-widest text-muted-foreground/40 py-2">
-                      System Templates
-                    </SelectLabel>
-                    {SYSTEM_TEMPLATES.map((t) => (
-                      <SelectItem key={t.id} value={t.id}>
-                        <div className="flex items-center gap-2">
-                          <t.icon className="h-4 w-4 text-primary/40" />
-                          <span>{t.name}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                  {lists.length > 0 && (
-                    <SelectGroup>
-                      <SelectLabel className="text-[9px] uppercase tracking-widest text-muted-foreground/40 py-2 border-t border-border/10 mt-2">
-                        Your Lists
-                      </SelectLabel>
-                      {lists.map((list) => (
-                        <SelectItem key={list.id} value={list.id}>
-                          <div className="flex justify-between items-center w-full gap-4">
-                            <span>{list.name}</span>
-                            <Badge
-                              variant="secondary"
-                              className="font-bold border-none bg-muted/40 text-[9px] h-3.5"
-                            >
-                              {list.gameCount}
-                            </Badge>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-            <span className="text-[9px] font-black text-muted-foreground/30 uppercase">
-              or
-            </span>
-            <DlesButton
-              variant="outline"
-              className="flex-1 text-sm font-medium gap-2"
-              onClick={onManualSelect}
-            >
-              Select Games Manually
-              <ChevronRight className="h-3.5 w-3.5 opacity-40" />
-            </DlesButton>
+            {/* Category templates */}
+            {SYSTEM_TEMPLATES.map((t) => (
+              <Tooltip key={t.id}>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="h-10 gap-2 text-xs font-medium bg-background hover:bg-muted border-border/50"
+                    onClick={() => onTemplateSelect(t.id)}
+                  >
+                    <t.icon className="h-4 w-4 text-primary" />
+                    {t.name}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p className="text-xs">{t.description}</p>
+                </TooltipContent>
+              </Tooltip>
+            ))}
           </div>
-        </CardContent>
-      </Card>
+        </TooltipProvider>
+
+        {/* Your Lists */}
+        {lists.length > 0 && (
+          <div className="pt-2 border-t border-border/30">
+            <Select onValueChange={onTemplateSelect}>
+              <SelectTrigger className="h-9 w-full text-xs border-border/50 bg-background">
+                <Gamepad className="h-3.5 w-3.5 mr-2 text-muted-foreground" />
+                <SelectValue placeholder="Or choose from your lists..." />
+              </SelectTrigger>
+              <SelectContent>
+                {lists.map((list) => (
+                  <SelectItem key={list.id} value={list.id}>
+                    <div className="flex items-center justify-between gap-4">
+                      <span>{list.name}</span>
+                      <Badge
+                        variant="secondary"
+                        className="text-[9px] h-4 px-1.5"
+                      >
+                        {list.gameCount}
+                      </Badge>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-border" />
+        </div>
+        <div className="relative flex justify-center">
+          <span className="bg-background px-4 text-xs font-medium text-muted-foreground">
+            or pick your own games
+          </span>
+        </div>
+      </div>
     </section>
   );
 }

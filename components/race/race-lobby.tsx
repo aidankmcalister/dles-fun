@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2, Flag } from "lucide-react";
 import { toast } from "sonner";
-import { Race, RaceGame } from "@/app/race/[id]/page";
+import { Race } from "@/app/race/[id]/page";
 import { DropResult } from "@hello-pangea/dnd";
-
-// Extracted Components
 import { LobbyHeader } from "@/components/features/race/lobby/lobby-header";
 import { InviteLink } from "@/components/features/race/lobby/invite-link";
 import { ParticipantList } from "@/components/features/race/lobby/participant-list";

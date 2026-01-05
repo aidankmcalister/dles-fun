@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, List, Check } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { List, Check } from "lucide-react";
 import { DlesButton } from "@/components/design/dles-button";
 import {
   Dialog,
@@ -35,7 +34,7 @@ export interface ListsDropdownProps {
 
 export function ListsDropdown({ gameId }: ListsDropdownProps) {
   const { data: session } = useSession();
-  const { lists, createList, addGameToList, isLoading } = useLists();
+  const { lists, createList, addGameToList } = useLists();
   const [isOpen, setIsOpen] = useState(false);
   const [newListName, setNewListName] = useState("");
   const [selectedListId, setSelectedListId] = useState("");

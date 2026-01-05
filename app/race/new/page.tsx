@@ -1,40 +1,18 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/layout/page-header";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  SelectGroup,
-  SelectLabel,
-} from "@/components/ui/select";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { UserButton } from "@/components/layout/user-button";
 import { useLists } from "@/lib/use-lists";
 import { Topic } from "@/app/generated/prisma/client";
 import { toast } from "sonner";
-import { Loader2, Flag } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { UserButton } from "@/components/layout/user-button";
 import { useSession } from "@/lib/auth-client";
-import { DropResult } from "@hello-pangea/dnd";
-
-// Imported Components
 import {
   RaceSetupForm,
   SYSTEM_TEMPLATES,
 } from "@/components/features/race/new-race/race-setup-form";
 import { GameSelector } from "@/components/features/race/new-race/game-selector";
-import { SelectedGamesList } from "@/components/features/race/new-race/selected-games-list";
-import { RaceInstructions } from "@/components/features/race/new-race/race-instructions";
-import { MobileRaceBar } from "@/components/features/race/new-race/mobile-race-bar";
 
 interface Game {
   id: string;
@@ -56,7 +34,7 @@ export default function NewRacePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
-  const [activeStep, setActiveStep] = useState<1 | 2>(1);
+  const [, setActiveStep] = useState<1 | 2>(1);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -65,7 +43,7 @@ export default function NewRacePage() {
         const res = await fetch("/api/games");
         if (res.ok) {
           const data = await res.json();
-          const activeGames = data.filter((g: any) => !g.archived);
+          const activeGames = data.filter((g: Game) => !g.archived);
           setAllGames(activeGames);
         }
       } catch (error) {
@@ -106,16 +84,18 @@ export default function NewRacePage() {
   const selectList = (id: string) => {
     if (id.startsWith("sys-")) {
       const template = SYSTEM_TEMPLATES.find((t) => t.id === id);
-      if (template) {
-        let games: Game[] = [];
-        if (template.topic)
-          games = allGames.filter((g) => g.topic === template.topic);
-        else if (template.count)
-          games = [...allGames]
-            .sort(() => 0.5 - Math.random())
-            .slice(0, template.count);
+      if (template && template.topic) {
+        const categoryGames = allGames.filter(
+          (g) => g.topic === template.topic
+        );
+        // Shuffle and pick only template.count games (default 5)
+        const games = [...categoryGames]
+          .sort(() => 0.5 - Math.random())
+          .slice(0, template.count || 5);
         setSelectedGameIds(games.map((g) => g.id));
-        toast.info(`Applied template: ${template.name}`);
+        toast.info(
+          `Selected ${games.length} ${template.name.toLowerCase()} games!`
+        );
         setActiveStep(2);
       }
     } else {
@@ -153,7 +133,7 @@ export default function NewRacePage() {
         // If created as guest, save identity
         if (!session?.user && guestName) {
           const myParticipant = race.participants.find(
-            (p: any) => p.guestName === guestName
+            (p: { guestName?: string }) => p.guestName === guestName
           );
           if (myParticipant) {
             localStorage.setItem(`race_guest_${race.id}`, myParticipant.id);
@@ -163,29 +143,11 @@ export default function NewRacePage() {
         toast.success("Race created!");
         router.push(`/race/${race.id}`);
       } else toast.error((await res.text()) || "Failed to create race");
-    } catch (e) {
+    } catch {
       toast.error("An error occurred");
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  // Helper: Get selected game names for summary
-  const selectedGameNames = useMemo(
-    () =>
-      selectedGameIds
-        .map((id) => allGames.find((g) => g.id === id)?.title)
-        .filter(Boolean) as string[],
-    [selectedGameIds, allGames]
-  );
-
-  // Quick 5 random selection
-  const selectQuick5 = () => {
-    const randomGames = [...allGames]
-      .sort(() => 0.5 - Math.random())
-      .slice(0, 5);
-    setSelectedGameIds(randomGames.map((g) => g.id));
-    toast.info("Selected 5 random games!");
   };
 
   return (
@@ -200,77 +162,96 @@ export default function NewRacePage() {
         <UserButton />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mt-8">
-        <div className="lg:col-span-8 space-y-8">
-          <RaceSetupForm
-            name={name}
-            onNameChange={setName}
-            guestName={guestName}
-            onGuestNameChange={setGuestName}
-            isGuest={!session?.user}
-            lists={lists}
-            onTemplateSelect={selectList}
-            onManualSelect={() => {
-              setSelectedGameIds([]);
-              setActiveStep(2);
-            }}
-            onStepFocus={() => setActiveStep(1)}
-          />
+      <div className="space-y-8">
+        <RaceSetupForm
+          name={name}
+          onNameChange={setName}
+          guestName={guestName}
+          onGuestNameChange={setGuestName}
+          isGuest={!session?.user}
+          lists={lists}
+          onTemplateSelect={selectList}
+          onRandomSelect={(count) => {
+            const randomGames = [...allGames]
+              .sort(() => 0.5 - Math.random())
+              .slice(0, count);
+            setSelectedGameIds(randomGames.map((g) => g.id));
+            toast.info(`Selected ${count} random games!`);
+          }}
+          onManualSelect={() => {
+            setSelectedGameIds([]);
+            setActiveStep(2);
+          }}
+          onStepFocus={() => setActiveStep(1)}
+        />
 
-          <GameSelector
-            allGames={allGames}
-            selectedGameIds={selectedGameIds}
-            filteredGames={filteredGames}
-            searchQuery={searchQuery}
-            onSearchChange={setSearchQuery}
-            selectedTopics={selectedTopics}
-            onTopicChange={setSelectedTopics}
-            isLoading={gamesLoading}
-            onToggleGame={toggleGame}
-            onSelectAll={() =>
-              setSelectedGameIds(
-                Array.from(
-                  new Set([
-                    ...selectedGameIds,
-                    ...filteredGames.map((g) => g.id),
-                  ])
-                )
+        <GameSelector
+          allGames={allGames}
+          selectedGameIds={selectedGameIds}
+          filteredGames={filteredGames}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          selectedTopics={selectedTopics}
+          onTopicChange={setSelectedTopics}
+          isLoading={gamesLoading}
+          onToggleGame={toggleGame}
+          onSelectAll={() =>
+            setSelectedGameIds(
+              Array.from(
+                new Set([...selectedGameIds, ...filteredGames.map((g) => g.id)])
               )
-            }
-            onClear={() => setSelectedGameIds([])}
-            topics={topics}
-          />
-        </div>
-
-        {/* RIGHT COLUMN: Instructions & Selected Games */}
-        <div className="lg:col-span-4 lg:sticky lg:top-8 space-y-6 text-muted-foreground/50">
-          <RaceInstructions />
-
-          <SelectedGamesList
-            selectedGameIds={selectedGameIds}
-            allGames={allGames}
-            onRemove={(id) =>
-              setSelectedGameIds((prev) => prev.filter((gid) => gid !== id))
-            }
-            onReorder={(result: DropResult) => {
-              if (!result.destination) return;
-              const items = Array.from(selectedGameIds);
-              const [reordered] = items.splice(result.source.index, 1);
-              items.splice(result.destination.index, 0, reordered);
-              setSelectedGameIds(items);
-            }}
-          />
-        </div>
+            )
+          }
+          onClear={() => setSelectedGameIds([])}
+          topics={topics}
+        />
       </div>
 
-      <MobileRaceBar
-        selectedCount={selectedGameIds.length}
-        firstGameTitle={
-          allGames.find((g) => g.id === selectedGameIds[0])?.title || ""
-        }
-        onSubmit={handleCreateRace}
-        isSubmitting={isSubmitting}
-      />
+      {/* Sticky Footer CTA */}
+      <div className="fixed bottom-0 left-0 right-0 border-t border-border/40 bg-background/80 backdrop-blur-md z-40 shadow-lg">
+        <div className="max-w-3xl mx-auto px-4 py-3 space-y-2">
+          {selectedGameIds.length > 0 && (
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-muted-foreground truncate">
+                <span className="font-bold text-foreground">
+                  {selectedGameIds.length}
+                </span>{" "}
+                selected:{" "}
+                {selectedGameIds
+                  .slice(0, 3)
+                  .map((id) => allGames.find((g) => g.id === id)?.title)
+                  .filter(Boolean)
+                  .join(", ")}
+                {selectedGameIds.length > 3 &&
+                  ` +${selectedGameIds.length - 3}`}
+              </span>
+              <button
+                className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
+                onClick={() => setSelectedGameIds([])}
+              >
+                Clear
+              </button>
+            </div>
+          )}
+          <button
+            className={`w-full h-11 text-sm font-bold gap-2 rounded-lg transition-all shadow-sm flex items-center justify-center ${
+              selectedGameIds.length > 0
+                ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md"
+                : "bg-muted/80 text-muted-foreground cursor-not-allowed border border-border/50"
+            }`}
+            onClick={handleCreateRace}
+            disabled={
+              isSubmitting || gamesLoading || selectedGameIds.length === 0
+            }
+          >
+            {selectedGameIds.length > 0
+              ? `Start Race with ${selectedGameIds.length} Game${
+                  selectedGameIds.length > 1 ? "s" : ""
+                }`
+              : "Select Games to Continue"}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
