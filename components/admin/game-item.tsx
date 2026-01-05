@@ -19,6 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { DlesTopic } from "@/components/dles-topic";
 import { TOPICS, TOPIC_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Pencil, Trash2, Archive } from "lucide-react";
@@ -156,15 +157,7 @@ export function GameItem({
         </div>
 
         <div className="flex items-center">
-          <Badge
-            className={cn(
-              "capitalize text-xs shrink-0",
-              TOPIC_COLORS[game.topic]
-            )}
-            variant="secondary"
-          >
-            {game.topic}
-          </Badge>
+          <DlesTopic topic={game.topic} className="text-xs shrink-0" />
         </div>
 
         <span
