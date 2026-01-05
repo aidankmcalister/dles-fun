@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { DlesButton } from "@/components/design/dles-button";
 import { Badge } from "@/components/ui/badge";
 import { MicroLabel } from "@/components/design/micro-label";
 import { Link, Eye, EyeOff, Clipboard } from "lucide-react";
@@ -59,24 +59,26 @@ export function InviteLink({ race }: InviteLinkProps) {
               {showLink ? windowHref : "••••••••••••••••••••••••"}
             </span>
           </div>
-          <Button
+          <DlesButton
             variant="outline"
             onClick={() => setShowLink(!showLink)}
-            className="shrink-0 h-10 w-10"
+            className="shrink-0 h-10 w-10 p-0"
+            size="icon"
           >
             {showLink ? (
               <EyeOff className="h-4 w-4" />
             ) : (
               <Eye className="h-4 w-4" />
             )}
-          </Button>
-          <Button
+          </DlesButton>
+          <DlesButton
             variant="outline"
             onClick={copyLink}
-            className="shrink-0 h-10 w-10"
+            className="shrink-0 h-10 w-10 p-0"
+            size="icon"
           >
             <Clipboard className="h-4 w-4" />
-          </Button>
+          </DlesButton>
         </div>
       </CardContent>
     </Card>

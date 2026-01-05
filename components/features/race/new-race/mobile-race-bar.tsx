@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { DlesButton } from "@/components/design/dles-button";
 import { Badge } from "@/components/ui/badge";
 
 interface MobileRaceBarProps {
@@ -27,14 +28,14 @@ export function MobileRaceBar({
           </Badge>
           <span className="truncate max-w-[100px]">{firstGameTitle}...</span>
         </div>
-        <Button
+        <DlesButton
           size="sm"
           className="h-8 px-4 font-black uppercase text-[9px] tracking-widest rounded-lg"
           onClick={onSubmit}
           disabled={isSubmitting}
         >
           CREATE
-        </Button>
+        </DlesButton>
       </div>
     </div>
   );

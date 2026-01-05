@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { DlesButton } from "@/components/design/dles-button";
 import { Badge } from "@/components/ui/badge";
 import { MultiSelect } from "@/components/ui/multi-select";
 import { HeaderSearch } from "@/components/header/header-search";
@@ -67,22 +68,17 @@ export function GameSelector({
             </Badge>
           </h2>
           <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={onSelectAll}
-              className="h-7 px-2.5 rounded-md font-bold border-border text-[10px]"
-            >
+            <DlesButton size="sm" onClick={onSelectAll} className="text-[10px]">
               Select All
-            </Button>
-            <Button
+            </DlesButton>
+            <DlesButton
               variant="ghost"
               size="sm"
               onClick={onClear}
-              className="h-7 px-2.5 rounded-md font-bold text-[10px] text-muted-foreground hover:text-destructive"
+              className="text-[10px] text-muted-foreground hover:text-destructive"
             >
               Clear
-            </Button>
+            </DlesButton>
           </div>
         </div>
 

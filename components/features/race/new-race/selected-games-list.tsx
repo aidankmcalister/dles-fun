@@ -3,6 +3,7 @@
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesButton } from "@/components/design/dles-button";
 import { Gamepad, GripVertical, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -83,12 +84,14 @@ export function SelectedGamesList({
                             topic={game.topic}
                             className="text-[9px] px-1.5 h-4 border-none"
                           />
-                          <button
+                          <DlesButton
+                            variant="ghost"
+                            size="icon-sm"
                             onClick={() => onRemove(id)}
-                            className="text-muted-foreground/50 hover:text-destructive"
+                            className="h-6 w-6 text-muted-foreground/50 hover:text-destructive"
                           >
-                            <X className="h-4 w-4" />
-                          </button>
+                            <X className="h-3.5 w-3.5" />
+                          </DlesButton>
                         </div>
                       )}
                     </Draggable>

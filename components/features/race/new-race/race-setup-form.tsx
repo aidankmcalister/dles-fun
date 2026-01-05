@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { DlesButton } from "@/components/design/dles-button";
 import {
   Select,
   SelectContent,
@@ -132,14 +133,14 @@ export function RaceSetupForm({
             <span className="text-[9px] font-black text-muted-foreground/30 uppercase">
               or
             </span>
-            <Button
+            <DlesButton
               variant="outline"
-              className="flex-1 rounded-md hover:bg-muted/50 text-sm font-medium gap-2"
+              className="flex-1 text-sm font-medium gap-2"
               onClick={onManualSelect}
             >
               Select Games Manually
               <ChevronRight className="h-3.5 w-3.5 opacity-40" />
-            </Button>
+            </DlesButton>
           </div>
         </CardContent>
       </Card>

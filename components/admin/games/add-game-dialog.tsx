@@ -11,7 +11,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -142,9 +141,9 @@ export function AddGameDialog({ onAdd }: AddGameDialogProps) {
           <AlertDialogCancel onClick={() => setIsOpen(false)}>
             Cancel
           </AlertDialogCancel>
-          <Button onClick={handleAdd} disabled={isSubmitting || !isValid}>
+          <DlesButton onClick={handleAdd} disabled={isSubmitting || !isValid}>
             {isSubmitting ? "Adding..." : "Add Game"}
-          </Button>
+          </DlesButton>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
