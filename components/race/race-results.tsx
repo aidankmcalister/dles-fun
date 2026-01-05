@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DlesTopic } from "@/components/dles-topic";
 import { Race } from "@/app/race/[id]/page";
 import { Trophy, Home, RotateCcw, Clock, List } from "lucide-react";
 import Link from "next/link";
@@ -210,15 +211,10 @@ export function RaceResults({ race, currentUser }: RaceResultsProps) {
                   className="px-3 py-2.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-muted/5 transition-colors"
                 >
                   <div className="flex items-center gap-2 min-w-[120px]">
-                    <Badge
-                      variant="secondary"
-                      className={cn(
-                        "text-[10px] uppercase font-bold px-1.5 h-5 min-w-[60px] justify-center border-0",
-                        TOPIC_COLORS[game.game.topic]
-                      )}
-                    >
-                      {game.game.topic}
-                    </Badge>
+                    <DlesTopic
+                      topic={game.game.topic}
+                      className="text-[10px] uppercase font-bold px-1.5 h-5 min-w-[60px] justify-center"
+                    />
                     <span className="font-bold text-sm truncate max-w-[150px]">
                       {game.game.title}
                     </span>

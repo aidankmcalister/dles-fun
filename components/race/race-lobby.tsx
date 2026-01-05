@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { DlesTopic } from "@/components/dles-topic";
 import {
   Loader2,
   Check,
@@ -469,15 +470,10 @@ export function RaceLobby({ race, currentUser, onRefresh }: RaceLobbyProps) {
                                       <span className="font-semibold text-sm truncate">
                                         {rg.game.title}
                                       </span>
-                                      <Badge
-                                        variant="secondary"
-                                        className={cn(
-                                          "text-[9px] capitalize px-1.5 h-4 border-none shrink-0",
-                                          TOPIC_COLORS[rg.game.topic]
-                                        )}
-                                      >
-                                        {rg.game.topic}
-                                      </Badge>
+                                      <DlesTopic
+                                        topic={rg.game.topic}
+                                        className="text-[9px] px-1.5 h-4 shrink-0"
+                                      />
                                     </div>
                                   </TooltipTrigger>
                                   {rg.game.description && (

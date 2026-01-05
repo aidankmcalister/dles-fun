@@ -162,7 +162,7 @@ export default function RacePage() {
               };
               return {
                 ...p,
-                completions: [...p.completions, newCompletion],
+                completions: [...(p.completions || []), newCompletion],
                 finishedAt: data.finishedAll
                   ? new Date().toISOString()
                   : p.finishedAt,

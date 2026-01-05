@@ -75,6 +75,7 @@ export async function POST(
                 image: true,
               },
             },
+            completions: true,
           },
         },
       },

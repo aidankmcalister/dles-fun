@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { DlesTopic } from "@/components/dles-topic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
@@ -238,15 +239,7 @@ export function ListsClient({ initialLists }: ListsClientProps) {
                           <span className="text-sm font-medium">
                             {game.title}
                           </span>
-                          <Badge
-                            variant="secondary"
-                            className={cn(
-                              "text-xs capitalize",
-                              TOPIC_COLORS[game.topic]
-                            )}
-                          >
-                            {game.topic}
-                          </Badge>
+                          <DlesTopic topic={game.topic} className="text-xs" />
                         </div>
                         <Button
                           variant="ghost"

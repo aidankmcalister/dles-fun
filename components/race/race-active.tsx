@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DlesTopic } from "@/components/dles-topic";
 import { Race, Participant, RaceGame } from "@/app/race/[id]/page";
 import {
   Check,
@@ -204,15 +205,10 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
                       <h3 className="text-xl font-black tracking-tight">
                         {rg.game.title}
                       </h3>
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "text-[10px] uppercase font-bold px-2 py-0.5 border-0",
-                          TOPIC_COLORS[rg.game.topic]
-                        )}
-                      >
-                        {rg.game.topic}
-                      </Badge>
+                      <DlesTopic
+                        topic={rg.game.topic}
+                        className="text-[10px] px-2 py-0.5"
+                      />
                     </div>
                     <a
                       href={rg.game.link}

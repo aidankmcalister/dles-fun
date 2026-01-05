@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { DlesTopic } from "@/components/dles-topic";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { TOPIC_COLORS } from "@/lib/constants";
@@ -51,15 +52,10 @@ export function SubmissionItem({
         </div>
 
         <div className="flex items-center">
-          <Badge
-            className={cn(
-              "capitalize text-[10px] shrink-0",
-              TOPIC_COLORS[submission.topic as string]
-            )}
-            variant="secondary"
-          >
-            {submission.topic}
-          </Badge>
+          <DlesTopic
+            topic={submission.topic}
+            className="text-[10px] shrink-0"
+          />
         </div>
 
         <div className="flex items-center gap-2 min-w-0">
