@@ -243,7 +243,7 @@ export default function NewRacePage() {
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="dles.fun Race"
+                    placeholder="dles.fun race"
                     className="h-10 text-sm font-medium bg-muted border-border focus:border-primary/30 rounded-md px-3 shadow-none"
                     onFocus={() => setActiveStep(1)}
                   />
