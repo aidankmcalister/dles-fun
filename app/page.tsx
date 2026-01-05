@@ -21,9 +21,7 @@ export default async function Page() {
       <div className="mx-auto max-w-7xl">
         {games.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <h1 className="text-2xl font-bold tracking-tight mb-2">
-              Daily Games
-            </h1>
+            <h1 className="text-2xl font-bold tracking-tight mb-2">dles.fun</h1>
             <p className="text-lg text-muted-foreground">No games yet.</p>
             <p className="text-sm text-muted-foreground">
               Add a game using the admin tools, or run the seed script.

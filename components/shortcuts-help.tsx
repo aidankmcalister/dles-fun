@@ -51,9 +51,7 @@ export function ShortcutsHelp() {
             <Keyboard className="h-5 w-5" />
             Keyboard Shortcuts
           </DialogTitle>
-          <DialogDescription>
-            Navigate Daily Games like a pro.
-          </DialogDescription>
+          <DialogDescription>Navigate dles.fun like a pro.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           {SHORTCUTS.map((shortcut) => (

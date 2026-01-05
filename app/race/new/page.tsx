@@ -73,7 +73,7 @@ export default function NewRacePage() {
   const router = useRouter();
   const { data: session } = useSession();
   const { lists, isLoading: listsLoading } = useLists();
-  const [name, setName] = useState("Daily Games Race");
+  const [name, setName] = useState("dles.fun Race");
   const [guestName, setGuestName] = useState("");
   const [selectedGameIds, setSelectedGameIds] = useState<string[]>([]);
   const [allGames, setAllGames] = useState<Game[]>([]);
@@ -243,7 +243,7 @@ export default function NewRacePage() {
                   <Input
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Daily Games Race"
+                    placeholder="dles.fun Race"
                     className="h-10 text-sm font-medium bg-muted border-border focus:border-primary/30 rounded-md px-3 shadow-none"
                     onFocus={() => setActiveStep(1)}
                   />

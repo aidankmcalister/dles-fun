@@ -1,10 +1,10 @@
 ---
-description: Project conventions and AI assistant rules for daily-games
+description: Project conventions and AI assistant rules for dles-fun
 ---
 
-# Daily Games Project Rules
+# dles-fun Project Rules
 
-Follow these rules for all development on the Daily Games platform.
+Follow these rules for all development on the dles.fun platform.
 
 ---
 

@@ -1,4 +1,4 @@
-# Daily Games Design System
+# dles-fun Design System
 
 Design guidelines based on the established visual patterns in the Admin Dashboard and Homepage.
 
