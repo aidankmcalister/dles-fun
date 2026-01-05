@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { ImpersonationProvider } from "@/components/impersonation-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ListsProvider } from "@/lib/use-lists";
 import "./globals.css";
 
@@ -45,6 +46,7 @@ export default function RootLayout({
         <ThemeProvider>
           <ImpersonationProvider>
             <Analytics />
+            <SpeedInsights />
             <SiteBanner />
             <ListsProvider>{children}</ListsProvider>
           </ImpersonationProvider>
