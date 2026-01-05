@@ -1,7 +1,7 @@
 "use client";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { DlesTopic } from "@/components/design/dles-topic";
 import {
   Tooltip,
@@ -15,7 +15,7 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { Gamepad2, GripVertical } from "lucide-react";
+import { GripVertical } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Race, RaceGame } from "@/app/race/[id]/page";
 
@@ -33,22 +33,20 @@ export function RaceConfig({
   onReorder,
 }: RaceConfigProps) {
   return (
-    <Card className="border border-border shadow-none bg-card h-full">
-      <CardHeader className="border-b border-border">
-        <CardTitle className="text-sm font-bold flex items-center gap-3">
-          <div className="flex items-center justify-center w-6 h-6 rounded-md bg-muted text-muted-foreground text-[10px] font-black">
-            <Gamepad2 className="h-3.5 w-3.5" />
-          </div>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
           Games in this Race
-          <Badge
-            variant="secondary"
-            className="ml-1 font-bold rounded-full px-2 py-0 border-none bg-primary/10 text-primary text-[10px]"
-          >
-            {race.raceGames.length}
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-0 flex-2">
+        </Label>
+        <Badge
+          variant="secondary"
+          className="font-black rounded-full px-2 py-0 border-none bg-primary/10 text-primary text-[9px]"
+        >
+          {race.raceGames.length}
+        </Badge>
+      </div>
+
+      <div className="rounded-xl border border-border/50 bg-muted/20 overflow-hidden transition-all">
         <TooltipProvider delayDuration={200}>
           <DragDropContext onDragEnd={onReorder}>
             <Droppable droppableId="race-games">
@@ -56,7 +54,7 @@ export function RaceConfig({
                 <div
                   {...provided.droppableProps}
                   ref={provided.innerRef}
-                  className="max-h-[400px] overflow-y-auto"
+                  className="divide-y divide-border/30"
                 >
                   {orderedGames.map((rg, index) => (
                     <Draggable
@@ -73,8 +71,10 @@ export function RaceConfig({
                           ref={provided.innerRef}
                           {...provided.draggableProps}
                           className={cn(
-                            "px-4 py-3 flex items-center gap-3 border-b border-border last:border-b-0",
-                            snapshot.isDragging && "bg-muted shadow-lg"
+                            "px-4 py-3 flex items-center gap-3 bg-muted/5 transition-colors",
+                            snapshot.isDragging &&
+                              "bg-muted/40 shadow-xl z-50 ring-1 ring-primary/20",
+                            !snapshot.isDragging && "hover:bg-muted/10"
                           )}
                         >
                           {isCreator &&
@@ -82,26 +82,26 @@ export function RaceConfig({
                               race.status === "ready") && (
                               <div
                                 {...provided.dragHandleProps}
-                                className="text-muted-foreground/50 hover:text-primary cursor-grab"
+                                className="text-muted-foreground/30 hover:text-primary transition-colors cursor-grab active:cursor-grabbing"
                               >
                                 <GripVertical className="h-4 w-4" />
                               </div>
                             )}
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <div className="flex items-center gap-3 flex-1 min-w-0">
-                                <span className="font-semibold text-sm truncate">
+                              <div className="flex items-center gap-3 flex-1 min-w-0  justify-between">
+                                <span className="font-bold text-xs truncate text-foreground/90">
                                   {rg.game.title}
                                 </span>
                                 <DlesTopic
                                   topic={rg.game.topic}
-                                  className="text-[9px] px-1.5 h-4 shrink-0"
+                                  className="text-[8px] px-1.5 h-4 shrink-0 font-black opacity-80"
                                 />
                               </div>
                             </TooltipTrigger>
                             {rg.game.description && (
-                              <TooltipContent>
-                                <p className="max-w-xs">
+                              <TooltipContent side="right">
+                                <p className="max-w-xs text-xs">
                                   {rg.game.description}
                                 </p>
                               </TooltipContent>
@@ -117,7 +117,7 @@ export function RaceConfig({
             </Droppable>
           </DragDropContext>
         </TooltipProvider>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

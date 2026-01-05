@@ -21,11 +21,13 @@ export function SystemUtilitiesCard() {
             className="h-16 flex flex-col items-center justify-center gap-1.5 border-dashed border-border/50 hover:bg-muted/50 hover:border-primary/30 group transition-all"
             onClick={() => window.open("/api/admin/export/games", "_blank")}
           >
-            <div className="flex items-center gap-2 text-sm font-bold">
+            <div className="flex items-center gap-2">
               <FileJson className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
-              Export Games
+              <span className="text-[10px] font-bold uppercase tracking-widest">
+                Export Games
+              </span>
             </div>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-[10px] text-muted-foreground/60 italic">
               Full JSON dataset
             </span>
           </DlesButton>
@@ -35,11 +37,13 @@ export function SystemUtilitiesCard() {
             className="h-16 flex flex-col items-center justify-center gap-1.5 border-dashed border-border/50 hover:bg-muted/50 hover:border-primary/30 group transition-all"
             onClick={() => window.open("/api/admin/export/users", "_blank")}
           >
-            <div className="flex items-center gap-2 text-sm font-bold">
+            <div className="flex items-center gap-2">
               <Users2 className="h-4 w-4 text-primary transition-transform group-hover:scale-110" />
-              Export Users
+              <span className="text-[10px] font-bold uppercase tracking-widest">
+                Export Users
+              </span>
             </div>
-            <span className="text-[10px] text-muted-foreground">
+            <span className="text-[10px] text-muted-foreground/60 italic">
               User stats data
             </span>
           </DlesButton>

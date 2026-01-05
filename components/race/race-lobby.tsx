@@ -22,12 +22,12 @@ export function RaceLobby({ race, currentUser, onRefresh }: RaceLobbyProps) {
   const [isJoining, setIsJoining] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [guestName, setGuestName] = useState("");
-  const [localGuestId, setLocalGuestId] = useState<string | null>(null);
+  const [localGuestId, setGuestId] = useState<string | null>(null);
 
   React.useEffect(() => {
     if (typeof window !== "undefined") {
       const stored = localStorage.getItem(`race_guest_${race.id}`);
-      if (stored) setLocalGuestId(stored);
+      if (stored) setGuestId(stored);
     }
   }, [race.id]);
 
@@ -71,6 +71,7 @@ export function RaceLobby({ race, currentUser, onRefresh }: RaceLobbyProps) {
           );
           if (myParticipant) {
             localStorage.setItem(`race_guest_${race.id}`, myParticipant.id);
+            setGuestId(myParticipant.id);
           }
         }
         toast.success("Joined the race!");
@@ -139,79 +140,84 @@ export function RaceLobby({ race, currentUser, onRefresh }: RaceLobbyProps) {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 md:px-8 lg:px-12 animate-in fade-in slide-in-from-bottom-2 duration-500 pb-32">
+    <div className="max-w-3xl mx-auto px-4 py-8 pb-32 animate-in fade-in slide-in-from-bottom-2 duration-500">
       <LobbyHeader race={race} />
 
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Column: Invite, Players, Actions */}
-        <div className="lg:col-span-4 space-y-6">
-          <InviteLink race={race} />
-          <ParticipantList race={race} />
+      <div className="space-y-10">
+        <InviteLink race={race} />
 
-          {/* Action Button Section */}
+        <ParticipantList race={race} />
+
+        <RaceConfig
+          race={race}
+          orderedGames={orderedGames}
+          isCreator={isCreator ?? false}
+          onReorder={handleReorder}
+        />
+      </div>
+
+      {/* Sticky Footer Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 border-t border-border/40 bg-background/80 backdrop-blur-md z-40 shadow-lg">
+        <div className="max-w-3xl mx-auto px-4 py-4">
           <div className="space-y-3">
             {canJoin && !currentUser && (
               <Input
                 value={guestName}
                 onChange={(e) => setGuestName(e.target.value)}
                 placeholder="Enter your name to join..."
-                className="h-12 text-sm font-medium bg-muted border-border focus:border-primary/30 rounded-xl px-4"
+                className="h-11 text-sm font-medium bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted rounded-lg px-4 transition-colors"
+                disabled={isJoining}
               />
             )}
 
             {canJoin ? (
               <Button
-                className="w-full h-14 text-sm font-black uppercase tracking-widest rounded-xl transition-all shadow-none"
+                className="w-full h-11 text-sm font-bold gap-2 rounded-lg transition-all shadow-sm bg-primary text-primary-foreground hover:bg-primary/90"
                 onClick={handleJoin}
                 disabled={isJoining || (!currentUser && !guestName.trim())}
               >
                 {isJoining ? (
-                  <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Flag className="mr-3 h-4 w-4" />
+                  <Flag className="h-4 w-4" />
                 )}
                 {currentUser ? "Join Race" : "Join as Guest"}
               </Button>
             ) : canStart ? (
               <Button
-                className="w-full h-14 text-sm font-black uppercase tracking-widest rounded-xl transition-all shadow-none bg-emerald-500 hover:bg-emerald-600 text-white"
+                className="w-full h-11 text-sm font-bold gap-2 rounded-lg transition-all shadow-sm bg-emerald-500 hover:bg-emerald-600 text-white"
                 onClick={handleStart}
                 disabled={isStarting}
               >
                 {isStarting ? (
-                  <Loader2 className="mr-3 h-5 w-5 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Flag className="mr-3 h-4 w-4" />
+                  <Flag className="h-4 w-4" />
                 )}
                 Start Race
               </Button>
             ) : isParticipant ? (
-              <Button
-                className="w-full h-14 text-sm font-black uppercase tracking-widest rounded-xl transition-all shadow-none bg-muted text-muted-foreground cursor-not-allowed border border-border"
-                disabled
-              >
-                <Loader2 className="mr-3 h-4 w-4 animate-spin" />
-                Waiting for Opponent...
-              </Button>
+              <div className="flex flex-col items-center gap-2">
+                <Button
+                  className="w-full h-11 text-sm font-bold gap-2 rounded-lg bg-muted/80 text-muted-foreground cursor-not-allowed border border-border/50"
+                  disabled
+                >
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Waiting for Opponent...
+                </Button>
+                <p className="text-[10px] text-muted-foreground/60 font-medium italic">
+                  Invite a friend with the link above
+                </p>
+              </div>
             ) : (
               <Button
-                className="w-full h-14 text-sm font-black uppercase tracking-widest rounded-xl transition-all shadow-none bg-muted text-muted-foreground cursor-not-allowed border border-border"
+                className="w-full h-11 text-sm font-bold gap-2 rounded-lg bg-muted/80 text-muted-foreground cursor-not-allowed border border-border/50"
                 disabled
               >
-                Race not started yet
+                Race Busy
               </Button>
             )}
           </div>
-        </div>
-
-        {/* Right Column: Games */}
-        <div className="lg:col-span-8 h-full">
-          <RaceConfig
-            race={race}
-            orderedGames={orderedGames}
-            isCreator={isCreator ?? false}
-            onReorder={handleReorder}
-          />
         </div>
       </div>
     </div>

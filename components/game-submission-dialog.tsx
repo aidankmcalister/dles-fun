@@ -23,9 +23,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DlesTopic } from "@/components/design/dles-topic";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { Field, FieldError } from "@/components/ui/field";
 import { TOPICS } from "@/lib/constants";
-import { formatTopic } from "@/lib/utils";
 import { Loader2, Send } from "lucide-react";
 import { toast } from "sonner";
 
@@ -106,35 +106,55 @@ export function GameSubmissionDialog({
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 py-4">
           <Field>
-            <FieldLabel htmlFor="title">Game Title</FieldLabel>
+            <Label
+              htmlFor="title"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-1.5 block"
+            >
+              Game Title
+            </Label>
             <Input
               id="title"
               placeholder="e.g. Wordle"
               {...register("title")}
+              className="h-11 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted transition-colors rounded-lg px-4"
             />
             {errors.title && <FieldError errors={[errors.title]} />}
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="link">Game URL</FieldLabel>
+            <Label
+              htmlFor="link"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-1.5 block"
+            >
+              Game URL
+            </Label>
             <Input
               id="link"
               type="url"
               placeholder="https://example.com/game"
               {...register("link")}
+              className="h-11 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted transition-colors rounded-lg px-4"
             />
             {errors.link && <FieldError errors={[errors.link]} />}
           </Field>
 
           <Field>
-            <FieldLabel htmlFor="topic">Category</FieldLabel>
+            <Label
+              htmlFor="topic"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-1.5 block"
+            >
+              Category
+            </Label>
             <Select
               value={selectedTopic}
               onValueChange={(v) =>
                 setValue("topic", v, { shouldValidate: true })
               }
             >
-              <SelectTrigger id="topic">
+              <SelectTrigger
+                id="topic"
+                className="h-11 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted transition-colors rounded-lg px-4"
+              >
                 <SelectValue placeholder="Select a category" />
               </SelectTrigger>
               <SelectContent>
@@ -152,8 +172,13 @@ export function GameSubmissionDialog({
           </Field>
 
           <Field>
-            <div className="flex items-center justify-between">
-              <FieldLabel htmlFor="description">Description</FieldLabel>
+            <div className="flex items-center justify-between mb-1.5">
+              <Label
+                htmlFor="description"
+                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest"
+              >
+                Description
+              </Label>
               <span className="text-[10px] text-muted-foreground">
                 {watch("description")?.length || 0}/200
               </span>
@@ -162,7 +187,7 @@ export function GameSubmissionDialog({
               id="description"
               placeholder="A brief 1-2 sentence description of the game..."
               {...register("description")}
-              className="resize-none"
+              className="resize-none bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted transition-colors rounded-lg p-4 min-h-[100px]"
               maxLength={200}
             />
             {errors.description && <FieldError errors={[errors.description]} />}

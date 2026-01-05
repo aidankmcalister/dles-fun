@@ -21,9 +21,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DlesTopic } from "@/components/design/dles-topic";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { Field } from "@/components/ui/field";
 import { TOPICS } from "@/lib/constants";
-import { formatTopic } from "@/lib/utils";
 import { Plus } from "lucide-react";
 import type { Topic } from "@/app/generated/prisma/client";
 
@@ -83,7 +83,12 @@ export function AddGameDialog({ onAdd }: AddGameDialogProps) {
         </AlertDialogHeader>
         <div className="space-y-4 py-4">
           <Field>
-            <FieldLabel htmlFor="game-title">Title</FieldLabel>
+            <Label
+              htmlFor="game-title"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-1.5 block"
+            >
+              Title
+            </Label>
             <Input
               id="game-title"
               placeholder="Game name"
@@ -92,7 +97,12 @@ export function AddGameDialog({ onAdd }: AddGameDialogProps) {
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="game-link">Link</FieldLabel>
+            <Label
+              htmlFor="game-link"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-1.5 block"
+            >
+              Link
+            </Label>
             <Input
               id="game-link"
               placeholder="https://example.com/game"
@@ -101,7 +111,12 @@ export function AddGameDialog({ onAdd }: AddGameDialogProps) {
             />
           </Field>
           <Field>
-            <FieldLabel htmlFor="game-topic">Category</FieldLabel>
+            <Label
+              htmlFor="game-topic"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-1.5 block"
+            >
+              Category
+            </Label>
             <Select value={topic} onValueChange={(v) => setTopic(v as Topic)}>
               <SelectTrigger id="game-topic" className="w-full capitalize">
                 <SelectValue placeholder="Select category" />
@@ -109,15 +124,20 @@ export function AddGameDialog({ onAdd }: AddGameDialogProps) {
               <SelectContent>
                 {TOPICS.map((t) => (
                   <SelectItem key={t} value={t}>
-                    <DlesTopic topic={t} className="text-[10px] px-1.5 h-4" />
+                    <DlesTopic topic={t} className="text-[12px] px-1.5 h-5" />
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </Field>
           <Field>
-            <div className="flex items-center justify-between">
-              <FieldLabel htmlFor="game-description">Description</FieldLabel>
+            <div className="flex items-center justify-between mb-1.5">
+              <Label
+                htmlFor="game-description"
+                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest"
+              >
+                Description
+              </Label>
               <span className="text-[10px] text-muted-foreground">
                 {description.length}/200
               </span>

@@ -1,9 +1,10 @@
 "use client";
 
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Users, User, Check, Loader2 } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { User, Check, Loader2 } from "lucide-react";
 import { Race } from "@/app/race/[id]/page";
+import { cn } from "@/lib/utils";
 
 interface ParticipantListProps {
   race: Race;
@@ -11,37 +12,33 @@ interface ParticipantListProps {
 
 export function ParticipantList({ race }: ParticipantListProps) {
   return (
-    <Card className="border border-border shadow-none bg-card">
-      <CardHeader className="border-b border-border">
-        <CardTitle className="text-sm font-bold flex items-center gap-3">
-          <div className="flex items-center justify-center w-6 h-6 rounded-md bg-muted text-muted-foreground text-[10px] font-black">
-            <Users className="h-3.5 w-3.5" />
-          </div>
-          Players
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-5 space-y-3">
+    <div className="space-y-3">
+      <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+        Players
+      </Label>
+
+      <div className="space-y-2">
         {/* Participant 1 */}
-        <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted/40">
+        <div className="flex items-center justify-between p-3 rounded-xl border border-border/50 bg-muted/20">
           <div className="flex items-center gap-3">
             {race.participants[0]?.user?.image ? (
               <img
                 src={race.participants[0].user.image}
                 alt={race.participants[0].user.name}
-                className="h-10 w-10 rounded-full object-cover border border-primary/20"
+                className="h-9 w-9 rounded-full object-cover border border-primary/20"
               />
             ) : (
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
                 <User className="h-5 w-5 text-primary" />
               </div>
             )}
             <div>
-              <p className="font-bold text-sm">
+              <p className="font-bold text-xs">
                 {race.participants[0]?.user?.name ??
                   race.participants[0]?.guestName ??
                   "Unknown"}
               </p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">
+              <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black">
                 {race.createdBy === race.participants[0]?.userId
                   ? "Host"
                   : "Opponent"}
@@ -50,7 +47,7 @@ export function ParticipantList({ race }: ParticipantListProps) {
           </div>
           <Badge
             variant="secondary"
-            className="bg-emerald-500/10 text-emerald-400 border-none text-[9px] font-black uppercase tracking-widest"
+            className="bg-emerald-500/10 text-emerald-400 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5"
           >
             <Check className="h-3 w-3 mr-1" /> Joined
           </Badge>
@@ -58,53 +55,55 @@ export function ParticipantList({ race }: ParticipantListProps) {
 
         {/* Participant 2 or Waiting */}
         {race.participants[1] ? (
-          <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-muted/40">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-border/50 bg-muted/20">
             <div className="flex items-center gap-3">
               {race.participants[1]?.user?.image ? (
                 <img
                   src={race.participants[1].user.image}
                   alt={race.participants[1].user.name}
-                  className="h-10 w-10 rounded-full object-cover border border-primary/20"
+                  className="h-9 w-9 rounded-full object-cover border border-primary/20"
                 />
               ) : (
-                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
                   <User className="h-5 w-5 text-primary" />
                 </div>
               )}
               <div>
-                <p className="font-bold text-sm">
+                <p className="font-bold text-xs">
                   {race.participants[1]?.user?.name ??
                     race.participants[1]?.guestName ??
                     "Unknown"}
                 </p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">
+                <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-black">
                   Opponent
                 </p>
               </div>
             </div>
             <Badge
               variant="secondary"
-              className="bg-emerald-500/10 text-emerald-400 border-none text-[9px] font-black uppercase tracking-widest"
+              className="bg-emerald-500/10 text-emerald-400 border-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5"
             >
               <Check className="h-3 w-3 mr-1" /> Joined
             </Badge>
           </div>
         ) : (
-          <div className="flex items-center justify-between p-4 rounded-xl border border-dashed border-border bg-muted/5 text-muted-foreground">
+          <div className="flex items-center justify-between p-3 rounded-xl border border-dashed border-border/40 bg-muted/5 text-muted-foreground">
             <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-muted/40 flex items-center justify-center">
-                <Loader2 className="h-5 w-5 animate-spin opacity-40" />
+              <div className="h-9 w-9 rounded-full bg-muted/20 flex items-center justify-center">
+                <Loader2 className="h-4 w-4 animate-spin opacity-40 text-muted-foreground" />
               </div>
               <div>
-                <p className="font-bold text-sm">Waiting for opponent...</p>
-                <p className="text-[10px] uppercase tracking-widest font-black opacity-40">
+                <p className="font-bold text-xs text-muted-foreground/60">
+                  Waiting for opponent...
+                </p>
+                <p className="text-[9px] uppercase tracking-widest font-black opacity-30">
                   Invite someone to race!
                 </p>
               </div>
             </div>
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

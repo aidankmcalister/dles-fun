@@ -146,7 +146,7 @@ export default function SubmitGamePage() {
               <FieldLabel htmlFor="title">Game Title</FieldLabel>
               <Input
                 id="title"
-                placeholder="e.g. Wordle"
+                placeholder="eg. Wordle"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 required

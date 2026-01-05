@@ -4,7 +4,8 @@ import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { Field, FieldError } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { FieldError } from "@/components/ui/field";
 import { ShieldAlert, Megaphone } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,11 +30,11 @@ export function SiteStatusCard() {
       </CardHeader>
       <CardContent className="space-y-6 flex-1 px-6 pb-6">
         <div className="flex items-center justify-between group">
-          <div className="space-y-0.5">
-            <p className="text-sm font-semibold group-hover:text-primary transition-colors">
+          <div className="space-y-1">
+            <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block">
               Maintenance Mode
-            </p>
-            <p className="text-xs text-muted-foreground leading-relaxed">
+            </Label>
+            <p className="text-[11px] text-muted-foreground/60 italic leading-relaxed">
               Show banner, disable tracking
             </p>
           </div>
@@ -57,9 +58,11 @@ export function SiteStatusCard() {
 
         <div className="space-y-4 pt-4 border-t border-border/50">
           <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <p className="text-sm font-semibold">Announcement Message</p>
-              <p className="text-xs text-muted-foreground">
+            <div className="space-y-1">
+              <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block">
+                Announcement Message
+              </Label>
+              <p className="text-[11px] text-muted-foreground/60 italic">
                 Site-wide announcement banner
               </p>
             </div>

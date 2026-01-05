@@ -18,7 +18,7 @@ export function PageHeader({
   children,
 }: PageHeaderProps) {
   return (
-    <header className="mb-8 border-b border-border pb-4">
+    <header className="mb-8 pb-4">
       <div className="flex items-center gap-3 mb-1">
         {backHref && (
           <Link

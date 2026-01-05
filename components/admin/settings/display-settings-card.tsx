@@ -10,7 +10,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { Field, FieldError } from "@/components/ui/field";
 import { Sliders } from "lucide-react";
 
 export function DisplaySettingsCard() {
@@ -36,13 +37,13 @@ export function DisplaySettingsCard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <Field>
             <div className="space-y-1 mb-2">
-              <FieldLabel
+              <Label
                 htmlFor="newGameDays"
-                className="text-sm font-semibold"
+                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
               >
                 New Game Days
-              </FieldLabel>
-              <p className="text-[10px] text-muted-foreground leading-tight">
+              </Label>
+              <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
                 Duration of &quot;NEW&quot; label
               </p>
             </div>
@@ -75,13 +76,13 @@ export function DisplaySettingsCard() {
 
           <Field>
             <div className="space-y-1 mb-2">
-              <FieldLabel
+              <Label
                 htmlFor="defaultSort"
-                className="text-sm font-semibold"
+                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
               >
                 Default Sort
-              </FieldLabel>
-              <p className="text-[10px] text-muted-foreground leading-tight">
+              </Label>
+              <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
                 Initial grid organization
               </p>
             </div>
@@ -111,13 +112,13 @@ export function DisplaySettingsCard() {
 
         <Field className="pt-4 border-t border-border/50">
           <div className="space-y-1 mb-2">
-            <FieldLabel
+            <Label
               htmlFor="minPlayStreak"
-              className="text-sm font-semibold"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
             >
               Min Streak Display
-            </FieldLabel>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            </Label>
+            <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
               Show streak after X days played
             </p>
           </div>

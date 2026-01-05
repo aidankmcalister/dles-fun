@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { DlesButton } from "@/components/design/dles-button";
 import { Badge } from "@/components/ui/badge";
-import { MicroLabel } from "@/components/design/micro-label";
-import { Link, Eye, EyeOff, Clipboard } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Eye, EyeOff, Clipboard } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Race } from "@/app/race/[id]/page";
@@ -30,57 +29,53 @@ export function InviteLink({ race }: InviteLinkProps) {
   };
 
   return (
-    <Card className="border border-border shadow-none bg-card">
-      <CardHeader className="border-b border-border">
-        <CardTitle className="text-sm font-bold flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <MicroLabel className="w-6 h-6 rounded-md bg-muted text-muted-foreground flex items-center justify-center p-0">
-              <Link className="h-3.5 w-3.5" />
-            </MicroLabel>
-            Invite Link
-          </div>
-          <Badge
-            variant="secondary"
-            className={cn(
-              "text-[9px] font-black uppercase tracking-widest px-3 py-1 border-none",
-              race.status === "waiting"
-                ? "bg-amber-400/10 text-amber-400"
-                : "bg-emerald-400/10 text-emerald-400"
-            )}
-          >
-            {race.participants.length}/2 Players
-          </Badge>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="p-4">
-        <div className="flex gap-2">
-          <div className="min-w-0 flex-1 h-10 px-3 rounded-lg border border-border bg-muted font-mono text-[11px] overflow-hidden flex items-center">
-            <span className="truncate">
-              {showLink ? windowHref : "••••••••••••••••••••••••"}
-            </span>
-          </div>
-          <DlesButton
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+          Race Invite Link
+        </Label>
+        <Badge
+          variant="secondary"
+          className={cn(
+            "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border-none",
+            race.status === "waiting"
+              ? "bg-amber-400/10 text-amber-400"
+              : "bg-emerald-400/10 text-emerald-400"
+          )}
+        >
+          {race.participants.length}/2 Players
+        </Badge>
+      </div>
+
+      <div className="flex gap-2 p-1.5 rounded-xl border border-border/50 bg-muted/20">
+        <div className="min-w-0 flex-1 h-10 px-3 rounded-lg border border-border/50 bg-background font-mono text-[11px] overflow-hidden flex items-center transition-colors">
+          <span className="truncate text-muted-foreground">
+            {showLink ? windowHref : "••••••••••••••••••••••••"}
+          </span>
+        </div>
+        <div className="flex gap-1.5">
+          <Button
             variant="outline"
             onClick={() => setShowLink(!showLink)}
-            className="shrink-0 h-10 w-10 p-0"
+            className="shrink-0 h-10 w-10 p-0 bg-background hover:bg-muted border-border/50"
             size="icon"
           >
             {showLink ? (
-              <EyeOff className="h-4 w-4" />
+              <EyeOff className="h-4 w-4 text-muted-foreground" />
             ) : (
-              <Eye className="h-4 w-4" />
+              <Eye className="h-4 w-4 text-muted-foreground" />
             )}
-          </DlesButton>
-          <DlesButton
+          </Button>
+          <Button
             variant="outline"
             onClick={copyLink}
-            className="shrink-0 h-10 w-10 p-0"
+            className="shrink-0 h-10 w-10 p-0 bg-background hover:bg-muted border-border/50"
             size="icon"
           >
-            <Clipboard className="h-4 w-4" />
-          </DlesButton>
+            <Clipboard className="h-4 w-4 text-muted-foreground" />
+          </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

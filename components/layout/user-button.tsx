@@ -134,8 +134,8 @@ export function UserButton() {
           )}
         </DlesButton>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56 p-1">
-        <div className="px-2 py-2 mb-1 bg-muted/30 rounded-t-sm border-b border-border/50">
+      <DropdownMenuContent align="end" className="w-56">
+        <div className="p-2">
           <p className="text-sm font-bold tracking-tight truncate">
             {session.user.name}
           </p>

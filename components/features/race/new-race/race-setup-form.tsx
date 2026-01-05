@@ -85,7 +85,7 @@ export function RaceSetupForm({
         <div className="space-y-2">
           <Label
             htmlFor="raceName"
-            className="text-xs font-medium text-muted-foreground"
+            className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest"
           >
             Race Name
           </Label>
@@ -102,7 +102,7 @@ export function RaceSetupForm({
           <div className="space-y-2">
             <Label
               htmlFor="guestName"
-              className="text-xs font-medium text-muted-foreground"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest"
             >
               Your Name
             </Label>

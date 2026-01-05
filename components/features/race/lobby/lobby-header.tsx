@@ -10,13 +10,13 @@ interface LobbyHeaderProps {
 
 export function LobbyHeader({ race }: LobbyHeaderProps) {
   return (
-    <div className="flex items-start justify-between gap-4">
+    <div className="flex items-start justify-between gap-4 mb-8">
       <PageHeader
         title={race.name}
         subtitle={
           race.status === "waiting"
-            ? "Share the link below with your opponent to begin"
-            : "Both players have joined. Ready to race?"
+            ? "Waiting for opponents to join the race."
+            : "Everyone is here. Let the games begin!"
         }
         backHref="/"
       />

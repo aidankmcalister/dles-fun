@@ -4,7 +4,8 @@ import { useFormContext } from "react-hook-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { Label } from "@/components/ui/label";
+import { Field, FieldError } from "@/components/ui/field";
 import { Users2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -29,13 +30,13 @@ export function UserLimitsCard() {
       <CardContent className="space-y-6 flex-1 px-6 pb-6">
         <Field>
           <div className="space-y-1 mb-2">
-            <FieldLabel
+            <Label
               htmlFor="maxCustomLists"
-              className="text-sm font-semibold"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
             >
               Max Custom Lists
-            </FieldLabel>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            </Label>
+            <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
               Limit per registered user
             </p>
           </div>
@@ -57,10 +58,10 @@ export function UserLimitsCard() {
 
         <div className="flex items-center justify-between pt-6 border-t border-border/50 group">
           <div className="space-y-1">
-            <p className="text-sm font-semibold group-hover:text-primary transition-colors">
+            <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block">
               Community Submissions
-            </p>
-            <p className="text-[10px] text-muted-foreground leading-tight">
+            </Label>
+            <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
               Allow game suggestions
             </p>
           </div>
