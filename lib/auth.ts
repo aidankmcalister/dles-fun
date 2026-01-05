@@ -13,4 +13,5 @@ export const auth = betterAuth({
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
   },
+  trustedOrigins: ["https://dles.fun", "https://www.dles.fun"],
 });
