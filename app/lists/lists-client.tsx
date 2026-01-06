@@ -1,7 +1,8 @@
 "use client";
+// forcing refresh
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { DlesTopic } from "@/components/design/dles-topic";
 import {
@@ -11,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,12 +49,14 @@ import {
   Gamepad2,
   Sparkles,
   Loader2,
+  ExternalLink,
 } from "lucide-react";
 
 interface Game {
   id: string;
   title: string;
   topic: string;
+  link?: string;
 }
 
 // Extended list with full game objects for display
@@ -145,7 +149,7 @@ export function ListsClient({ initialLists }: ListsClientProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Your Game Lists</h2>
+        <h2 className="text-micro text-muted-foreground/60">Your Game Lists</h2>
         <Dialog open={isCreating} onOpenChange={setIsCreating}>
           <DialogTrigger asChild>
             <DlesButton size="sm" className="gap-2">
@@ -153,73 +157,76 @@ export function ListsClient({ initialLists }: ListsClientProps) {
               New List
             </DlesButton>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[400px]">
-            <DialogHeader>
-              <DialogTitle>Create New List</DialogTitle>
+          <DialogContent className="sm:max-w-[400px] p-0 gap-0 overflow-hidden bg-card border-border/60">
+            <DialogHeader className="p-4 py-3 border-b border-border/40 bg-muted/20">
+              <DialogTitle className="text-micro text-muted-foreground">
+                Create New List
+              </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <Field>
-                <FieldLabel>List Name</FieldLabel>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="e.g. Favorites, Completed..."
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" &&
-                      newListName.trim() &&
-                      handleCreateList()
-                    }
-                    className="h-11 flex-1"
-                  />
-                  <Popover
-                    open={isColorPickerOpen}
-                    onOpenChange={setIsColorPickerOpen}
-                  >
-                    <PopoverTrigger asChild>
+            <div className="p-4 space-y-4">
+              <div className="space-y-2">
+                <label className="text-micro text-muted-foreground/70">
+                  List Name
+                </label>
+                <Input
+                  placeholder="e.g. My Favorites"
+                  value={newListName}
+                  onChange={(e) => setNewListName(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" &&
+                    newListName.trim() &&
+                    handleCreateList()
+                  }
+                  className="h-10 text-sm font-medium bg-muted/40 border-border/40 focus-visible:bg-background focus-visible:ring-offset-0"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-micro text-muted-foreground/70">
+                  Color Theme
+                </label>
+                <div className="grid grid-cols-6 gap-2">
+                  {LIST_COLOR_OPTIONS.map((color) => {
+                    const style = LIST_CARD_STYLES[color];
+                    return (
                       <button
+                        key={color}
                         type="button"
+                        onClick={() => setNewListColor(color)}
                         className={cn(
-                          "w-11 h-11 rounded-lg shrink-0 border border-border/50",
-                          LIST_CARD_STYLES[newListColor]?.dot || "bg-slate-500"
+                          "aspect-square rounded-md border flex items-center justify-center transition-all",
+                          style.card,
+                          newListColor === color
+                            ? "ring-2 ring-primary border-primary/50 bg-background"
+                            : "hover:scale-105 opacity-70 hover:opacity-100"
                         )}
-                        title="Pick color"
-                      />
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-3" align="end">
-                      <div className="grid grid-cols-6 gap-1.5">
-                        {LIST_COLOR_OPTIONS.map((color) => (
-                          <button
-                            key={color}
-                            type="button"
-                            onClick={() => {
-                              setNewListColor(color);
-                              setIsColorPickerOpen(false);
-                            }}
-                            className={cn(
-                              "w-5 h-5 rounded-full",
-                              LIST_CARD_STYLES[color]?.dot,
-                              newListColor === color &&
-                                "ring-2 ring-offset-1 ring-offset-background ring-foreground"
-                            )}
-                            title={color}
-                          />
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                        title={color}
+                      >
+                        <div
+                          className={cn("w-2.5 h-2.5 rounded-full", style.dot)}
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
-              </Field>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsCreating(false)}>
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <DlesButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsCreating(false)}
+                  className="h-9 text-muted-foreground hover:text-foreground"
+                >
                   Cancel
-                </Button>
-                <Button
+                </DlesButton>
+                <DlesButton
                   onClick={handleCreateList}
                   disabled={!newListName.trim()}
+                  className="h-9 px-6 font-bold"
                 >
-                  Create
-                </Button>
+                  Create List
+                </DlesButton>
               </div>
             </div>
           </DialogContent>
@@ -227,10 +234,12 @@ export function ListsClient({ initialLists }: ListsClientProps) {
       </div>
 
       {lists.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border/60 bg-muted/20 py-16 text-center">
-          <Sparkles className="h-10 w-10 mx-auto text-muted-foreground/50 mb-4" />
-          <p className="text-muted-foreground font-medium">No lists yet</p>
-          <p className="text-xs text-muted-foreground/70 mt-1">
+        <div className="rounded-xl border border-border/40 bg-card/50 py-16 text-center">
+          <div className="h-12 w-12 mx-auto bg-muted/50 rounded-full flex items-center justify-center mb-4">
+            <Sparkles className="h-5 w-5 text-muted-foreground/70" />
+          </div>
+          <p className="text-sm font-bold text-foreground">No lists yet</p>
+          <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px] mx-auto">
             Create your first list to organize games
           </p>
         </div>
@@ -262,22 +271,24 @@ export function ListsClient({ initialLists }: ListsClientProps) {
                         className="h-7 text-sm font-semibold -ml-2 px-2 bg-background/80"
                       />
                     ) : (
-                      <h3 className="font-semibold truncate">{list.name}</h3>
+                      <h3 className="text-heading-card truncate">
+                        {list.name}
+                      </h3>
                     )}
-                    <p className="text-xs opacity-70 mt-0.5">
+                    <p className="text-micro text-muted-foreground/60 mt-1">
                       {list.games.length}{" "}
                       {list.games.length === 1 ? "game" : "games"}
                     </p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
+                      <DlesButton
                         variant="ghost"
                         size="icon-sm"
                         className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      </DlesButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem
@@ -358,32 +369,56 @@ export function ListsClient({ initialLists }: ListsClientProps) {
                       <p className="text-xs">Add games from the homepage</p>
                     </div>
                   ) : (
-                    <div className="space-y-1">
-                      {list.games.slice(0, 4).map((game) => (
-                        <div
-                          key={game.id}
-                          className="flex items-center justify-between py-1.5 px-2 rounded-md group/item hover:bg-background/50 transition-colors"
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-sm truncate text-foreground">
-                              {game.title}
-                            </span>
-                            <DlesTopic topic={game.topic} />
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon-sm"
-                            className="h-5 w-5 opacity-0 group-hover/item:opacity-100 text-muted-foreground hover:text-destructive shrink-0"
-                            onClick={() => handleRemoveGame(list.id, game.id)}
+                    <div className="relative group/list">
+                      <div
+                        className={cn(
+                          "space-y-1 max-h-[190px] overflow-y-auto pr-2 -mr-2 scrollbar-none hover:scrollbar-thin scrollbar-thumb-muted/10 hover:scrollbar-thumb-muted/20 transition-colors",
+                          list.games.length > 5 && "mask-linear-fade"
+                        )}
+                      >
+                        {list.games.map((game) => (
+                          <div
+                            key={game.id}
+                            className="flex items-center justify-between gap-2 py-1.5 px-2 rounded-md group/item hover:bg-background/50 transition-colors relative"
                           >
-                            <Trash2 className="h-3 w-3" />
-                          </Button>
+                            {game.link ? (
+                              <Link
+                                href={game.link}
+                                target="_blank"
+                                className="flex items-center gap-1.5 text-sm truncate text-foreground flex-1 min-w-0 hover:text-brand transition-colors"
+                              >
+                                <span className="truncate">{game.title}</span>
+                                <ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all" />
+                              </Link>
+                            ) : (
+                              <span className="text-sm truncate text-foreground flex-1 min-w-0">
+                                {game.title}
+                              </span>
+                            )}
+                            <div className="flex items-center shrink-0 relative">
+                              <div className="transition-transform duration-200 ease-out group-hover/item:-translate-x-6">
+                                <DlesTopic topic={game.topic} />
+                              </div>
+                              <DlesButton
+                                variant="ghost"
+                                size="icon-sm"
+                                className="h-5 w-5 absolute right-0 opacity-0 scale-75 group-hover/item:opacity-100 group-hover/item:scale-100 text-muted-foreground hover:text-destructive transition-all duration-200"
+                                onClick={() =>
+                                  handleRemoveGame(list.id, game.id)
+                                }
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </DlesButton>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {list.games.length > 5 && (
+                        <div className="absolute -bottom-2 left-0 right-0 h-12 bg-gradient-to-t from-card/20 to-transparent flex items-end justify-center pb-2 pointer-events-none group-hover/list:opacity-0 transition-opacity duration-300">
+                          <span className="text-[10px] text-muted-foreground/70 font-mono bg-background/50 backdrop-blur-[1px] px-2 py-0.5 rounded-full border border-border/10 shadow-sm flex items-center gap-1">
+                            Scroll for more
+                          </span>
                         </div>
-                      ))}
-                      {list.games.length > 4 && (
-                        <p className="text-xs opacity-60 text-center pt-2">
-                          +{list.games.length - 4} more
-                        </p>
                       )}
                     </div>
                   )}

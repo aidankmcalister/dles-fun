@@ -16,23 +16,28 @@ export default async function Page() {
     // Table may not exist yet
   }
 
+  const siteConfig = await prisma.siteConfig.findUnique({
+    where: { id: "default" },
+  });
+
   return (
     <main className="min-h-screen px-4 pt-4 pb-8 md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
         {games.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
-            <h1 className="text-3xl font-black tracking-tighter mb-2 text-foreground">
-              dles.fun
-            </h1>
-            <p className="text-lg text-muted-foreground font-medium">
+            <h1 className="text-heading-page text-foreground mb-2">dles.fun</h1>
+            <p className="text-heading-section text-muted-foreground">
               No games yet.
             </p>
-            <p className="text-sm text-muted-foreground/80 mt-1">
+            <p className="text-body-small text-muted-foreground/80 mt-1">
               Add a game using the admin tools, or run the seed script.
             </p>
           </div>
         ) : (
-          <GamesClient games={games} />
+          <GamesClient
+            games={games}
+            newGameMinutes={siteConfig?.newGameMinutes}
+          />
         )}
       </div>
     </main>

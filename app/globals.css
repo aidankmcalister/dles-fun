@@ -54,6 +54,19 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Brand Palette Alias (Pink) */
+  --color-brand-50: var(--color-orange-50);
+  --color-brand-100: var(--color-orange-100);
+  --color-brand-200: var(--color-orange-200);
+  --color-brand-300: var(--color-orange-300);
+  --color-brand-400: var(--color-orange-400);
+  --color-brand-500: var(--color-orange-500);
+  --color-brand-600: var(--color-orange-600);
+  --color-brand-700: var(--color-orange-700);
+  --color-brand-800: var(--color-orange-800);
+  --color-brand-900: var(--color-orange-900);
+  --color-brand-950: var(--color-orange-950);
 }
 
 :root {
@@ -91,6 +104,7 @@
   --sidebar-primary-foreground: oklch(0.985 0 0);
   --sidebar-accent: oklch(0.97 0 0);
   --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
@@ -130,6 +144,7 @@
   --sidebar-accent: oklch(0.269 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
 
@@ -142,6 +157,44 @@
   }
 }
 
+/* Typography Utilities */
+@layer utilities {
+  /* Page title - largest heading */
+  .text-heading-page {
+    @apply text-3xl font-black tracking-tight;
+  }
+
+  /* Section headers */
+  .text-heading-section {
+    @apply text-lg font-bold;
+  }
+
+  /* Card titles */
+  .text-heading-card {
+    @apply text-base font-bold tracking-tight;
+  }
+
+  /* Standard body text */
+  .text-body {
+    @apply text-sm font-medium;
+  }
+
+  /* Small body text, buttons */
+  .text-body-small {
+    @apply text-xs font-medium;
+  }
+
+  /* Micro labels, badges, metadata */
+  .text-micro {
+    @apply text-[10px] font-bold uppercase tracking-wider;
+  }
+
+  /* Extra small micro for tight spaces */
+  .text-micro-xs {
+    @apply text-[8px] font-bold uppercase tracking-wider;
+  }
+}
+
 html {
   overflow-y: scroll;
 }
@@ -151,7 +204,7 @@ html {
 }
 
 body {
-  @apply !min-w-full;
+  @apply min-w-full!;
 }
 
 .no-scrollbar {
@@ -160,4 +213,23 @@ body {
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+@keyframes prompt-cursor {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.animate-prompt-cursor {
+  animation: prompt-cursor 1s step-end infinite;
+}
+
+.mask-linear-fade {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
 }

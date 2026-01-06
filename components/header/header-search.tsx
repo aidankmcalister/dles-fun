@@ -27,7 +27,7 @@ export function HeaderSearch({
         placeholder="Search..."
         value={query}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 pl-9 pr-8 text-sm bg-transparent border-primary/20 hover:border-primary/50 hover:bg-primary/5 focus:bg-primary/5 focus:border-primary/50 w-full"
+        className="h-10 pl-9 pr-8 text-sm bg-muted/40 border-border/40 hover:border-border focus:border-primary/50 focus:bg-background w-full transition-all"
       />
       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
         {query && (

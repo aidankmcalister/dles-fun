@@ -46,7 +46,7 @@ export function GamesSearchFilter({
         placeholder="Search games..."
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
-        className="h-10 text-base md:text-xs border-primary/20 hover:border-primary/50 focus:border-primary/50 w-full md:flex-1 md:w-auto"
+        className="h-9 text-xs bg-background/50 border-border/20 focus:border-primary/50 w-full md:flex-1 md:w-auto font-mono placeholder:text-muted-foreground/50 transition-colors hover:bg-background/80"
       />
 
       {/* Filters Grid */}
@@ -57,7 +57,7 @@ export function GamesSearchFilter({
           value={topicFilter.length === 0 ? ["all"] : topicFilter}
           onChange={onTopicFilterChange}
           placeholder="Topic"
-          className="w-full sm:w-[160px] h-10"
+          className="w-full sm:w-[160px] h-9"
         />
         <Select
           value={sortBy}
@@ -66,8 +66,8 @@ export function GamesSearchFilter({
           <SelectTrigger
             size="lg"
             className={cn(
-              "w-full sm:w-[140px] h-10 text-xs border-primary/20 hover:border-primary/50 hover:bg-primary/5",
-              sortBy !== "title" && "bg-primary/5"
+              "w-full sm:w-[140px] h-9 text-xs bg-background/50 border-border/20 hover:border-primary/50 hover:bg-background/80 transition-all",
+              sortBy !== "title" && "border-primary/50 text-primary"
             )}
           >
             <SelectValue placeholder="Sort" />

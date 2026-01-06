@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
-import { Button } from "@/components/ui/button";
 import { Loader2, FileUp } from "lucide-react";
 import type { Topic } from "@/app/generated/prisma/client";
 import { GameItem, Game } from "./game-item";
@@ -246,7 +245,7 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-heading-section">
           All Games ({filteredGames.length})
         </h2>
         {canManageGames && (
@@ -295,20 +294,29 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
         onShowArchivedToggle={() => setShowArchived(!showArchived)}
       />
 
-      <div className="rounded-md border bg-card overflow-hidden">
+      <div className="rounded-md border border-border/40 bg-card overflow-hidden">
         <div className="overflow-x-auto">
           {canManageGames && filteredGames.length > 0 && (
-            <div className="px-4 py-2 border-b flex items-center gap-4 text-xs text-muted-foreground bg-muted/30">
-              <input
-                type="checkbox"
-                checked={filteredGames.every((g) => selectedIds.has(g.id))}
-                onChange={(e) => handleSelectAll(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-              />
-              <span>Select All</span>
+            <div className="grid grid-cols-[16px_1fr_100px] md:grid-cols-[16px_180px_150px_minmax(0,1fr)_80px_80px] gap-4 items-center px-4 py-3 border-b border-border/40 bg-muted/20 text-micro text-muted-foreground sticky top-0 z-10 backdrop-blur-sm">
+              <div className="flex items-center justify-center">
+                <input
+                  type="checkbox"
+                  checked={
+                    filteredGames.length > 0 &&
+                    filteredGames.every((g) => selectedIds.has(g.id))
+                  }
+                  onChange={(e) => handleSelectAll(e.target.checked)}
+                  className="h-3.5 w-3.5 rounded border-gray-300 text-primary focus:ring-primary/20 bg-background/50 cursor-pointer"
+                />
+              </div>
+              <div className="hidden md:block">Title</div>
+              <div className="hidden md:block">Category</div>
+              <div className="hidden md:block">Link</div>
+              <div className="hidden md:block">Stats</div>
+              <div className="text-right ml-auto">Actions</div>
             </div>
           )}
-          <div className="divide-y relative">
+          <div className="divide-y divide-border/30 relative">
             {filteredGames.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground text-sm">
                 No games found.
@@ -317,7 +325,7 @@ export function GamesTab({ canManageGames }: { canManageGames: boolean }) {
               filteredGames.map((game) => (
                 <div
                   key={game.id}
-                  className="px-4 py-3 hover:bg-muted/40 transition-colors"
+                  className="px-4 py-3 hover:bg-muted/5 transition-colors"
                 >
                   <GameItem
                     game={game}

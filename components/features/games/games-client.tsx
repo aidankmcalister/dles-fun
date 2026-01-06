@@ -11,7 +11,6 @@ import { usePlayedGames } from "@/lib/use-played-games";
 import { useLists } from "@/lib/use-lists";
 
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { DlesButton } from "@/components/design/dles-button";
 import { Search } from "lucide-react";
 
@@ -37,7 +36,13 @@ const GuestSyncBanner = dynamic(
 
 type SortOption = "title" | "topic" | "played";
 
-export function GamesClient({ games: initialGames }: { games: Game[] }) {
+export function GamesClient({
+  games: initialGames,
+  newGameMinutes = 10080,
+}: {
+  games: Game[];
+  newGameMinutes?: number;
+}) {
   const [games, setGames] = useState<Game[]>(initialGames);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("title");
@@ -300,6 +305,7 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
             topic: g.topic,
             playCount: g.playCount || 0,
             createdAt: g.createdAt,
+            newGameMinutes,
           }))}
           playedIds={playedIds}
           onPlay={handlePlay}
@@ -310,8 +316,8 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
           <div className="bg-muted/50 rounded-full p-4 mb-4">
             <Search className="h-8 w-8 text-muted-foreground" />
           </div>
-          <h3 className="text-lg font-semibold">No games found</h3>
-          <p className="text-muted-foreground mt-2 max-w-sm">
+          <h3 className="text-heading-section">No games found</h3>
+          <p className="text-body text-muted-foreground mt-2 max-w-sm">
             We couldn't find any games matching your current search and filters.
           </p>
           <DlesButton

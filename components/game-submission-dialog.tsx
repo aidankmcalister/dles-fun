@@ -109,7 +109,7 @@ export function GameSubmissionDialog({
           <Field>
             <Label
               htmlFor="title"
-              className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest mb-1.5 block"
+              className="text-micro text-muted-foreground/60 mb-1.5 block"
             >
               Game Title
             </Label>
@@ -117,7 +117,7 @@ export function GameSubmissionDialog({
               id="title"
               placeholder="e.g. Wordle"
               {...register("title")}
-              className="h-11 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted transition-colors rounded-lg px-4"
+              className="h-11 bg-muted/40 border-border/40 focus:border-border focus:bg-background transition-all rounded-lg px-4"
             />
             {errors.title && <FieldError errors={[errors.title]} />}
           </Field>
@@ -134,7 +134,7 @@ export function GameSubmissionDialog({
               type="url"
               placeholder="https://example.com/game"
               {...register("link")}
-              className="h-11 bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted transition-colors rounded-lg px-4"
+              className="h-11 bg-muted/40 border-border/40 focus:border-border focus:bg-background transition-all rounded-lg px-4"
             />
             {errors.link && <FieldError errors={[errors.link]} />}
           </Field>
@@ -159,7 +159,7 @@ export function GameSubmissionDialog({
             <div className="flex items-center justify-between mb-1.5">
               <Label
                 htmlFor="description"
-                className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest"
+                className="text-micro text-muted-foreground/60"
               >
                 Description
               </Label>
@@ -171,7 +171,7 @@ export function GameSubmissionDialog({
               id="description"
               placeholder="A brief 1-2 sentence description of the game..."
               {...register("description")}
-              className="resize-none bg-muted/50 border-border/50 focus:border-primary/50 focus:bg-muted transition-colors rounded-lg p-4 min-h-[100px]"
+              className="resize-none bg-muted/40 border-border/40 focus:border-border focus:bg-background transition-all rounded-lg p-4 min-h-[100px]"
               maxLength={200}
             />
             {errors.description && <FieldError errors={[errors.description]} />}

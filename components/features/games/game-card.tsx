@@ -14,36 +14,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn, formatTopic } from "@/lib/utils";
-import { TOPIC_COLORS, extractDomain } from "@/lib/constants";
+import { TOPIC_COLORS, TOPIC_SHADOWS, extractDomain } from "@/lib/constants";
 import { ExternalLink, EyeOff } from "lucide-react";
 import { ListsDropdown } from "../lists/lists-dropdown";
 import { DlesTopic } from "@/components/design/dles-topic";
 
-const TOPIC_SHADOWS: Record<string, string> = {
-  words: "hover:shadow-blue-500/25 dark:hover:shadow-blue-500/10",
-  geography: "hover:shadow-green-500/25 dark:hover:shadow-green-500/10",
-  trivia: "hover:shadow-yellow-500/25 dark:hover:shadow-yellow-500/10",
-  nature: "hover:shadow-emerald-500/25 dark:hover:shadow-emerald-500/10",
-  food: "hover:shadow-orange-500/25 dark:hover:shadow-orange-500/10",
-  sports: "hover:shadow-cyan-500/25 dark:hover:shadow-cyan-500/10",
-  colors: "hover:shadow-indigo-500/25 dark:hover:shadow-indigo-500/10",
-  estimation: "hover:shadow-teal-500/25 dark:hover:shadow-teal-500/10",
-  logic: "hover:shadow-slate-500/25 dark:hover:shadow-slate-500/10",
-  history: "hover:shadow-amber-500/25 dark:hover:shadow-amber-500/10",
-  movies_tv: "hover:shadow-violet-500/25 dark:hover:shadow-violet-500/10",
-  music: "hover:shadow-rose-500/25 dark:hover:shadow-rose-500/10",
-  shapes: "hover:shadow-lime-500/25 dark:hover:shadow-lime-500/10",
-  video_games: "hover:shadow-sky-500/25 dark:hover:shadow-sky-500/10",
-  board_games: "hover:shadow-fuchsia-500/25 dark:hover:shadow-fuchsia-500/10",
-};
-
 /**
- * Check if a date is within the last N days
+ * Check if a date is within the last N minutes
  */
-function isWithinDays(date: Date, days: number): boolean {
+function isWithinMinutes(date: Date, minutes: number): boolean {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
-  return diff < days * 24 * 60 * 60 * 1000;
+  return diff < minutes * 60 * 1000;
 }
 
 export interface GameCardProps {
@@ -59,6 +41,7 @@ export interface GameCardProps {
   createdAt?: Date;
   index?: number;
   minimal?: boolean;
+  newGameMinutes?: number;
 }
 
 export function GameCard({
@@ -73,6 +56,7 @@ export function GameCard({
   createdAt,
   index = 0,
   minimal = false,
+  newGameMinutes = 10080, // Default 7 days
 }: GameCardProps) {
   const handleClick = () => {
     if (minimal) return;
@@ -85,7 +69,8 @@ export function GameCard({
     onHide?.(id);
   };
 
-  const isNew = createdAt && isWithinDays(new Date(createdAt), 7);
+  const isNew =
+    createdAt && isWithinMinutes(new Date(createdAt), newGameMinutes);
 
   const cardContent = (
     <Card
@@ -97,11 +82,10 @@ export function GameCard({
       className={cn(
         "cursor-pointer transition-all duration-200 ease-out group relative overflow-hidden border-border h-full flex flex-col justify-center",
         "animate-in fade-in slide-in-from-bottom-2 duration-200",
-        "hover:border-primary/40 hover:-translate-y-0.5",
-        TOPIC_SHADOWS[topic],
+        "hover:-translate-y-0.5",
         isPlayed
-          ? "bg-muted/40 opacity-60 grayscale hover:grayscale-0 hover:opacity-100"
-          : "bg-card hover:bg-muted/5"
+          ? "bg-muted/40 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 border-dashed"
+          : cn("bg-card hover:bg-card", TOPIC_COLORS[topic]) // Apply specific topic color style
       )}
     >
       {/* Corner NEW ribbon */}
@@ -119,7 +103,7 @@ export function GameCard({
       <CardHeader className="p-4 pb-3">
         <div className="flex items-start justify-between gap-2">
           <div className="space-y-1.5 flex-1 min-w-0">
-            <CardTitle className="flex items-center gap-2 text-base font-bold tracking-tight leading-tight justify-between">
+            <CardTitle className="flex items-center gap-2 text-heading-card leading-tight justify-between">
               <div className="flex items-center gap-2">
                 <span className="truncate">{title}</span>
                 <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
@@ -130,7 +114,10 @@ export function GameCard({
                   className="flex items-center gap-1"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <ListsDropdown gameId={id} />
+                  <ListsDropdown
+                    gameId={id}
+                    className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
+                  />
                   {onHide && (
                     <TooltipProvider delayDuration={200}>
                       <Tooltip>

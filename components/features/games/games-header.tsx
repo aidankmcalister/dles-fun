@@ -11,6 +11,7 @@ import { GameList } from "@/lib/use-lists";
 import { HeaderSearch } from "../../header/header-search";
 import { HeaderFilters } from "./games-filters";
 import { HeaderStats } from "../../header/header-stats";
+import { Logo } from "@/components/design/logo";
 
 type SortOption = "title" | "topic" | "played";
 
@@ -83,10 +84,8 @@ export function GamesHeader(props: GamesHeaderProps) {
           <div className="mx-auto max-w-7xl space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
-                  dles.fun
-                </h1>
-                <p className="hidden sm:block text-muted-foreground text-sm sm:text-base max-w-lg">
+                <Logo size="lg" href="/" />
+                <p className="hidden sm:block text-muted-foreground text-body">
                   A curated list of daily games my friends and I play.
                 </p>
               </div>
@@ -224,6 +223,15 @@ export function GamesHeader(props: GamesHeaderProps) {
                     title="Feeling Lucky"
                   >
                     <Dices className="h-4 w-4" />
+                  </DlesButton>
+                  <DlesButton
+                    variant="ghost"
+                    size="icon"
+                    className="w-10 text-primary"
+                    onClick={onRandom}
+                    title="Race"
+                  >
+                    <Flag className="h-4 w-4" />
                   </DlesButton>
                   <UserButton />
                 </div>

@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { useImpersonation } from "@/components/impersonation-provider";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { cn } from "@/lib/utils";
 import {
   Gamepad2,
   Users,
@@ -58,8 +58,8 @@ export default function AdminLayout({
     return (
       <main className="min-h-screen flex flex-col items-center justify-center gap-4">
         <Shield className="h-16 w-16 text-muted-foreground" />
-        <h1 className="text-2xl font-bold">Access Denied</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-heading-page">Access Denied</h1>
+        <p className="text-body text-muted-foreground">
           You don't have permission to view this page.
         </p>
         <DlesButton href="/">Go Home</DlesButton>

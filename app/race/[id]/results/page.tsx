@@ -138,8 +138,8 @@ export default function RaceResultsPage() {
   if (!race) {
     return (
       <div className="container py-20 text-center">
-        <h1 className="text-2xl font-bold">Race not found</h1>
-        <p className="mt-2 text-muted-foreground">
+        <h1 className="text-heading-page">Race not found</h1>
+        <p className="mt-2 text-body text-muted-foreground">
           Make sure you have the correct link.
         </p>
       </div>
@@ -161,10 +161,17 @@ export default function RaceResultsPage() {
 
       {/* Actions */}
       <div className="grid grid-cols-2 gap-4">
-        <DlesButton href="/race/new">
+        <DlesButton
+          href="/race/new"
+          className="h-12 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 text-primary"
+        >
           <RotateCcw className="h-4 w-4 mr-2" /> New Race
         </DlesButton>
-        <DlesButton href="/" variant="outline">
+        <DlesButton
+          href="/"
+          variant="outline"
+          className="h-12 border-border/40 hover:bg-muted/5 hover:border-border/60"
+        >
           <Home className="h-4 w-4 mr-2" /> Home
         </DlesButton>
       </div>

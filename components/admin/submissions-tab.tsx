@@ -101,7 +101,7 @@ export function SubmissionsTab({
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-heading-section">
           Game Submissions ({filteredSubmissions.length})
         </h2>
       </div>
@@ -112,7 +112,7 @@ export function SubmissionsTab({
             placeholder="Search submissions..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 h-10 text-xs border-primary/20 hover:border-primary/50 focus:border-primary/50"
+            className="flex-1 h-10 text-xs text-muted-foreground bg-muted/40 border-border/40 hover:border-border hover:bg-muted/60 focus:bg-background focus:border-border transition-all"
           />
         </div>
         <div className="flex gap-2">
@@ -133,18 +133,21 @@ export function SubmissionsTab({
         </div>
       </div>
 
-      <div className="rounded-md border bg-card overflow-hidden">
+      <div className="rounded-md border border-border/40 bg-card overflow-hidden">
         <div className="overflow-x-auto">
-          <div className="divide-y">
+          <div className="divide-y divide-border/30">
             {filteredSubmissions.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground text-sm">
-                No submissions found.
+              <div className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
+                <div className="h-12 w-12 rounded-full bg-muted/20 flex items-center justify-center mb-3">
+                  <Layers className="h-6 w-6 opacity-20" />
+                </div>
+                <p className="text-body">No submissions found</p>
               </div>
             ) : (
               filteredSubmissions.map((sub) => (
                 <div
                   key={sub.id}
-                  className="px-4 py-3 hover:bg-muted/40 transition-colors"
+                  className="px-4 py-3 hover:bg-muted/5 transition-colors"
                 >
                   <SubmissionItem
                     submission={sub}
