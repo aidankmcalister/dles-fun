@@ -99,7 +99,6 @@ export function HeaderFilters({
                     label="All Lists"
                     count={totalGames}
                     color="slate"
-                    className="w-full border-0 px-2"
                   />
                 );
               }
@@ -110,7 +109,6 @@ export function HeaderFilters({
                   label={option.label}
                   count={list?.games.length || 0}
                   color={color}
-                  className="w-full border-0 px-2"
                 />
               );
             }}
