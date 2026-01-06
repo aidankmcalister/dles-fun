@@ -1,9 +1,9 @@
 import { getSession } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
-import { DashboardClient } from "./dashboard-client";
+import { RaceStatsClient } from "./race-stats-client";
 
-export default async function DashboardPage() {
+export default async function RaceStatsPage() {
   const session = await getSession();
 
   if (!session?.user?.id) {
@@ -57,7 +57,7 @@ export default async function DashboardPage() {
   });
 
   return (
-    <DashboardClient
+    <RaceStatsClient
       playedCount={userGames.length}
       totalGames={totalGames}
       playedDates={playedDates.map((d) => d.toISOString())}

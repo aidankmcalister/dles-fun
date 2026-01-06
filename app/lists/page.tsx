@@ -33,7 +33,7 @@ export default async function ListsPage() {
           <PageHeader
             title="Lists"
             subtitle="Organize your games into custom collections."
-            backHref="/dashboard"
+            backHref="/"
           />
           <UserButton />
         </div>

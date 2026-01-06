@@ -20,7 +20,7 @@ interface HiddenGame {
   topic: string;
 }
 
-interface DashboardClientProps {
+interface RaceStatsClientProps {
   playedCount: number;
   totalGames: number;
   playedDates: string[];
@@ -28,13 +28,13 @@ interface DashboardClientProps {
   hiddenGames: HiddenGame[];
 }
 
-export function DashboardClient({
+export function RaceStatsClient({
   playedCount,
   totalGames,
   playedDates,
   categoryData,
   hiddenGames: initialHiddenGames,
-}: DashboardClientProps) {
+}: RaceStatsClientProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const [hiddenGames, setHiddenGames] = useState(initialHiddenGames);

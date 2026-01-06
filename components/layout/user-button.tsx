@@ -197,7 +197,7 @@ export function UserButton() {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <a href="/dashboard/lists">
+          <a href="/lists">
             <List className="mr-2 h-4 w-4" />
             Lists
           </a>
@@ -206,9 +206,9 @@ export function UserButton() {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <a href="/dashboard">
+          <a href="/race/stats">
             <BarChart3 className="mr-2 h-4 w-4" />
-            Dashboard
+            Race Stats
           </a>
         </DropdownMenuItem>
 
