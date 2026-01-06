@@ -49,7 +49,7 @@ export function ResultsList({
 
       <Card className="border-border/60 shadow-sm overflow-hidden">
         <CardContent className="p-0">
-          <div className="divide-y divide-border/40">
+          <div className="divide-y divide-border/30">
             {sortedGames.map((game) => {
               const mySplitComp = myParticipantId
                 ? participantsWithSplits.find((p) => p.id === myParticipantId)
@@ -123,7 +123,7 @@ export function ResultsList({
             })}
 
             {/* Total Row */}
-            <div className="p-3 px-4 bg-muted/10 border-t border-border/60 flex items-center justify-between">
+            <div className="p-3 px-4 bg-muted/5 border-t border-border/40 flex items-center justify-between">
               <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">
                 Total
               </span>

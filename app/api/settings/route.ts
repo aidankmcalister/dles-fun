@@ -43,7 +43,7 @@ export async function PATCH(request: Request) {
 
     // Sanitize input - only allow specific fields
     const allowedFields = [
-      "newGameDays",
+      "newGameMinutes",
       "topicColors",
       "maintenanceMode",
       "welcomeMessage",

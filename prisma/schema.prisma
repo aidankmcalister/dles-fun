@@ -59,7 +59,7 @@ model GameList {
 
 model SiteConfig {
   id                         String   @id @default("default")
-  newGameDays                Int      @default(7)
+  newGameMinutes             Int      @default(10080)
   topicColors                Json?
   maintenanceMode            Boolean  @default(false)
   welcomeMessage             String?

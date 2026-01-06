@@ -83,17 +83,17 @@ export function GameItem({
           <Input
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="h-8"
+            className="h-8 bg-muted/40 border-border/40 focus:border-border transition-all"
             placeholder="Title"
           />
           <Input
             value={link}
             onChange={(e) => setLink(e.target.value)}
-            className="h-8"
+            className="h-8 bg-muted/40 border-border/40 focus:border-border transition-all"
             placeholder="Link"
           />
           <Select value={topic} onValueChange={(v) => setTopic(v as Topic)}>
-            <SelectTrigger className="h-8 capitalize">
+            <SelectTrigger className="h-8 capitalize bg-muted/40 border-border/40 focus:border-border transition-all">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -130,14 +130,17 @@ export function GameItem({
           type="checkbox"
           checked={isSelected}
           onChange={(e) => onSelect(e.target.checked)}
-          className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+          className="h-3.5 w-3.5 rounded border-gray-300 text-primary focus:ring-primary/20 bg-background/50 cursor-pointer"
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-[180px_200px_minmax(0,1fr)_100px] gap-4 items-center flex-1 min-w-0">
+      <div className="grid grid-cols-[1fr_100px] md:grid-cols-[180px_200px_minmax(0,1fr)_100px] gap-4 items-center flex-1 min-w-0">
         <div className="flex items-center gap-2 min-w-0">
           {game.archived && (
-            <Badge variant="outline" className="h-5 text-[10px] px-1 bg-muted">
+            <Badge
+              variant="outline"
+              className="h-5 text-[10px] px-1 bg-muted/40 border-border/40 text-muted-foreground shrink-0"
+            >
               Archived
             </Badge>
           )}
@@ -146,19 +149,19 @@ export function GameItem({
           </span>
         </div>
 
-        <div className="flex items-center">
+        <div className="items-center hidden md:flex">
           <DlesTopic topic={game.topic} />
         </div>
 
         <span
-          className="text-xs text-muted-foreground truncate font-mono"
+          className="text-xs text-muted-foreground truncate font-mono hidden md:block"
           title={game.link}
         >
           {game.link}
         </span>
 
-        <span className="text-xs text-muted-foreground truncate">
-          {game.playCount || 0} plays
+        <span className="text-xs text-muted-foreground truncate text-right md:text-left font-mono">
+          {game.playCount || 0}
         </span>
       </div>
 

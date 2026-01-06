@@ -16,6 +16,10 @@ export default async function Page() {
     // Table may not exist yet
   }
 
+  const siteConfig = await prisma.siteConfig.findUnique({
+    where: { id: "default" },
+  });
+
   return (
     <main className="min-h-screen px-4 pt-4 pb-8 md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
@@ -32,7 +36,10 @@ export default async function Page() {
             </p>
           </div>
         ) : (
-          <GamesClient games={games} />
+          <GamesClient
+            games={games}
+            newGameMinutes={siteConfig?.newGameMinutes}
+          />
         )}
       </div>
     </main>

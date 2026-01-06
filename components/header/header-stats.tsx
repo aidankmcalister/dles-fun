@@ -51,7 +51,7 @@ export function HeaderStats({
   return (
     <div className="flex items-center gap-3 text-sm font-medium">
       {currentStreak > 0 && (
-        <span className="flex items-center gap-1.5 text-orange-500 bg-orange-500/10 px-2.5 py-0.5 rounded-full border border-orange-500/20">
+        <span className="flex items-center gap-1.5 text-orange-500 bg-orange-500/5 px-2.5 py-0.5 rounded-full border border-orange-500/20">
           <Flame className="h-3.5 w-3.5 fill-current" />
           {currentStreak} <span className="hidden sm:inline">streak</span>
         </span>

@@ -11,7 +11,6 @@ import { usePlayedGames } from "@/lib/use-played-games";
 import { useLists } from "@/lib/use-lists";
 
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { DlesButton } from "@/components/design/dles-button";
 import { Search } from "lucide-react";
 
@@ -37,7 +36,13 @@ const GuestSyncBanner = dynamic(
 
 type SortOption = "title" | "topic" | "played";
 
-export function GamesClient({ games: initialGames }: { games: Game[] }) {
+export function GamesClient({
+  games: initialGames,
+  newGameMinutes = 10080,
+}: {
+  games: Game[];
+  newGameMinutes?: number;
+}) {
   const [games, setGames] = useState<Game[]>(initialGames);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("title");
@@ -300,6 +305,7 @@ export function GamesClient({ games: initialGames }: { games: Game[] }) {
             topic: g.topic,
             playCount: g.playCount || 0,
             createdAt: g.createdAt,
+            newGameMinutes,
           }))}
           playedIds={playedIds}
           onPlay={handlePlay}

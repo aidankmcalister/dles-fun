@@ -16,7 +16,7 @@ import { DlesButton } from "@/components/design/dles-button";
 
 interface SiteConfig {
   id: string;
-  newGameDays: number;
+  newGameMinutes: number;
   topicColors: Record<string, string> | null;
   maintenanceMode: boolean;
   welcomeMessage: string | null;
@@ -33,7 +33,7 @@ const DEFAULT_CONFIG: Omit<
   SiteConfig,
   "id" | "updatedAt" | "topicColors" | "featuredGameIds"
 > = {
-  newGameDays: 7,
+  newGameMinutes: 10080,
   maintenanceMode: false,
   welcomeMessage: null,
   showWelcomeMessage: false,
@@ -44,7 +44,7 @@ const DEFAULT_CONFIG: Omit<
 };
 
 const settingsSchema = z.object({
-  newGameDays: z.number().min(1).max(30),
+  newGameMinutes: z.number().min(-1).max(525600), // Max 1 year
   maintenanceMode: z.boolean(),
   welcomeMessage: z.string().nullable(),
   showWelcomeMessage: z.boolean(),
@@ -83,7 +83,7 @@ export function SettingsTab() {
         const data = await res.json();
         setConfig(data);
         reset({
-          newGameDays: data.newGameDays,
+          newGameMinutes: data.newGameMinutes,
           maintenanceMode: data.maintenanceMode,
           welcomeMessage: data.welcomeMessage,
           showWelcomeMessage: data.showWelcomeMessage,
@@ -224,11 +224,26 @@ export function SettingsTab() {
           </p>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-          <SiteStatusCard />
-          <DisplaySettingsCard />
-          <UserLimitsCard />
-          <SystemUtilitiesCard />
+        <div className="space-y-8">
+          {/* Hero Section: System Status */}
+          <section className="w-full">
+            <SiteStatusCard />
+          </section>
+
+          {/* Main Control Deck */}
+          <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+            <div className="lg:col-span-2 h-full">
+              <DisplaySettingsCard />
+            </div>
+            <div className="lg:col-span-1 h-full">
+              <UserLimitsCard />
+            </div>
+          </section>
+
+          {/* Footer: System Operations */}
+          <section className="w-full pt-4 border-t border-border/20">
+            <SystemUtilitiesCard />
+          </section>
         </div>
       </form>
     </FormProvider>

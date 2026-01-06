@@ -38,12 +38,12 @@ const TOPIC_SHADOWS: Record<string, string> = {
 };
 
 /**
- * Check if a date is within the last N days
+ * Check if a date is within the last N minutes
  */
-function isWithinDays(date: Date, days: number): boolean {
+function isWithinMinutes(date: Date, minutes: number): boolean {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
-  return diff < days * 24 * 60 * 60 * 1000;
+  return diff < minutes * 60 * 1000;
 }
 
 export interface GameCardProps {
@@ -59,6 +59,7 @@ export interface GameCardProps {
   createdAt?: Date;
   index?: number;
   minimal?: boolean;
+  newGameMinutes?: number;
 }
 
 export function GameCard({
@@ -73,6 +74,7 @@ export function GameCard({
   createdAt,
   index = 0,
   minimal = false,
+  newGameMinutes = 10080, // Default 7 days
 }: GameCardProps) {
   const handleClick = () => {
     if (minimal) return;
@@ -85,7 +87,8 @@ export function GameCard({
     onHide?.(id);
   };
 
-  const isNew = createdAt && isWithinDays(new Date(createdAt), 7);
+  const isNew =
+    createdAt && isWithinMinutes(new Date(createdAt), newGameMinutes);
 
   const cardContent = (
     <Card
@@ -97,11 +100,10 @@ export function GameCard({
       className={cn(
         "cursor-pointer transition-all duration-200 ease-out group relative overflow-hidden border-border h-full flex flex-col justify-center",
         "animate-in fade-in slide-in-from-bottom-2 duration-200",
-        "hover:border-primary/40 hover:-translate-y-0.5",
-        TOPIC_SHADOWS[topic],
+        "hover:-translate-y-0.5",
         isPlayed
-          ? "bg-muted/40 opacity-60 grayscale hover:grayscale-0 hover:opacity-100"
-          : "bg-card hover:bg-muted/5"
+          ? "bg-muted/40 opacity-60 grayscale hover:grayscale-0 hover:opacity-100 border-dashed"
+          : cn("bg-card hover:bg-card", TOPIC_COLORS[topic]) // Apply specific topic color style
       )}
     >
       {/* Corner NEW ribbon */}
@@ -130,7 +132,10 @@ export function GameCard({
                   className="flex items-center gap-1"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <ListsDropdown gameId={id} />
+                  <ListsDropdown
+                    gameId={id}
+                    className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
+                  />
                   {onHide && (
                     <TooltipProvider delayDuration={200}>
                       <Tooltip>

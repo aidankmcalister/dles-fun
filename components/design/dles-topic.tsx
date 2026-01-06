@@ -51,7 +51,7 @@ export function DlesTopic({
       <Badge
         className={cn(
           baseClasses,
-          "bg-pink-500/20 text-pink-700 dark:text-pink-300",
+          "bg-brand-500/20 text-brand-700 dark:text-brand-300 border border-brand-500/30",
           className
         )}
       >

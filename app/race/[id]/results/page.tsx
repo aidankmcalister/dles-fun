@@ -161,10 +161,17 @@ export default function RaceResultsPage() {
 
       {/* Actions */}
       <div className="grid grid-cols-2 gap-4">
-        <DlesButton href="/race/new">
+        <DlesButton
+          href="/race/new"
+          className="h-12 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 text-primary"
+        >
           <RotateCcw className="h-4 w-4 mr-2" /> New Race
         </DlesButton>
-        <DlesButton href="/" variant="outline">
+        <DlesButton
+          href="/"
+          variant="outline"
+          className="h-12 border-border/40 hover:bg-muted/5 hover:border-border/60"
+        >
           <Home className="h-4 w-4 mr-2" /> Home
         </DlesButton>
       </div>

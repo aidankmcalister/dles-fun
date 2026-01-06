@@ -36,10 +36,14 @@ const ROLE_LABELS: Record<Role, string> = {
 };
 
 const ROLE_COLORS: Record<Role, string> = {
-  owner: "bg-amber-500/20 text-amber-700 dark:text-amber-300",
-  coowner: "bg-violet-500/20 text-violet-700 dark:text-violet-300",
-  admin: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
-  member: "bg-zinc-500/20 text-zinc-700 dark:text-zinc-300",
+  owner:
+    "bg-amber-500/5 text-amber-700 dark:text-amber-300 border-amber-500/20 border",
+  coowner:
+    "bg-violet-500/5 text-violet-700 dark:text-violet-300 border-violet-500/20 border",
+  admin:
+    "bg-blue-500/5 text-blue-700 dark:text-blue-300 border-blue-500/20 border",
+  member:
+    "bg-zinc-500/5 text-zinc-700 dark:text-zinc-300 border-zinc-500/20 border",
 };
 
 export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
@@ -185,7 +189,7 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
           placeholder="Search users..."
           value={userSearch}
           onChange={(e) => setUserSearch(e.target.value)}
-          className="h-10 text-base md:text-xs border-primary/20 hover:border-primary/50 focus:border-primary/50 w-full md:flex-1 md:w-auto"
+          className="h-10 text-base md:text-xs text-muted-foreground bg-muted/40 border-border/40 hover:border-border focus:bg-background focus:border-border transition-all w-full md:flex-1 md:w-auto"
         />
         <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center md:w-auto">
           <DlesSelect
@@ -246,7 +250,7 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
           >
             <SelectTrigger
               size="lg"
-              className="w-full sm:w-[140px] text-xs border-primary/20 hover:border-primary/50 hover:bg-primary/5"
+              className="w-full sm:w-[140px] text-xs bg-muted/40 border-border/40 hover:border-border hover:bg-muted/60 transition-all focus:border-border"
             >
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
@@ -263,9 +267,16 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
         </div>
       </div>
 
-      <div className="rounded-md border bg-card overflow-hidden">
+      <div className="rounded-md border border-border/40 bg-card overflow-hidden">
         <div className="overflow-x-auto">
-          <div className="divide-y">
+          <div className="grid grid-cols-[auto_1fr] md:grid-cols-[1fr_150px_minmax(0,1.5fr)_130px_50px] gap-4 items-center px-4 py-3 border-b border-border/40 bg-muted/20 text-[10px] font-bold text-muted-foreground uppercase tracking-wider sticky top-0 z-10 backdrop-blur-sm">
+            <div className="pl-12 md:pl-0">User Identity</div>
+            <div className="hidden md:block">Role</div>
+            <div className="hidden md:block">Email</div>
+            <div className="hidden md:block text-right pr-4">Created</div>
+            <div className="text-right">Action</div>
+          </div>
+          <div className="divide-y divide-border/30 px-0">
             {filteredUsers.length === 0 ? (
               <div className="p-8 text-center text-muted-foreground text-sm">
                 No users found.
@@ -274,7 +285,7 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
               filteredUsers.map((user) => (
                 <div
                   key={user.id}
-                  className="px-4 py-3 hover:bg-muted/40 transition-colors"
+                  className="px-4 py-3 hover:bg-muted/5 transition-colors"
                 >
                   <UserItem
                     user={user}

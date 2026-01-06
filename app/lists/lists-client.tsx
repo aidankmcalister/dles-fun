@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { DlesTopic } from "@/components/design/dles-topic";
 import {
@@ -145,7 +144,9 @@ export function ListsClient({ initialLists }: ListsClientProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Your Game Lists</h2>
+        <h2 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+          Your Game Lists
+        </h2>
         <Dialog open={isCreating} onOpenChange={setIsCreating}>
           <DialogTrigger asChild>
             <DlesButton size="sm" className="gap-2">
@@ -153,73 +154,76 @@ export function ListsClient({ initialLists }: ListsClientProps) {
               New List
             </DlesButton>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[400px]">
-            <DialogHeader>
-              <DialogTitle>Create New List</DialogTitle>
+          <DialogContent className="sm:max-w-[400px] p-0 gap-0 overflow-hidden bg-card border-border/60">
+            <DialogHeader className="p-4 py-3 border-b border-border/40 bg-muted/20">
+              <DialogTitle className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                Create New List
+              </DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <Field>
-                <FieldLabel>List Name</FieldLabel>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="e.g. Favorites, Completed..."
-                    value={newListName}
-                    onChange={(e) => setNewListName(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" &&
-                      newListName.trim() &&
-                      handleCreateList()
-                    }
-                    className="h-11 flex-1"
-                  />
-                  <Popover
-                    open={isColorPickerOpen}
-                    onOpenChange={setIsColorPickerOpen}
-                  >
-                    <PopoverTrigger asChild>
+            <div className="p-4 space-y-4">
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                  List Name
+                </label>
+                <Input
+                  placeholder="e.g. My Favorites"
+                  value={newListName}
+                  onChange={(e) => setNewListName(e.target.value)}
+                  onKeyDown={(e) =>
+                    e.key === "Enter" &&
+                    newListName.trim() &&
+                    handleCreateList()
+                  }
+                  className="h-10 text-sm font-medium bg-muted/40 border-border/40 focus-visible:bg-background focus-visible:ring-offset-0"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                  Color Theme
+                </label>
+                <div className="grid grid-cols-6 gap-2">
+                  {LIST_COLOR_OPTIONS.map((color) => {
+                    const style = LIST_CARD_STYLES[color];
+                    return (
                       <button
+                        key={color}
                         type="button"
+                        onClick={() => setNewListColor(color)}
                         className={cn(
-                          "w-11 h-11 rounded-lg shrink-0 border border-border/50",
-                          LIST_CARD_STYLES[newListColor]?.dot || "bg-slate-500"
+                          "aspect-square rounded-md border flex items-center justify-center transition-all",
+                          style.card,
+                          newListColor === color
+                            ? "ring-2 ring-primary border-primary/50 bg-background"
+                            : "hover:scale-105 opacity-70 hover:opacity-100"
                         )}
-                        title="Pick color"
-                      />
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-3" align="end">
-                      <div className="grid grid-cols-6 gap-1.5">
-                        {LIST_COLOR_OPTIONS.map((color) => (
-                          <button
-                            key={color}
-                            type="button"
-                            onClick={() => {
-                              setNewListColor(color);
-                              setIsColorPickerOpen(false);
-                            }}
-                            className={cn(
-                              "w-5 h-5 rounded-full",
-                              LIST_CARD_STYLES[color]?.dot,
-                              newListColor === color &&
-                                "ring-2 ring-offset-1 ring-offset-background ring-foreground"
-                            )}
-                            title={color}
-                          />
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                        title={color}
+                      >
+                        <div
+                          className={cn("w-2.5 h-2.5 rounded-full", style.dot)}
+                        />
+                      </button>
+                    );
+                  })}
                 </div>
-              </Field>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsCreating(false)}>
+              </div>
+
+              <div className="pt-2 flex justify-end gap-2">
+                <DlesButton
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsCreating(false)}
+                  className="h-9 text-muted-foreground hover:text-foreground"
+                >
                   Cancel
-                </Button>
-                <Button
+                </DlesButton>
+                <DlesButton
                   onClick={handleCreateList}
                   disabled={!newListName.trim()}
+                  className="h-9 px-6 font-bold"
                 >
-                  Create
-                </Button>
+                  Create List
+                </DlesButton>
               </div>
             </div>
           </DialogContent>
@@ -227,10 +231,12 @@ export function ListsClient({ initialLists }: ListsClientProps) {
       </div>
 
       {lists.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-border/60 bg-muted/20 py-16 text-center">
-          <Sparkles className="h-10 w-10 mx-auto text-muted-foreground/50 mb-4" />
-          <p className="text-muted-foreground font-medium">No lists yet</p>
-          <p className="text-xs text-muted-foreground/70 mt-1">
+        <div className="rounded-xl border border-border/40 bg-card/50 py-16 text-center">
+          <div className="h-12 w-12 mx-auto bg-muted/50 rounded-full flex items-center justify-center mb-4">
+            <Sparkles className="h-5 w-5 text-muted-foreground/70" />
+          </div>
+          <p className="text-sm font-bold text-foreground">No lists yet</p>
+          <p className="text-xs text-muted-foreground/70 mt-1 max-w-[200px] mx-auto">
             Create your first list to organize games
           </p>
         </div>
@@ -262,22 +268,24 @@ export function ListsClient({ initialLists }: ListsClientProps) {
                         className="h-7 text-sm font-semibold -ml-2 px-2 bg-background/80"
                       />
                     ) : (
-                      <h3 className="font-semibold truncate">{list.name}</h3>
+                      <h3 className="font-black text-base tracking-tight truncate">
+                        {list.name}
+                      </h3>
                     )}
-                    <p className="text-xs opacity-70 mt-0.5">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60 mt-1">
                       {list.games.length}{" "}
                       {list.games.length === 1 ? "game" : "games"}
                     </p>
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button
+                      <DlesButton
                         variant="ghost"
                         size="icon-sm"
                         className="shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
                       >
                         <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      </DlesButton>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
                       <DropdownMenuItem
@@ -370,14 +378,14 @@ export function ListsClient({ initialLists }: ListsClientProps) {
                             </span>
                             <DlesTopic topic={game.topic} />
                           </div>
-                          <Button
+                          <DlesButton
                             variant="ghost"
                             size="icon-sm"
                             className="h-5 w-5 opacity-0 group-hover/item:opacity-100 text-muted-foreground hover:text-destructive shrink-0"
                             onClick={() => handleRemoveGame(list.id, game.id)}
                           >
                             <Trash2 className="h-3 w-3" />
-                          </Button>
+                          </DlesButton>
                         </div>
                       ))}
                       {list.games.length > 4 && (

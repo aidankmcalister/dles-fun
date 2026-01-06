@@ -7,8 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { DlesSelect } from "@/components/design/dles-select";
-import { TOPICS } from "@/lib/constants";
+import { DlesTopic } from "@/components/design/dles-topic";
+import { TOPICS, LIST_CARD_STYLES } from "@/lib/constants";
 import { Tag, Library, ArrowDownAZ, LayoutGrid, Clock, X } from "lucide-react";
 import { GameList } from "@/lib/use-lists";
 import { cn, formatTopic } from "@/lib/utils";
@@ -73,30 +75,58 @@ export function HeaderFilters({
     <div className="grid grid-cols-2 gap-2 w-full md:flex md:w-auto md:gap-2">
       {isAuthenticated && lists.length > 0 && (
         <div className="col-span-2 md:col-span-1 md:w-auto">
-          <Select value={listFilter} onValueChange={onListFilterChange}>
-            <SelectTrigger
-              size="lg"
-              className={cn(
-                "w-full md:w-[160px] h-10 text-sm border-primary/20 hover:border-primary/50 hover:bg-primary/5",
-                !isCompact && listFilter !== "all" && "bg-primary/5"
-              )}
-            >
-              <SelectValue placeholder="All Games" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">
-                <div className="flex items-center gap-2">
-                  <Library className="h-4 w-4" />
-                  <span>All Games</span>
-                </div>
-              </SelectItem>
-              {lists.map((l) => (
-                <SelectItem key={l.id} value={l.id}>
-                  {l.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <DlesSelect
+            value={listFilter}
+            onChange={(val) => onListFilterChange(val)}
+            options={[
+              { value: "all", label: "All Games" },
+              ...lists.map((l) => ({ value: l.id, label: l.name })),
+            ]}
+            placeholder="All Games"
+            className={cn(
+              "w-full md:w-[160px] h-10 text-sm border-primary/20",
+              !isCompact && listFilter !== "all" && "bg-primary/5"
+            )}
+            renderSelected={(option) => {
+              if (option.value === "all") return <span>All Games</span>;
+              const list = lists.find((l) => l.id === option.value);
+              const color = list?.color || "slate";
+              return (
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    "rounded-full px-2 font-medium border pointer-events-none",
+                    LIST_CARD_STYLES[color]?.card
+                  )}
+                >
+                  {option.label}
+                </Badge>
+              );
+            }}
+            renderOption={(option) => {
+              if (option.value === "all") {
+                return (
+                  <div className="flex items-center gap-2">
+                    <DlesTopic topic="all" className="w-fit px-3" />
+                    <span>All Games</span>
+                  </div>
+                );
+              }
+              const list = lists.find((l) => l.id === option.value);
+              const color = list?.color || "slate";
+              return (
+                <Badge
+                  variant="secondary"
+                  className={cn(
+                    "rounded-full px-2 font-medium border pointer-events-none w-fit",
+                    LIST_CARD_STYLES[color]?.card
+                  )}
+                >
+                  {option.label}
+                </Badge>
+              );
+            }}
+          />
         </div>
       )}
 
@@ -121,8 +151,10 @@ export function HeaderFilters({
         <SelectTrigger
           size="lg"
           className={cn(
-            "w-full md:w-[140px] text-xs h-10 border-primary/20 hover:border-primary/50 hover:bg-primary/5",
-            !isCompact && sortBy !== "title" && "bg-primary/5"
+            "w-full md:w-[140px] text-xs h-10 bg-muted/40 border-border/40 hover:border-border hover:bg-muted/60",
+            !isCompact &&
+              sortBy !== "title" &&
+              "border-primary/50 bg-primary/5 text-primary"
           )}
         >
           <SelectValue placeholder="Sort" />

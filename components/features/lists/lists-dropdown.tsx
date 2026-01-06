@@ -1,21 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { List, Loader2, Plus } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { List, Plus, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button"; // Note: Changed from Button to generic since DlesButton might not be used or standard button is needed. Reverting to project standard.
+// Actually project seems to use DlesButton or standard Button. The original file had Button import.
+// Checking imports: Input.
 import { Input } from "@/components/ui/input";
-import { DlesButton } from "@/components/design/dles-button";
-import { DlesSelect } from "@/components/design/dles-select";
-import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { DlesSelect } from "@/components/design/dles-select";
 import { useLists } from "@/lib/use-lists";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -38,9 +30,10 @@ import {
 
 export interface ListsDropdownProps {
   gameId: string;
+  className?: string; // For hover visibility
 }
 
-export function ListsDropdown({ gameId }: ListsDropdownProps) {
+export function ListsDropdown({ gameId, className }: ListsDropdownProps) {
   const { data: session } = useSession();
   const {
     lists,
@@ -49,41 +42,30 @@ export function ListsDropdown({ gameId }: ListsDropdownProps) {
     removeGameFromList,
     getListsForGame,
   } = useLists();
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedListIds, setSelectedListIds] = useState<string[]>([]);
+
+  const [isSubmitting, setIsSubmitting] = useState(false); // Network state
   const [newListName, setNewListName] = useState("");
   const [newListColor, setNewListColor] = useState("slate");
-  const [isColorPickerOpen, setIsColorPickerOpen] = useState(false);
-
-  // Initialize selected lists when dialog opens (only on open, not on lists change)
-  useEffect(() => {
-    if (isOpen) {
-      setSelectedListIds(getListsForGame(gameId));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, gameId]);
 
   if (!session) return null;
 
-  const handleSave = async () => {
-    setIsSubmitting(true);
-    const currentLists = getListsForGame(gameId);
+  const currentListIds = getListsForGame(gameId);
 
-    for (const listId of selectedListIds.filter(
-      (id) => !currentLists.includes(id)
-    )) {
-      await addGameToList(listId, gameId);
+  // Wrapper for onChange to handle immediate API calls
+  const handleChange = async (newValues: string | string[]) => {
+    const newIds = Array.isArray(newValues) ? newValues : [newValues];
+
+    // Find what was added
+    const added = newIds.find((id) => !currentListIds.includes(id));
+    if (added) {
+      await addGameToList(added, gameId);
     }
 
-    for (const listId of currentLists.filter(
-      (id) => !selectedListIds.includes(id)
-    )) {
-      await removeGameFromList(listId, gameId);
+    // Find what was removed
+    const removed = currentListIds.find((id) => !newIds.includes(id));
+    if (removed) {
+      await removeGameFromList(removed, gameId);
     }
-
-    setIsSubmitting(false);
-    setIsOpen(false);
   };
 
   const handleCreateList = async () => {
@@ -92,199 +74,136 @@ export function ListsDropdown({ gameId }: ListsDropdownProps) {
     const newList = await createList(newListName, newListColor);
     if (newList) {
       await addGameToList(newList.id, gameId);
-      // Filter to only valid existing list IDs, then add the new one
-      const existingListIds = new Set(lists.map((l) => l.id));
-      setSelectedListIds((prev) => {
-        const validPrev = prev.filter((id) => existingListIds.has(id));
-        return [...validPrev, newList.id];
-      });
       setNewListName("");
       setNewListColor("slate");
     }
     setIsSubmitting(false);
   };
 
-  const hasChanges = () => {
-    const currentLists = getListsForGame(gameId);
-    if (currentLists.length !== selectedListIds.length) return true;
-    return !currentLists.every((id) => selectedListIds.includes(id));
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <TooltipProvider delayDuration={200}>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <DialogTrigger asChild>
-              <DlesButton
-                variant="ghost"
-                size="icon-sm"
-                onClick={(e) => e.stopPropagation()}
-                className={cn(
-                  "p-1 rounded-md text-muted-foreground shrink-0",
-                  "hover:bg-muted hover:text-foreground"
-                )}
-              >
-                <List className="h-3.5 w-3.5" />
-              </DlesButton>
-            </DialogTrigger>
-          </TooltipTrigger>
-          <TooltipContent side="top" className="text-xs">
-            Add to list
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+    <TooltipProvider delayDuration={200}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div>
+            <DlesSelect
+              value={currentListIds}
+              onChange={handleChange}
+              multi
+              searchable={lists.length >= 5}
+              placeholder="Add to list"
+              emptyText="No lists found."
+              options={lists.map((list) => ({
+                value: list.id,
+                label: list.name,
+              }))}
+              trigger={
+                <Button
+                  variant="ghost"
+                  onClick={(e) => e.stopPropagation()}
+                  className={cn(
+                    "p-1 h-auto w-auto rounded-md text-muted-foreground shrink-0",
+                    "hover:bg-muted hover:text-foreground",
+                    className
+                  )}
+                >
+                  <List className="h-3.5 w-3.5" />
+                </Button>
+              }
+              renderOption={(option) => {
+                const list = lists.find((l) => l.id === option.value);
+                if (!list) return null;
 
-      <DialogContent className="w-full max-w-md overflow-hidden">
-        <DialogHeader>
-          <DialogTitle>Add to List</DialogTitle>
-        </DialogHeader>
+                const color = list.color || "slate";
 
-        <div className="space-y-5 py-2">
-          {/* Existing lists multi-select */}
-          {lists.length > 0 && (
-            <div className="w-full">
-              <Label className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest mb-2 block">
-                Your Lists
-              </Label>
-              <div className="w-full">
-                <DlesSelect
-                  value={selectedListIds}
-                  onChange={setSelectedListIds}
-                  placeholder="Select lists..."
-                  multi
-                  className="w-full"
-                  options={lists.map((list) => ({
-                    value: list.id,
-                    label: list.name,
-                  }))}
-                  renderOption={(option: { value: string; label: string }) => {
-                    const list = lists.find((l) => l.id === option.value);
-                    const colorClass = list
-                      ? LIST_COLORS[list.color] || LIST_COLORS.slate
-                      : LIST_COLORS.slate;
-                    return (
-                      <Badge
-                        className={cn(
-                          "text-xs px-2 py-0.5 rounded-full normal-case pointer-events-none",
-                          colorClass
-                        )}
-                      >
-                        {option.label}
-                      </Badge>
-                    );
-                  }}
-                  renderSelected={(option: {
-                    value: string;
-                    label: string;
-                  }) => {
-                    const list = lists.find((l) => l.id === option.value);
-                    const colorClass = list
-                      ? LIST_COLORS[list.color] || LIST_COLORS.slate
-                      : LIST_COLORS.slate;
-                    return (
-                      <Badge
-                        className={cn(
-                          "text-xs px-2 py-0.5 rounded-full normal-case",
-                          colorClass
-                        )}
-                      >
-                        {option.label}
-                      </Badge>
-                    );
-                  }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Divider */}
-          {lists.length > 0 && (
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border/40" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase tracking-wider">
-                <span className="bg-background px-2 text-muted-foreground/60 font-bold">
-                  Or
-                </span>
-              </div>
-            </div>
-          )}
-
-          {/* Create new list */}
-          <div className="w-full">
-            <Label className="text-xs font-bold text-muted-foreground/60 uppercase tracking-widest mb-2 block">
-              Create New List
-            </Label>
-            <div className="flex gap-2 w-full">
-              <Input
-                placeholder="List name..."
-                value={newListName}
-                onChange={(e) => setNewListName(e.target.value)}
-                onKeyDown={(e) =>
-                  e.key === "Enter" && newListName.trim() && handleCreateList()
-                }
-                className="h-10 flex-1 min-w-0"
-              />
-              <Popover
-                open={isColorPickerOpen}
-                onOpenChange={setIsColorPickerOpen}
-              >
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className={cn(
-                      "w-10 h-10 rounded-lg shrink-0 border border-border/50",
-                      LIST_CARD_STYLES[newListColor]?.dot || "bg-slate-500"
-                    )}
-                    title="Pick color"
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-3" align="end">
-                  <div className="grid grid-cols-6 gap-1.5">
-                    {LIST_COLOR_OPTIONS.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        onClick={() => {
-                          setNewListColor(color);
-                          setIsColorPickerOpen(false);
-                        }}
-                        className={cn(
-                          "w-5 h-5 rounded-full",
-                          LIST_CARD_STYLES[color]?.dot,
-                          newListColor === color &&
-                            "ring-2 ring-offset-1 ring-offset-background ring-foreground"
-                        )}
-                        title={color}
-                      />
-                    ))}
+                return (
+                  <div className="flex w-full items-center justify-between py-1">
+                    <Badge
+                      variant="secondary"
+                      className={cn(
+                        "rounded-full px-3 py-1 font-medium border w-full justify-between pointer-events-none hover:bg-transparent",
+                        LIST_CARD_STYLES[color]?.card
+                      )}
+                    >
+                      <span className="truncate">{list.name}</span>
+                      {list.games.length > 0 && (
+                        <span className="ml-2 text-[10px] opacity-70 font-mono tabular-nums">
+                          {list.games.length}
+                        </span>
+                      )}
+                    </Badge>
                   </div>
-                </PopoverContent>
-              </Popover>
-              <Button
-                type="button"
-                onClick={handleCreateList}
-                disabled={!newListName.trim() || isSubmitting}
-                className="shrink-0 h-10"
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
+                );
+              }}
+              contentClassName="w-[240px] p-0"
+              footer={
+                <div className="p-2 border-t border-border/40 bg-muted/20">
+                  <div className="space-y-2">
+                    <div className="text-[10px] uppercase font-bold text-muted-foreground/60 tracking-wider px-1">
+                      New List
+                    </div>
+                    <div className="flex gap-2 items-center">
+                      <Input
+                        placeholder="Name..."
+                        value={newListName}
+                        onChange={(e) => setNewListName(e.target.value)}
+                        onKeyDown={(e) =>
+                          e.key === "Enter" && handleCreateList()
+                        }
+                        className="h-8 text-xs bg-background/50 border-border/40 focus:border-border transition-all flex-1"
+                      />
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            className={cn(
+                              "w-8 h-8 rounded-md border shrink-0 transition-all hover:scale-105 focus:scale-105 border-border/40",
+                              LIST_CARD_STYLES[newListColor]?.dot ||
+                                "bg-slate-500"
+                            )}
+                          />
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-3" align="end">
+                          <div className="grid grid-cols-4 gap-2">
+                            {LIST_COLOR_OPTIONS.map((color) => (
+                              <button
+                                key={color}
+                                type="button"
+                                onClick={() => setNewListColor(color)}
+                                className={cn(
+                                  "w-5 h-5 rounded-full transition-transform hover:scale-110",
+                                  LIST_CARD_STYLES[color]?.dot,
+                                  newListColor === color &&
+                                    "ring-2 ring-offset-2 ring-foreground"
+                                )}
+                              />
+                            ))}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full h-7 text-xs border-dashed border-border/60 hover:border-primary/40 hover:text-primary transition-all"
+                      onClick={handleCreateList}
+                      disabled={!newListName.trim() || isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Plus className="h-3.5 w-3.5 mr-1.5" />
+                      )}
+                      Create List
+                    </Button>
+                  </div>
+                </div>
+              }
+            />
           </div>
-        </div>
-
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={!hasChanges() || isSubmitting}>
-            {isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            Save
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="text-xs">
+          Add to list
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

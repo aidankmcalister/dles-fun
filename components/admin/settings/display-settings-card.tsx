@@ -1,7 +1,6 @@
 "use client";
 
 import { useFormContext } from "react-hook-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -22,55 +21,58 @@ export function DisplaySettingsCard() {
     formState: { errors },
   } = useFormContext();
 
-  const newGameDays = watch("newGameDays");
+  const newGameMinutes = watch("newGameMinutes");
   const defaultSort = watch("defaultSort");
 
   return (
-    <Card className="flex flex-col border-none shadow-none lg:border lg:shadow-sm bg-transparent lg:bg-card">
-      <CardHeader className="pb-3 px-6 pt-6">
-        <CardTitle className="text-base flex items-center gap-2 text-primary font-bold">
-          <Sliders className="h-4 w-4" />
-          Display Settings
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-6 flex-1 px-6 pb-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div className="h-full bg-card/50 border border-border/40 rounded-xl p-6">
+      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border/40">
+        <Sliders className="h-4 w-4 text-primary" />
+        <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-foreground">
+          Display Configuration
+        </h3>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-6">
           <Field>
             <div className="space-y-1 mb-2">
               <Label
-                htmlFor="newGameDays"
+                htmlFor="newGameMinutes"
                 className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
               >
-                New Game Days
+                New Game Duration
               </Label>
               <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
-                Duration of &quot;NEW&quot; label
+                How long the "NEW" badge persists
               </p>
             </div>
             <Select
-              value={newGameDays?.toString()}
+              value={newGameMinutes?.toString()}
               onValueChange={(v) =>
-                setValue("newGameDays", parseInt(v), { shouldDirty: true })
+                setValue("newGameMinutes", parseInt(v), { shouldDirty: true })
               }
             >
               <SelectTrigger
-                id="newGameDays"
-                className="h-10 bg-muted/20 border-border/50"
+                id="newGameMinutes"
+                className="h-10 bg-muted/40 border-border/40 focus:border-border transition-all"
               >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">1 Day</SelectItem>
-                <SelectItem value="2">2 Days</SelectItem>
-                <SelectItem value="3">3 Days</SelectItem>
-                <SelectItem value="5">5 Days</SelectItem>
-                <SelectItem value="7">7 Days (Week)</SelectItem>
-                <SelectItem value="14">14 Days (2 Weeks)</SelectItem>
-                <SelectItem value="30">30 Days (Month)</SelectItem>
+                <SelectItem value="30">30 Minutes</SelectItem>
+                <SelectItem value="60">1 Hour</SelectItem>
+                <SelectItem value="360">6 Hours</SelectItem>
+                <SelectItem value="1440">1 Day</SelectItem>
+                <SelectItem value="4320">3 Days</SelectItem>
+                <SelectItem value="10080">7 Days (Week)</SelectItem>
+                <SelectItem value="20160">14 Days (2 Weeks)</SelectItem>
+                <SelectItem value="43200">30 Days (Month)</SelectItem>
+                <SelectItem value="-1">Never Show</SelectItem>
               </SelectContent>
             </Select>
-            {errors.newGameDays && (
-              <FieldError errors={[errors.newGameDays as any]} />
+            {errors.newGameMinutes && (
+              <FieldError errors={[errors.newGameMinutes as any]} />
             )}
           </Field>
 
@@ -80,10 +82,10 @@ export function DisplaySettingsCard() {
                 htmlFor="defaultSort"
                 className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
               >
-                Default Sort
+                Default Sort Order
               </Label>
               <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
-                Initial grid organization
+                Initial grid organization strategy
               </p>
             </div>
             <Select
@@ -94,7 +96,7 @@ export function DisplaySettingsCard() {
             >
               <SelectTrigger
                 id="defaultSort"
-                className="h-10 bg-muted/20 border-border/50"
+                className="h-10 bg-muted/40 border-border/40 focus:border-border transition-all"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -110,34 +112,36 @@ export function DisplaySettingsCard() {
           </Field>
         </div>
 
-        <Field className="pt-4 border-t border-border/50">
-          <div className="space-y-1 mb-2">
-            <Label
-              htmlFor="minPlayStreak"
-              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
-            >
-              Min Streak Display
-            </Label>
-            <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
-              Show streak after X days played
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Input
-              id="minPlayStreak"
-              type="number"
-              {...register("minPlayStreak", { valueAsNumber: true })}
-              className="w-24 h-10 bg-muted/20 border-border/50"
-            />
-            <span className="text-xs font-medium text-muted-foreground">
-              days
-            </span>
-          </div>
-          {errors.minPlayStreak && (
-            <FieldError errors={[errors.minPlayStreak as any]} />
-          )}
-        </Field>
-      </CardContent>
-    </Card>
+        <div className="space-y-6 md:border-l border-border/40 md:pl-8">
+          <Field>
+            <div className="space-y-1 mb-2">
+              <Label
+                htmlFor="minPlayStreak"
+                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
+              >
+                Streak Threshold
+              </Label>
+              <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
+                Minimum plays to show streak UI
+              </p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Input
+                id="minPlayStreak"
+                type="number"
+                {...register("minPlayStreak", { valueAsNumber: true })}
+                className="w-24 h-10 bg-muted/40 border-border/40 focus:border-border transition-all"
+              />
+              <span className="text-xs font-mono text-muted-foreground">
+                DAYS
+              </span>
+            </div>
+            {errors.minPlayStreak && (
+              <FieldError errors={[errors.minPlayStreak as any]} />
+            )}
+          </Field>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -44,8 +44,8 @@ export function FeelingLuckyModal({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-zinc-950 border-border/50 p-6 flex flex-col justify-between min-h-[520px]">
-        <DialogHeader className="pb-4 border-b border-border/50 shrink-0">
+      <DialogContent className="sm:max-w-md bg-card border-border/40 p-6 flex flex-col justify-between min-h-[520px]">
+        <DialogHeader className="pb-4 border-b border-border/40 shrink-0">
           <DialogTitle className="flex items-center gap-2 text-lg font-semibold tracking-tight">
             <Dices className="h-4 w-4 text-primary" />
             Feeling Lucky

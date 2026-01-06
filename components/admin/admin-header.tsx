@@ -8,10 +8,14 @@ import { cn } from "@/lib/utils";
 import type { Role } from "@/app/generated/prisma/client";
 
 const ROLE_COLORS: Record<Role, string> = {
-  owner: "bg-amber-500/20 text-amber-700 dark:text-amber-300",
-  coowner: "bg-violet-500/20 text-violet-700 dark:text-violet-300",
-  admin: "bg-blue-500/20 text-blue-700 dark:text-blue-300",
-  member: "bg-gray-500/20 text-gray-700 dark:text-gray-300",
+  owner:
+    "bg-amber-500/5 text-amber-700 dark:text-amber-300 border-amber-500/20 border",
+  coowner:
+    "bg-violet-500/5 text-violet-700 dark:text-violet-300 border-violet-500/20 border",
+  admin:
+    "bg-blue-500/5 text-blue-700 dark:text-blue-300 border-blue-500/20 border",
+  member:
+    "bg-zinc-500/5 text-zinc-700 dark:text-zinc-300 border-zinc-500/20 border",
 };
 
 const ROLE_LABELS: Record<Role, string> = {

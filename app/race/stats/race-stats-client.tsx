@@ -423,10 +423,13 @@ export function RaceStatsClient({
               {stats.gameMastery.slice(0, 12).map((game) => (
                 <div
                   key={game.name}
-                  className="bg-muted/30 rounded-md p-3 border border-border/50 flex flex-col justify-between gap-2"
+                  className="bg-card hover:bg-muted/5 transition-colors rounded-xl p-3 border border-border/40 flex flex-col justify-between gap-2"
                 >
                   <div>
-                    <p className="text-xs font-bold truncate" title={game.name}>
+                    <p
+                      className="text-xs font-bold truncate tracking-tight"
+                      title={game.name}
+                    >
                       {game.name}
                     </p>
                     <p className="text-[10px] text-muted-foreground">
@@ -473,8 +476,8 @@ export function RaceStatsClient({
               No completed races found. Start a race to build your history!
             </div>
           ) : (
-            <div className="divide-y divide-border/50">
-              <div className="grid grid-cols-12 gap-4 p-3 bg-muted/30 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border/50">
+            <div className="divide-y divide-border/40">
+              <div className="grid grid-cols-12 gap-4 p-3 bg-muted/10 text-[10px] font-bold uppercase tracking-wider text-muted-foreground border-b border-border/40">
                 <div className="col-span-2 sm:col-span-1">Result</div>
                 <div className="col-span-5 sm:col-span-4">Opponent</div>
                 <div className="col-span-3 sm:col-span-2">Date</div>
@@ -526,8 +529,8 @@ export function RaceStatsClient({
                         className={cn(
                           "text-[10px] h-5 px-1.5 rounded-sm font-bold justify-center w-fit",
                           result === "WON"
-                            ? "bg-emerald-500/10 text-emerald-500"
-                            : "bg-rose-500/10 text-rose-500"
+                            ? "bg-emerald-500/5 text-emerald-500 border-emerald-500/20"
+                            : "bg-rose-500/5 text-rose-500 border-rose-500/20"
                         )}
                       >
                         {result}
