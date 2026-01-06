@@ -19,9 +19,9 @@ export function UserLimitsCard() {
   const enableCommunitySubmissions = watch("enableCommunitySubmissions");
 
   return (
-    <div className="h-full bg-card/50 border border-border/40 rounded-xl p-6">
-      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border/40">
-        <Users className="h-4 w-4 text-primary" />
+    <div className="h-full bg-background/50 border border-border/20 rounded-xl p-6 shadow-sm">
+      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border/20">
+        <Users className="h-4 w-4 text-muted-foreground" />
         <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-foreground">
           User Permissions
         </h3>
@@ -32,11 +32,11 @@ export function UserLimitsCard() {
           <div className="space-y-1 mb-2">
             <Label
               htmlFor="maxCustomLists"
-              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
+              className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block font-mono"
             >
               List Capacity
             </Label>
-            <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
+            <p className="text-[11px] text-muted-foreground/60 italic leading-tight font-mono">
               Max lists per user account
             </p>
           </div>
@@ -45,9 +45,9 @@ export function UserLimitsCard() {
               id="maxCustomLists"
               type="number"
               {...register("maxCustomLists", { valueAsNumber: true })}
-              className="w-24 h-10 bg-muted/40 border-border/40 focus:border-border transition-all"
+              className="w-24 h-10 bg-muted/20 border-border/20 focus:border-border transition-all font-mono text-sm"
             />
-            <span className="text-xs font-mono text-muted-foreground">
+            <span className="text-xs font-mono text-muted-foreground uppercase">
               LISTS
             </span>
           </div>
@@ -56,17 +56,17 @@ export function UserLimitsCard() {
           )}
         </div>
 
-        <div className="pt-4 border-t border-border/40">
+        <div className="pt-4 border-t border-border/20">
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-1">
-              <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block">
+              <Label className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block font-mono">
                 Public Submissions
               </Label>
-              <p className="text-[11px] text-muted-foreground/60 italic">
+              <p className="text-[11px] text-muted-foreground/60 italic font-mono">
                 Allow users to suggest games
               </p>
             </div>
-            <div className="flex items-center gap-2 bg-muted/30 px-3 py-1.5 rounded-full border border-border/50 transition-colors hover:border-border">
+            <div className="flex items-center gap-2 bg-muted/20 px-3 py-1.5 rounded-full border border-border/20 transition-colors hover:border-border/40">
               <span
                 className={cn(
                   "text-[10px] font-bold font-mono transition-colors w-6 text-center select-none",

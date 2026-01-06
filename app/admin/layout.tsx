@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { useImpersonation } from "@/components/impersonation-provider";
 import { AdminHeader } from "@/components/admin/admin-header";
+import { cn } from "@/lib/utils";
 import {
   Gamepad2,
   Users,

@@ -9,7 +9,7 @@ import type { Role } from "@/app/generated/prisma/client";
 
 const ROLE_COLORS: Record<Role, string> = {
   owner:
-    "bg-amber-500/5 text-amber-700 dark:text-amber-300 border-amber-500/20 border",
+    "bg-brand-500/5 text-brand-700 dark:text-brand-300 border-brand-500/20 border",
   coowner:
     "bg-violet-500/5 text-violet-700 dark:text-violet-300 border-violet-500/20 border",
   admin:
@@ -39,7 +39,7 @@ export function AdminHeader({ canManageUsers }: { canManageUsers: boolean }) {
           className={cn(
             "capitalize text-xs",
             ROLE_COLORS[effectiveRole || "member"],
-            viewAsRole && "ring-2 ring-amber-500/50"
+            viewAsRole && "border-dashed border-2"
           )}
         >
           {viewAsRole && "Viewing as "}

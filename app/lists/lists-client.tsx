@@ -1,6 +1,8 @@
 "use client";
+// forcing refresh
 
 import { useState } from "react";
+import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { DlesTopic } from "@/components/design/dles-topic";
 import {
@@ -10,6 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,12 +49,14 @@ import {
   Gamepad2,
   Sparkles,
   Loader2,
+  ExternalLink,
 } from "lucide-react";
 
 interface Game {
   id: string;
   title: string;
   topic: string;
+  link?: string;
 }
 
 // Extended list with full game objects for display
@@ -366,32 +371,56 @@ export function ListsClient({ initialLists }: ListsClientProps) {
                       <p className="text-xs">Add games from the homepage</p>
                     </div>
                   ) : (
-                    <div className="space-y-1">
-                      {list.games.slice(0, 4).map((game) => (
-                        <div
-                          key={game.id}
-                          className="flex items-center justify-between py-1.5 px-2 rounded-md group/item hover:bg-background/50 transition-colors"
-                        >
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="text-sm truncate text-foreground">
-                              {game.title}
-                            </span>
-                            <DlesTopic topic={game.topic} />
-                          </div>
-                          <DlesButton
-                            variant="ghost"
-                            size="icon-sm"
-                            className="h-5 w-5 opacity-0 group-hover/item:opacity-100 text-muted-foreground hover:text-destructive shrink-0"
-                            onClick={() => handleRemoveGame(list.id, game.id)}
+                    <div className="relative group/list">
+                      <div
+                        className={cn(
+                          "space-y-1 max-h-[190px] overflow-y-auto pr-2 -mr-2 scrollbar-none hover:scrollbar-thin scrollbar-thumb-muted/10 hover:scrollbar-thumb-muted/20 transition-colors",
+                          list.games.length > 5 && "mask-linear-fade"
+                        )}
+                      >
+                        {list.games.map((game) => (
+                          <div
+                            key={game.id}
+                            className="flex items-center justify-between gap-2 py-1.5 px-2 rounded-md group/item hover:bg-background/50 transition-colors relative"
                           >
-                            <Trash2 className="h-3 w-3" />
-                          </DlesButton>
+                            {game.link ? (
+                              <Link
+                                href={game.link}
+                                target="_blank"
+                                className="flex items-center gap-1.5 text-sm truncate text-foreground flex-1 min-w-0 hover:text-brand transition-colors"
+                              >
+                                <span className="truncate">{game.title}</span>
+                                <ExternalLink className="h-3 w-3 shrink-0 text-muted-foreground/50 opacity-0 -translate-x-1 group-hover/item:opacity-100 group-hover/item:translate-x-0 transition-all" />
+                              </Link>
+                            ) : (
+                              <span className="text-sm truncate text-foreground flex-1 min-w-0">
+                                {game.title}
+                              </span>
+                            )}
+                            <div className="flex items-center shrink-0 relative">
+                              <div className="transition-transform duration-200 ease-out group-hover/item:-translate-x-6">
+                                <DlesTopic topic={game.topic} />
+                              </div>
+                              <DlesButton
+                                variant="ghost"
+                                size="icon-sm"
+                                className="h-5 w-5 absolute right-0 opacity-0 scale-75 group-hover/item:opacity-100 group-hover/item:scale-100 text-muted-foreground hover:text-destructive transition-all duration-200"
+                                onClick={() =>
+                                  handleRemoveGame(list.id, game.id)
+                                }
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </DlesButton>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      {list.games.length > 5 && (
+                        <div className="absolute -bottom-2 left-0 right-0 h-12 bg-gradient-to-t from-card/20 to-transparent flex items-end justify-center pb-2 pointer-events-none group-hover/list:opacity-0 transition-opacity duration-300">
+                          <span className="text-[10px] text-muted-foreground/70 font-mono bg-background/50 backdrop-blur-[1px] px-2 py-0.5 rounded-full border border-border/10 shadow-sm flex items-center gap-1">
+                            Scroll for more
+                          </span>
                         </div>
-                      ))}
-                      {list.games.length > 4 && (
-                        <p className="text-xs opacity-60 text-center pt-2">
-                          +{list.games.length - 4} more
-                        </p>
                       )}
                     </div>
                   )}

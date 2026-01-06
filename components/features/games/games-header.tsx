@@ -11,6 +11,7 @@ import { GameList } from "@/lib/use-lists";
 import { HeaderSearch } from "../../header/header-search";
 import { HeaderFilters } from "./games-filters";
 import { HeaderStats } from "../../header/header-stats";
+import { Logo } from "@/components/design/logo";
 
 type SortOption = "title" | "topic" | "played";
 
@@ -83,26 +84,7 @@ export function GamesHeader(props: GamesHeaderProps) {
           <div className="mx-auto max-w-7xl space-y-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <Link href="/" className="block w-fit group/logo select-none">
-                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight flex items-baseline font-mono">
-                    <span className="mr-2 text-brand-700 dark:text-brand-400 transition-all duration-300 group-hover/logo:translate-x-1 group-hover/logo:text-brand-600 dark:group-hover/logo:text-brand-300 drop-shadow-[0_0_10px_var(--color-brand-500)]">
-                      &gt;
-                    </span>
-
-                    <span className="text-foreground tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.25)] dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">
-                      dles
-                    </span>
-
-                    <span className="text-brand-700 dark:text-brand-400 transition-all duration-300 group-hover/logo:text-brand-600 dark:group-hover/logo:text-brand-300 tracking-tighter drop-shadow-[0_0_10px_var(--color-brand-500)]">
-                      .fun
-                    </span>
-
-                    {/* Underscore Cursor */}
-                    <span className="animate-prompt-cursor ml-0.5 text-brand-700 dark:text-brand-400 font-bold drop-shadow-[0_0_10px_var(--color-brand-500)]">
-                      _
-                    </span>
-                  </h1>
-                </Link>
+                <Logo size="lg" href="/" />
                 <p className="hidden sm:block text-muted-foreground text-sm sm:text-base max-w-lg">
                   A curated list of daily games my friends and I play.
                 </p>

@@ -20,6 +20,7 @@ export default async function ListsPage() {
           id: true,
           title: true,
           topic: true,
+          link: true,
         },
       },
     },

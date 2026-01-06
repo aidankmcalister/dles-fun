@@ -190,3 +190,8 @@ body {
 .animate-prompt-cursor {
   animation: prompt-cursor 1s step-end infinite;
 }
+
+.mask-linear-fade {
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}

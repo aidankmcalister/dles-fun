@@ -41,20 +41,20 @@ export function SiteStatusCard() {
                 maintenanceMode ? "bg-red-500" : "bg-emerald-500"
               )}
             />
-            <h2 className="text-sm font-medium tracking-wide text-muted-foreground uppercase">
+            <h2 className="text-sm font-medium tracking-wide text-muted-foreground uppercase font-mono">
               System Status
             </h2>
           </div>
           <div className="space-y-1">
             <h1
               className={cn(
-                "text-xl md:text-2xl font-bold tracking-tight",
+                "text-xl md:text-2xl font-bold tracking-tight font-mono",
                 statusColor
               )}
             >
               {maintenanceMode ? "Maintenance Mode" : "Systems Operational"}
             </h1>
-            <p className="text-xs md:text-sm text-muted-foreground max-w-md text-balance">
+            <p className="text-xs md:text-sm text-muted-foreground max-w-md text-balance font-mono">
               {maintenanceMode
                 ? "Site is locked. Only administrative accounts can access the dashboard."
                 : "All systems running normally. User traffic is being served."}
@@ -64,7 +64,7 @@ export function SiteStatusCard() {
 
         <div className="flex items-center gap-4 bg-background/50 backdrop-blur-sm p-4 rounded-lg border border-border/20 shadow-sm">
           <div className="space-y-1 text-right hidden md:block">
-            <span className="block text-xs font-semibold text-muted-foreground">
+            <span className="block text-xs font-semibold text-muted-foreground font-mono">
               Maintenance
             </span>
           </div>
@@ -79,15 +79,13 @@ export function SiteStatusCard() {
       </div>
 
       {/* Broadcast Section */}
-      <div className="border-t border-border/10 bg-background/30 p-4 md:px-8">
+      <div className="border-t border-border/10 bg-background/20 p-4 md:px-8">
         <div className="flex flex-col md:flex-row gap-4 items-start md:items-center">
           <div className="flex items-center gap-3">
             <Megaphone className="h-4 w-4 text-muted-foreground" />
-            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground whitespace-nowrap">
+            <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground whitespace-nowrap font-mono">
               Announcement
             </span>
-          </div>
-          <div className="flex-1 w-full flex gap-3 items-center">
             <div className="flex items-center gap-2">
               <Switch
                 checked={showWelcomeMessage}
@@ -95,15 +93,18 @@ export function SiteStatusCard() {
                   setValue("showWelcomeMessage", v, { shouldDirty: true })
                 }
                 id="broadcast-toggle"
+                className="scale-75"
               />
             </div>
+          </div>
+          <div className="flex-1 w-full flex gap-3 items-center">
             <div className="relative flex-1 group w-full">
               <Input
                 disabled={!showWelcomeMessage}
                 id="welcomeMessage"
                 placeholder="Type announcement..."
                 {...register("welcomeMessage")}
-                className="h-9 bg-background/50 border-input/50 focus:border-primary/20 focus:bg-background/80 transition-all text-sm shadow-none w-full"
+                className="h-9 bg-background/30 border-input/20 focus:border-primary/20 focus:bg-background/50 transition-all text-sm shadow-none w-full font-mono placeholder:text-muted-foreground/50"
               />
             </div>
           </div>

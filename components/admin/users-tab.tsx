@@ -13,6 +13,7 @@ import {
 import { DlesSelect } from "@/components/design/dles-select";
 import { useImpersonation } from "@/components/impersonation-provider";
 import { Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { Role } from "@/app/generated/prisma/client";
 import { UserItem } from "./user-item";
 
@@ -184,24 +185,20 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
       </div>
 
       {/* User search and filters */}
-      <div className="flex flex-col gap-3 md:flex-row md:items-center">
-        <Input
-          placeholder="Search users..."
-          value={userSearch}
-          onChange={(e) => setUserSearch(e.target.value)}
-          className="h-10 text-base md:text-xs text-muted-foreground bg-muted/40 border-border/40 hover:border-border focus:bg-background focus:border-border transition-all w-full md:flex-1 md:w-auto"
-        />
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center md:w-auto">
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <div className="flex-1">
+          <Input
+            placeholder="Search users..."
+            value={userSearch}
+            onChange={(e) => setUserSearch(e.target.value)}
+            className="flex-1 h-9 text-xs text-muted-foreground bg-background border-border/40 hover:border-border hover:bg-muted/10 focus:bg-background focus:border-brand transition-all font-mono"
+          />
+        </div>
+        <div className="flex gap-2">
           <DlesSelect
             multi
             value={userRoleFilter}
-            onChange={(val) => {
-              // Enforce "All" exclusivity logic if DlesSelect doesn't catch it or for extra safety
-              // If "all" was just selected (not present before), clear others.
-              // If "all" was present and something else selected, remove "all".
-              // For now, trust the incoming value but ensure logical consistency if needed.
-              setUserRoleFilter(val);
-            }}
+            onChange={(val) => setUserRoleFilter(val)}
             options={[
               { value: "all", label: "All Roles" },
               ...ROLES.map((role) => ({
@@ -209,28 +206,36 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
                 label: ROLE_LABELS[role],
               })),
             ]}
-            className="w-full sm:w-[140px]"
+            className="w-[140px] h-9 text-xs font-mono"
             renderOption={(option) => {
-              if (option.value === "all") return <span>{option.label}</span>;
+              if (option.value === "all")
+                return (
+                  <span className="font-mono text-xs">{option.label}</span>
+                );
               return (
                 <Badge
-                  variant="secondary"
-                  className={`capitalize rounded-full text-xs px-2.5 h-6 gap-1 shrink-0 ${
+                  variant="outline"
+                  className={cn(
+                    "capitalize rounded-sm text-[10px] px-1.5 h-5 font-mono",
                     ROLE_COLORS[option.value as Role]
-                  }`}
+                  )}
                 >
                   {option.label}
                 </Badge>
               );
             }}
             renderSelected={(option) => {
-              if (option.value === "all") return <span>{option.label}</span>;
+              if (option.value === "all")
+                return (
+                  <span className="font-mono text-xs">{option.label}</span>
+                );
               return (
                 <Badge
-                  variant="secondary"
-                  className={`capitalize rounded-md px-2 h-6 font-medium border-primary/20 gap-1 shrink-0 ${
+                  variant="outline"
+                  className={cn(
+                    "capitalize rounded-sm text-[10px] px-1.5 h-4 font-mono",
                     ROLE_COLORS[option.value as Role]
-                  }`}
+                  )}
                 >
                   {option.label}
                 </Badge>
@@ -248,10 +253,7 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
               setUserSortOrder(order);
             }}
           >
-            <SelectTrigger
-              size="lg"
-              className="w-full sm:w-[140px] text-xs bg-muted/40 border-border/40 hover:border-border hover:bg-muted/60 transition-all focus:border-border"
-            >
+            <SelectTrigger className="w-[140px] h-9 text-xs bg-background border-border/40 hover:border-border hover:bg-muted/10 transition-all focus:border-brand font-mono">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -270,16 +272,16 @@ export function UsersTab({ canManageUsers }: { canManageUsers: boolean }) {
       <div className="rounded-md border border-border/40 bg-card overflow-hidden">
         <div className="overflow-x-auto">
           <div className="grid grid-cols-[auto_1fr] md:grid-cols-[1fr_150px_minmax(0,1.5fr)_130px_50px] gap-4 items-center px-4 py-3 border-b border-border/40 bg-muted/20 text-[10px] font-bold text-muted-foreground uppercase tracking-wider sticky top-0 z-10 backdrop-blur-sm">
-            <div className="pl-12 md:pl-0">User Identity</div>
-            <div className="hidden md:block">Role</div>
-            <div className="hidden md:block">Email</div>
-            <div className="hidden md:block text-right pr-4">Created</div>
-            <div className="text-right">Action</div>
+            <div className="pl-12 md:pl-0">USER IDENTITY</div>
+            <div className="hidden md:block">ROLE</div>
+            <div className="hidden md:block">EMAIL</div>
+            <div className="hidden md:block text-right pr-4">CREATED</div>
+            <div className="text-right">ACTION</div>
           </div>
           <div className="divide-y divide-border/30 px-0">
             {filteredUsers.length === 0 ? (
-              <div className="p-8 text-center text-muted-foreground text-sm">
-                No users found.
+              <div className="p-8 text-center text-muted-foreground text-sm font-mono border-b border-border/20">
+                &gt; No users found.
               </div>
             ) : (
               filteredUsers.map((user) => (

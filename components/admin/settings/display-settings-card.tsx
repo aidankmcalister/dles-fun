@@ -25,9 +25,9 @@ export function DisplaySettingsCard() {
   const defaultSort = watch("defaultSort");
 
   return (
-    <div className="h-full bg-card/50 border border-border/40 rounded-xl p-6">
-      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border/40">
-        <Sliders className="h-4 w-4 text-primary" />
+    <div className="h-full bg-background/50 border border-border/20 rounded-xl p-6 shadow-sm">
+      <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border/20">
+        <Sliders className="h-4 w-4 text-muted-foreground" />
         <h3 className="font-mono text-xs font-bold uppercase tracking-widest text-foreground">
           Display Configuration
         </h3>
@@ -39,11 +39,11 @@ export function DisplaySettingsCard() {
             <div className="space-y-1 mb-2">
               <Label
                 htmlFor="newGameMinutes"
-                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
+                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block font-mono"
               >
                 New Game Duration
               </Label>
-              <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
+              <p className="text-[11px] text-muted-foreground/60 italic leading-tight font-mono">
                 How long the "NEW" badge persists
               </p>
             </div>
@@ -55,7 +55,7 @@ export function DisplaySettingsCard() {
             >
               <SelectTrigger
                 id="newGameMinutes"
-                className="h-10 bg-muted/40 border-border/40 focus:border-border transition-all"
+                className="h-10 bg-muted/20 border-border/20 focus:border-border transition-all font-mono text-xs"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -80,11 +80,11 @@ export function DisplaySettingsCard() {
             <div className="space-y-1 mb-2">
               <Label
                 htmlFor="defaultSort"
-                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
+                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block font-mono"
               >
                 Default Sort Order
               </Label>
-              <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
+              <p className="text-[11px] text-muted-foreground/60 italic leading-tight font-mono">
                 Initial grid organization strategy
               </p>
             </div>
@@ -96,7 +96,7 @@ export function DisplaySettingsCard() {
             >
               <SelectTrigger
                 id="defaultSort"
-                className="h-10 bg-muted/40 border-border/40 focus:border-border transition-all"
+                className="h-10 bg-muted/20 border-border/20 focus:border-border transition-all font-mono text-xs"
               >
                 <SelectValue />
               </SelectTrigger>
@@ -112,16 +112,16 @@ export function DisplaySettingsCard() {
           </Field>
         </div>
 
-        <div className="space-y-6 md:border-l border-border/40 md:pl-8">
+        <div className="space-y-6 md:border-l border-border/20 md:pl-8">
           <Field>
             <div className="space-y-1 mb-2">
               <Label
                 htmlFor="minPlayStreak"
-                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block"
+                className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest block font-mono"
               >
                 Streak Threshold
               </Label>
-              <p className="text-[11px] text-muted-foreground/60 italic leading-tight">
+              <p className="text-[11px] text-muted-foreground/60 italic leading-tight font-mono">
                 Minimum plays to show streak UI
               </p>
             </div>
@@ -130,9 +130,9 @@ export function DisplaySettingsCard() {
                 id="minPlayStreak"
                 type="number"
                 {...register("minPlayStreak", { valueAsNumber: true })}
-                className="w-24 h-10 bg-muted/40 border-border/40 focus:border-border transition-all"
+                className="w-24 h-10 bg-muted/20 border-border/20 focus:border-border transition-all font-mono text-sm"
               />
-              <span className="text-xs font-mono text-muted-foreground">
+              <span className="text-xs font-mono text-muted-foreground uppercase">
                 DAYS
               </span>
             </div>
