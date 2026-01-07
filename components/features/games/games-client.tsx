@@ -10,6 +10,7 @@ import type { Game } from "@/app/generated/prisma/client";
 import { usePlayedGames } from "@/lib/use-played-games";
 import { useLists } from "@/lib/use-lists";
 import { useStats } from "@/lib/stats-context";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import { toast } from "sonner";
 import { DlesButton } from "@/components/design/dles-button";
@@ -283,7 +284,21 @@ export function GamesClient({
     showHidden,
   ]);
 
-  if (isLoading) return <GameGridSkeleton count={games.length} />;
+  if (isLoading) {
+    return (
+      <div className="space-y-6 animate-in fade-in duration-300">
+        {/* Header skeleton */}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <Skeleton className="h-10 w-64" />
+            <Skeleton className="h-10 w-32" />
+            <Skeleton className="h-10 w-32" />
+          </div>
+        </div>
+        <GameGridSkeleton count={games.length} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
