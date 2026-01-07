@@ -42,7 +42,7 @@ export function DlesTopic({
   );
 
   const baseClasses = cn(
-    "w-fit border-0 shadow-none pointer-events-none hover:bg-inherit transition-none normal-case leading-none items-center justify-center flex whitespace-nowrap",
+    "w-fit rounded-full border shadow-none pointer-events-none hover:bg-inherit transition-none normal-case leading-none items-center justify-center flex whitespace-nowrap",
     SIZE_CLASSES[size]
   );
 

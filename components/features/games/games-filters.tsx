@@ -94,13 +94,7 @@ export function HeaderFilters({
                   (acc, l) => acc + (l.games?.length || 0),
                   0
                 );
-                return (
-                  <ListChip
-                    label="All Lists"
-                    count={totalGames}
-                    color="slate"
-                  />
-                );
+                return <ListChip label="All Lists" color="brand" />;
               }
               const list = lists.find((l) => l.id === option.value);
               const color = list?.color || "slate";
@@ -118,13 +112,7 @@ export function HeaderFilters({
                   (acc, l) => acc + (l.games?.length || 0),
                   0
                 );
-                return (
-                  <ListChip
-                    label="All Lists"
-                    count={totalGames}
-                    color="slate"
-                  />
-                );
+                return <ListChip label="All Lists" color="brand" />;
               }
               const list = lists.find((l) => l.id === option.value);
               const color = list?.color || "slate";

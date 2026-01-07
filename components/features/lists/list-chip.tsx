@@ -4,7 +4,7 @@ import { Gamepad } from "lucide-react";
 
 export interface ListChipProps {
   label: string;
-  count: number;
+  count?: number;
   color?: string;
   className?: string; // Allow overriding width and other styles
 }
@@ -32,12 +32,14 @@ export function ListChip({
         {label}
       </span>
 
-      <div className="flex items-center gap-1.5 ml-2 shrink-0">
-        <span className="text-body-small font-mono font-bold tabular-nums opacity-80">
-          {count}
-        </span>
-        <Gamepad className="h-3.5 w-3.5 opacity-70" />
-      </div>
+      {count && (
+        <div className="flex items-center gap-1.5 ml-2 shrink-0">
+          <span className="text-body-small font-mono font-bold tabular-nums opacity-80">
+            {count}
+          </span>
+          <Gamepad className="h-3.5 w-3.5 opacity-70" />
+        </div>
+      )}
     </div>
   );
 }
