@@ -30,6 +30,7 @@ interface GameSelectorProps {
   onSelectAll: () => void;
   onClear: () => void;
   topics: string[];
+  hideFilters?: boolean;
 }
 
 export function GameSelector({
@@ -44,26 +45,28 @@ export function GameSelector({
   onSelectAll,
   onClear,
   topics,
+  hideFilters = false,
 }: GameSelectorProps) {
   return (
     <section className="space-y-4">
-      {/* Search & Filter Row */}
-      <div className="flex flex-col sm:flex-row gap-2">
-        <HeaderSearch
-          query={searchQuery}
-          onChange={onSearchChange}
-          className="flex-1"
-        />
-        <DlesSelect // Changed from MultiSelect to DlesSelect
-          multi
-          topics // Added topics prop
-          value={selectedTopics.length === 0 ? ["all"] : selectedTopics}
-          onChange={onTopicChange}
-          placeholder="Filter"
-          className="w-full sm:w-[180px]"
-          // Removed options, renderLabel, and renderSelectedItem props
-        />
-      </div>
+      {/* Search & Filter Row - hidden when rendered elsewhere */}
+      {!hideFilters && (
+        <div className="flex flex-col sm:flex-row gap-2">
+          <HeaderSearch
+            query={searchQuery}
+            onChange={onSearchChange}
+            className="flex-1"
+          />
+          <DlesSelect
+            multi
+            topics
+            value={selectedTopics.length === 0 ? ["all"] : selectedTopics}
+            onChange={onTopicChange}
+            placeholder="Filter"
+            className="w-full sm:w-[180px]"
+          />
+        </div>
+      )}
 
       {/* Game Grid */}
       {isLoading ? (

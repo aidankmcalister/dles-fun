@@ -2,8 +2,6 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
-import { PageHeader } from "@/components/layout/page-header";
-import { UserButton } from "@/components/layout/user-button";
 import { useLists } from "@/lib/use-lists";
 import { Topic } from "@/app/generated/prisma/client";
 import { toast } from "sonner";
@@ -13,6 +11,12 @@ import {
   SYSTEM_TEMPLATES,
 } from "@/components/features/race/new-race/race-setup-form";
 import { GameSelector } from "@/components/features/race/new-race/game-selector";
+import { DlesButton } from "@/components/design/dles-button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { HeaderSearch } from "@/components/header/header-search";
+import { DlesSelect } from "@/components/design/dles-select";
+import { Flag } from "lucide-react";
 
 interface Game {
   id: string;
@@ -34,6 +38,7 @@ export default function NewRacePage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [selectedListId, setSelectedListId] = useState<string>("");
   const [, setActiveStep] = useState<1 | 2>(1);
 
   useEffect(() => {
@@ -88,11 +93,11 @@ export default function NewRacePage() {
         const categoryGames = allGames.filter(
           (g) => g.topic === template.topic
         );
-        // Shuffle and pick only template.count games (default 5)
         const games = [...categoryGames]
           .sort(() => 0.5 - Math.random())
           .slice(0, template.count || 5);
         setSelectedGameIds(games.map((g) => g.id));
+        setSelectedListId(""); // Clear list selection for system templates
         toast.info(
           `Selected ${games.length} ${template.name.toLowerCase()} games!`
         );
@@ -102,6 +107,7 @@ export default function NewRacePage() {
       const list = lists.find((l) => l.id === id);
       if (list) {
         setSelectedGameIds(list.games);
+        setSelectedListId(list.id);
         toast.info(`Applied list: ${list.name}`);
         setActiveStep(2);
       }
@@ -130,7 +136,6 @@ export default function NewRacePage() {
       if (res.ok) {
         const race = await res.json();
 
-        // If created as guest, save identity
         if (!session?.user && guestName) {
           const myParticipant = race.participants.find(
             (p: { guestName?: string }) => p.guestName === guestName
@@ -151,79 +156,171 @@ export default function NewRacePage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 pb-32 animate-in fade-in slide-in-from-bottom-2 duration-500">
-      {/* HEADER */}
-      <div className="flex items-start justify-between gap-4 mb-8">
-        <PageHeader
-          title="Start a Race"
-          subtitle="Challenge your friends to see who can finish their daily games the fastest."
-          backHref="/"
-        />
-        <UserButton />
+    <main className="min-h-screen px-4 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-7xl pb-32 animate-in fade-in slide-in-from-bottom-2 duration-500">
+        {/* Top bar: Race Name + Search + Filters inline */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 my-4 items-end">
+          {/* Race Name */}
+          <div className="md:col-span-3">
+            <Label
+              htmlFor="race-name"
+              className="text-micro text-muted-foreground mb-2 block"
+            >
+              RACE NAME
+            </Label>
+            <Input
+              id="race-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="dles.fun Race"
+            />
+          </div>
+
+          {/* Guest Name (if not logged in) */}
+          {!session?.user && (
+            <div className="md:col-span-2">
+              <Label
+                htmlFor="guest-name"
+                className="text-micro text-muted-foreground mb-2 block"
+              >
+                YOUR NAME
+              </Label>
+              <Input
+                id="guest-name"
+                value={guestName}
+                onChange={(e) => setGuestName(e.target.value)}
+                placeholder="Enter your name"
+              />
+            </div>
+          )}
+
+          {/* Search */}
+          <div className={session?.user ? "md:col-span-6" : "md:col-span-4"}>
+            <Label className="text-micro text-muted-foreground mb-2 block">
+              SEARCH GAMES
+            </Label>
+            <HeaderSearch
+              query={searchQuery}
+              onChange={setSearchQuery}
+              className="w-full"
+            />
+          </div>
+
+          {/* Topic Filter */}
+          <div className="md:col-span-3">
+            <Label className="text-micro text-muted-foreground mb-2 block">
+              FILTER BY TOPIC
+            </Label>
+            <DlesSelect
+              multi
+              topics
+              value={selectedTopics.length === 0 ? ["all"] : selectedTopics}
+              onChange={setSelectedTopics}
+              placeholder="All Topics"
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        {/* Two-column layout: Quick Picks + Game Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left column: Quick Picks */}
+          <div className="lg:col-span-3 space-y-4">
+            <RaceSetupForm
+              name={name}
+              onNameChange={setName}
+              guestName={guestName}
+              onGuestNameChange={setGuestName}
+              isGuest={!session?.user}
+              lists={lists}
+              selectedListId={selectedListId}
+              onTemplateSelect={selectList}
+              onRandomSelect={(count) => {
+                const randomGames = [...allGames]
+                  .sort(() => 0.5 - Math.random())
+                  .slice(0, count);
+                setSelectedGameIds(randomGames.map((g) => g.id));
+                setSelectedListId(""); // Clear list selection for random
+                toast.info(`Selected ${count} random games!`);
+              }}
+              onManualSelect={() => {
+                setSelectedGameIds([]);
+                setSelectedListId(""); // Clear list selection
+                setActiveStep(2);
+              }}
+              onStepFocus={() => setActiveStep(1)}
+              hideInputs
+            />
+
+            {/* Create Race Button - desktop */}
+            <div className="hidden lg:block sticky top-5 space-y-3">
+              <DlesButton
+                onClick={handleCreateRace}
+                disabled={
+                  isSubmitting || gamesLoading || selectedGameIds.length === 0
+                }
+                className="w-full h-12 text-base font-bold gap-2"
+                size="lg"
+              >
+                <Flag className="h-5 w-5" />
+                {selectedGameIds.length > 0
+                  ? `Create Race (${selectedGameIds.length})`
+                  : "Select Games"}
+              </DlesButton>
+              {selectedGameIds.length > 0 && (
+                <p className="text-center text-micro text-muted-foreground">
+                  {selectedGameIds
+                    .slice(0, 3)
+                    .map((id) => allGames.find((g) => g.id === id)?.title)
+                    .filter(Boolean)
+                    .join(", ")}
+                  {selectedGameIds.length > 3 &&
+                    ` +${selectedGameIds.length - 3} more`}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Right column: Game Grid */}
+          <div className="lg:col-span-9">
+            <GameSelector
+              allGames={allGames}
+              selectedGameIds={selectedGameIds}
+              filteredGames={filteredGames}
+              searchQuery={searchQuery}
+              onSearchChange={setSearchQuery}
+              selectedTopics={selectedTopics}
+              onTopicChange={setSelectedTopics}
+              isLoading={gamesLoading}
+              onToggleGame={toggleGame}
+              onSelectAll={() =>
+                setSelectedGameIds(
+                  Array.from(
+                    new Set([
+                      ...selectedGameIds,
+                      ...filteredGames.map((g) => g.id),
+                    ])
+                  )
+                )
+              }
+              onClear={() => setSelectedGameIds([])}
+              topics={topics}
+              hideFilters
+            />
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-8">
-        <RaceSetupForm
-          name={name}
-          onNameChange={setName}
-          guestName={guestName}
-          onGuestNameChange={setGuestName}
-          isGuest={!session?.user}
-          lists={lists}
-          onTemplateSelect={selectList}
-          onRandomSelect={(count) => {
-            const randomGames = [...allGames]
-              .sort(() => 0.5 - Math.random())
-              .slice(0, count);
-            setSelectedGameIds(randomGames.map((g) => g.id));
-            toast.info(`Selected ${count} random games!`);
-          }}
-          onManualSelect={() => {
-            setSelectedGameIds([]);
-            setActiveStep(2);
-          }}
-          onStepFocus={() => setActiveStep(1)}
-        />
-
-        <GameSelector
-          allGames={allGames}
-          selectedGameIds={selectedGameIds}
-          filteredGames={filteredGames}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          selectedTopics={selectedTopics}
-          onTopicChange={setSelectedTopics}
-          isLoading={gamesLoading}
-          onToggleGame={toggleGame}
-          onSelectAll={() =>
-            setSelectedGameIds(
-              Array.from(
-                new Set([...selectedGameIds, ...filteredGames.map((g) => g.id)])
-              )
-            )
-          }
-          onClear={() => setSelectedGameIds([])}
-          topics={topics}
-        />
-      </div>
-
-      {/* Sticky Footer CTA */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border/40 bg-background/80 backdrop-blur-md z-40 shadow-lg">
-        <div className="max-w-3xl mx-auto px-4 py-3 space-y-2">
+      {/* Sticky Footer CTA - Mobile only */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 border-t border-border/40 bg-background/80 backdrop-blur-md z-40 shadow-lg">
+        <div className="px-4 py-3 space-y-2">
           {selectedGameIds.length > 0 && (
             <div className="flex items-center justify-between text-body-small">
               <span className="text-muted-foreground truncate">
                 <span className="font-bold text-foreground">
                   {selectedGameIds.length}
                 </span>{" "}
-                selected:{" "}
-                {selectedGameIds
-                  .slice(0, 3)
-                  .map((id) => allGames.find((g) => g.id === id)?.title)
-                  .filter(Boolean)
-                  .join(", ")}
-                {selectedGameIds.length > 3 &&
-                  ` +${selectedGameIds.length - 3}`}
+                game{selectedGameIds.length !== 1 && "s"} selected
               </span>
               <button
                 className="text-micro text-muted-foreground hover:text-destructive transition-colors"
@@ -233,25 +330,22 @@ export default function NewRacePage() {
               </button>
             </div>
           )}
-          <button
-            className={`w-full h-11 text-sm font-bold gap-2 rounded-lg transition-all shadow-sm flex items-center justify-center ${
-              selectedGameIds.length > 0
-                ? "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-md"
-                : "bg-muted/80 text-muted-foreground cursor-not-allowed border border-border/50"
-            }`}
+          <DlesButton
             onClick={handleCreateRace}
             disabled={
               isSubmitting || gamesLoading || selectedGameIds.length === 0
             }
+            className="w-full h-11 text-sm font-bold gap-2"
           >
+            <Flag className="h-4 w-4" />
             {selectedGameIds.length > 0
-              ? `Start Race with ${selectedGameIds.length} Game${
+              ? `Create Race with ${selectedGameIds.length} Game${
                   selectedGameIds.length > 1 ? "s" : ""
                 }`
               : "Select Games to Continue"}
-          </button>
+          </DlesButton>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

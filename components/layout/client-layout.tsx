@@ -7,7 +7,7 @@ import { SiteHeader } from "@/components/layout/site-header";
  * Routes that should NOT show the global header.
  * These pages have their own specialized headers or layouts.
  */
-const EXCLUDED_ROUTES = ["/race/new"];
+const EXCLUDED_ROUTES: string[] = [];
 
 /**
  * Page title mappings based on route patterns.
@@ -16,6 +16,7 @@ const EXCLUDED_ROUTES = ["/race/new"];
 const PAGE_TITLES: Record<string, string> = {
   "/lists": "Lists",
   "/race/stats": "Race Stats",
+  "/race/new": "Start a Race",
   "/dashboard": "Dashboard",
   "/dashboard/races": "Race History",
   "/admin": "Admin",

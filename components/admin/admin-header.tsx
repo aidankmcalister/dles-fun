@@ -3,7 +3,6 @@
 import { Badge } from "@/components/ui/badge";
 import { UserButton } from "@/components/layout/user-button";
 import { useImpersonation } from "@/components/impersonation-provider";
-import { PageHeader } from "@/components/layout/page-header";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/app/generated/prisma/client";
 
@@ -30,22 +29,24 @@ export function AdminHeader({ canManageUsers }: { canManageUsers: boolean }) {
 
   return (
     <div className="flex items-start justify-between">
-      <PageHeader
-        title="Admin Dashboard"
-        subtitle={`Manage games${canManageUsers ? " and users" : ""}.`}
-        backHref="/"
-      >
-        <Badge
-          className={cn(
-            "capitalize text-body-small",
-            ROLE_COLORS[effectiveRole || "member"],
-            viewAsRole && "border-dashed border-2"
-          )}
-        >
-          {viewAsRole && "Viewing as "}
-          {ROLE_LABELS[effectiveRole || "member"]}
-        </Badge>
-      </PageHeader>
+      <div className="space-y-1">
+        <div className="flex items-center gap-3">
+          <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
+          <Badge
+            className={cn(
+              "capitalize text-body-small",
+              ROLE_COLORS[effectiveRole || "member"],
+              viewAsRole && "border-dashed border-2"
+            )}
+          >
+            {viewAsRole && "Viewing as "}
+            {ROLE_LABELS[effectiveRole || "member"]}
+          </Badge>
+        </div>
+        <p className="text-muted-foreground">
+          Manage games{canManageUsers ? " and users" : ""}.
+        </p>
+      </div>
       <div className="flex items-center gap-2">
         <UserButton />
       </div>
