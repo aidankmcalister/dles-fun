@@ -54,8 +54,12 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
       return undefined;
     }
 
-    // For race lobby/active/results pages, we'll let them handle their own layout
-    // but still show the nav
+    // For race results pages, show "Race Results"
+    if (pathname.match(/^\/race\/[^/]+\/results$/)) {
+      return "Race Results";
+    }
+
+    // For race lobby/active pages, no extra title
     if (pathname.startsWith("/race/")) {
       return undefined;
     }

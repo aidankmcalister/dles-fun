@@ -45,8 +45,14 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
   }, [race.startedAt]);
 
   const formatTime = (seconds: number) => {
-    const m = Math.floor(seconds / 60);
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
+    if (h > 0) {
+      return `${h}:${m.toString().padStart(2, "0")}:${s
+        .toString()
+        .padStart(2, "0")}`;
+    }
     return `${m}:${s.toString().padStart(2, "0")}`;
   };
 
@@ -104,143 +110,165 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
     return false;
   };
 
+  // Get the active game - prefer first incomplete, fall back to manually selected
+  // If the manually selected game is completed, auto-advance to next incomplete
+  const selectedGameCompletion = expandedId
+    ? getCompletionForUser(expandedId, myParticipant?.id)
+    : null;
+  const activeGameId =
+    expandedId && !selectedGameCompletion ? expandedId : firstIncompleteId;
+  const activeGame = race.raceGames.find((rg) => rg.id === activeGameId);
+  const activeGameCompletion = activeGame
+    ? getCompletionForUser(activeGame.id, myParticipant?.id)
+    : null;
+  const activeOpponentCompletion = activeGame
+    ? getCompletionForUser(activeGame.id, opponent?.id)
+    : null;
+
   return (
-    <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
-      {/* Compact Header Bar */}
-      <div className="flex items-center justify-between gap-4 px-4 py-3 rounded-xl bg-card/60 border border-border/40 backdrop-blur-sm">
-        {/* You */}
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60">
-            You
-          </span>
-          <span className="text-lg font-black tabular-nums tracking-tight">
-            <span className="text-primary">
-              {myParticipant?.completions?.length || 0}
+    <div className="min-h-screen px-4 md:px-8 lg:px-12">
+      <div className="mx-auto max-w-7xl py-6 space-y-6">
+        {/* Compact Header Bar */}
+        <div className="flex items-center justify-between gap-4 px-5 py-3 rounded-xl bg-card/60 border border-border/40 backdrop-blur-sm">
+          {/* You */}
+          <div className="flex items-center gap-3">
+            <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60">
+              You
             </span>
-            <span className="text-muted-foreground/30">/</span>
-            <span className="text-muted-foreground/60">
-              {race.raceGames.length}
+            <span className="text-xl font-black tabular-nums tracking-tight">
+              <span className="text-primary">
+                {myParticipant?.completions?.length || 0}
+              </span>
+              <span className="text-muted-foreground/30">/</span>
+              <span className="text-muted-foreground/60">
+                {race.raceGames.length}
+              </span>
             </span>
-          </span>
+          </div>
+
+          {/* Timer */}
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+            <Timer className="h-4 w-4 text-primary" />
+            <span className="text-lg font-black tabular-nums tracking-tight text-primary">
+              {formatTime(time)}
+            </span>
+          </div>
+
+          {/* Opponent */}
+          <div className="flex items-center gap-3">
+            <span className="text-xl font-black tabular-nums tracking-tight">
+              <span className="text-primary">
+                {opponent?.completions?.length || 0}
+              </span>
+              <span className="text-muted-foreground/30">/</span>
+              <span className="text-muted-foreground/60">
+                {race.raceGames.length}
+              </span>
+            </span>
+            <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60 truncate max-w-[80px]">
+              {opponent?.user?.name || opponent?.guestName || "Opponent"}
+            </span>
+          </div>
         </div>
 
-        {/* Timer */}
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20">
-          <Timer className="h-3.5 w-3.5 text-primary" />
-          <span className="text-sm font-black tabular-nums tracking-tight text-primary">
-            {formatTime(time)}
-          </span>
-        </div>
+        {/* Split Panel Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Panel: Compact Game List */}
+          <div className="lg:col-span-5 space-y-1.5">
+            {race.raceGames.map((rg, index) => {
+              const myCompletion = getCompletionForUser(
+                rg.id,
+                myParticipant?.id
+              );
+              const opponentCompletion = getCompletionForUser(
+                rg.id,
+                opponent?.id
+              );
+              const isLocked =
+                index > 0 &&
+                !getCompletionForUser(
+                  race.raceGames[index - 1].id,
+                  myParticipant?.id
+                );
+              const isActive = rg.id === activeGameId;
 
-        {/* Opponent */}
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-black tabular-nums tracking-tight">
-            <span className="text-primary">
-              {opponent?.completions?.length || 0}
-            </span>
-            <span className="text-muted-foreground/30">/</span>
-            <span className="text-muted-foreground/60">
-              {race.raceGames.length}
-            </span>
-          </span>
-          <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/60">
-            Opp
-          </span>
-        </div>
-      </div>
-
-      {/* Games List - Progressive Disclosure */}
-      <div className="space-y-2">
-        {race.raceGames.map((rg, index) => {
-          const myCompletion = getCompletionForUser(rg.id, myParticipant?.id);
-          const opponentCompletion = getCompletionForUser(rg.id, opponent?.id);
-          const isLocked =
-            index > 0 &&
-            !getCompletionForUser(
-              race.raceGames[index - 1].id,
-              myParticipant?.id
-            );
-          const expanded = isExpanded(rg.id) && !myCompletion;
-
-          return (
-            <Card
-              key={rg.id}
-              className={cn(
-                "overflow-hidden transition-all duration-200 ease-out border",
-                myCompletion
-                  ? myCompletion.skipped
-                    ? "border-rose-500/20 bg-rose-500/5"
-                    : "border-emerald-500/20 bg-emerald-500/5"
-                  : expanded
-                  ? "border-primary/30 bg-card shadow-lg shadow-primary/5"
-                  : "border-border/30 bg-card/50 hover:border-border/50 hover:bg-card/80",
-                isLocked && "opacity-40 pointer-events-none grayscale"
-              )}
-              onMouseEnter={() =>
-                !myCompletion && !isLocked && setExpandedId(rg.id)
-              }
-            >
-              <CardContent className="p-0">
-                {/* Collapsed Row (always visible) */}
+              return (
                 <button
+                  key={rg.id}
                   onClick={() =>
-                    !myCompletion &&
-                    !isLocked &&
-                    setExpandedId(expanded ? null : rg.id)
+                    !myCompletion && !isLocked && setExpandedId(rg.id)
                   }
                   className={cn(
-                    "w-full flex items-center justify-between gap-3 px-4 py-3 text-left transition-colors",
-                    !myCompletion && "hover:bg-muted/30 cursor-pointer"
+                    "w-full flex items-center justify-between gap-2 px-3 py-2.5 rounded-lg text-left transition-all duration-150",
+                    isActive
+                      ? "bg-primary/10 border border-primary/30 shadow-sm"
+                      : myCompletion
+                      ? myCompletion.skipped
+                        ? "bg-rose-500/5 border border-rose-500/10 hover:bg-rose-500/10"
+                        : "bg-emerald-500/5 border border-emerald-500/10 hover:bg-emerald-500/10"
+                      : "bg-card/50 border border-border/30 hover:bg-card hover:border-border/50",
+                    isLocked && "opacity-40 pointer-events-none grayscale"
                   )}
                 >
-                  {/* Left: Status Icon + Title */}
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                  {/* Left: Icon + Title */}
+                  <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                    {/* Status Icon */}
                     {myCompletion ? (
                       myCompletion.skipped ? (
-                        <div className="h-7 w-7 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0">
-                          <SkipForward className="h-3.5 w-3.5 text-rose-500" />
+                        <div className="h-6 w-6 rounded-full bg-rose-500/15 flex items-center justify-center shrink-0">
+                          <SkipForward className="h-3 w-3 text-rose-500" />
                         </div>
                       ) : (
-                        <div className="h-7 w-7 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                          <Check className="h-3.5 w-3.5 text-emerald-500" />
+                        <div className="h-6 w-6 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">
+                          <Check className="h-3 w-3 text-emerald-500" />
                         </div>
                       )
-                    ) : expanded ? (
-                      <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        <Loader2 className="h-3.5 w-3.5 text-primary animate-spin" />
+                    ) : isActive ? (
+                      <div className="h-6 w-6 rounded-full bg-primary/15 flex items-center justify-center shrink-0">
+                        <Loader2 className="h-3 w-3 text-primary animate-spin" />
                       </div>
                     ) : (
-                      <div className="h-7 w-7 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
-                        <span className="text-[10px] font-bold text-muted-foreground/50">
+                      <div className="h-6 w-6 rounded-full bg-muted/50 flex items-center justify-center shrink-0">
+                        <span className="text-[9px] font-bold text-muted-foreground/40">
                           {index + 1}
                         </span>
                       </div>
                     )}
-
+                    {/* Title */}
                     <span
                       className={cn(
-                        "font-bold text-sm truncate",
-                        myCompletion?.skipped && "text-rose-500/80",
+                        "font-semibold text-sm truncate",
+                        myCompletion?.skipped && "text-rose-500/70",
                         myCompletion &&
                           !myCompletion.skipped &&
-                          "text-emerald-600 dark:text-emerald-400",
-                        !myCompletion && "text-foreground"
+                          "text-emerald-500/70",
+                        !myCompletion && isActive && "text-foreground",
+                        !myCompletion && !isActive && "text-muted-foreground"
                       )}
                     >
                       {rg.game.title}
                     </span>
+                    <DlesBadge
+                      text={formatTopic(rg.game.topic)}
+                      color={rg.game.topic}
+                      size="xs"
+                    />
                   </div>
 
-                  {/* Right: Times + Badge + Chevron */}
-                  <div className="flex items-center gap-3 shrink-0">
-                    {/* Times (compact) */}
-                    <div className="hidden sm:flex items-center gap-2 text-[10px] font-mono tabular-nums text-muted-foreground/60">
+                  {/* Right: Times */}
+                  <div className="flex flex-col items-end text-[10px] font-mono tabular-nums leading-tight shrink-0">
+                    <div className="flex items-center">
+                      <span className="text-muted-foreground/50 w-[32px] text-right">
+                        You
+                      </span>
                       <span
                         className={cn(
+                          "w-[52px] text-right font-semibold",
+                          myCompletion?.skipped && "text-rose-400",
                           myCompletion &&
-                            (myCompletion.skipped
-                              ? "text-rose-400"
-                              : "text-emerald-400")
+                            !myCompletion.skipped &&
+                            "text-emerald-400",
+                          !myCompletion && "text-muted-foreground/30"
                         )}
                       >
                         {myCompletion
@@ -249,13 +277,23 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
                             : formatTime(myCompletion.timeToComplete)
                           : "—:——"}
                       </span>
-                      <span className="text-muted-foreground/20">|</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="text-muted-foreground/50 w-[32px] text-right truncate">
+                        {(
+                          opponent?.user?.name ||
+                          opponent?.guestName ||
+                          "Opp"
+                        ).slice(0, 4)}
+                      </span>
                       <span
                         className={cn(
+                          "w-[52px] text-right font-semibold",
+                          opponentCompletion?.skipped && "text-rose-400",
                           opponentCompletion &&
-                            (opponentCompletion.skipped
-                              ? "text-rose-400"
-                              : "text-primary")
+                            !opponentCompletion.skipped &&
+                            "text-primary",
+                          !opponentCompletion && "text-muted-foreground/30"
                         )}
                       >
                         {opponentCompletion
@@ -265,100 +303,140 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
                           : "—:——"}
                       </span>
                     </div>
-
-                    <DlesBadge
-                      text={formatTopic(rg.game.topic)}
-                      color={rg.game.topic}
-                      size="xs"
-                    />
-
-                    {!myCompletion && (
-                      <ChevronDown
-                        className={cn(
-                          "h-4 w-4 text-muted-foreground/40 transition-transform duration-200",
-                          expanded && "rotate-180"
-                        )}
-                      />
-                    )}
                   </div>
                 </button>
+              );
+            })}
+          </div>
 
-                {/* Expanded Content (actions) */}
-                <div
-                  className={cn(
-                    "overflow-hidden transition-all duration-200 ease-out",
-                    expanded ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
-                  )}
-                >
-                  <div className="px-4 pb-4 pt-1 border-t border-border/30">
-                    {/* Status Row */}
-                    <div className="flex items-center gap-4 mb-3 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                        <span>You: Racing...</span>
-                      </div>
-                      <span className="text-muted-foreground/30">•</span>
-                      <div className="flex items-center gap-1.5">
-                        {opponentCompletion ? (
-                          opponentCompletion.skipped ? (
-                            <span className="text-rose-500 font-medium">
-                              Opp: Lost
-                            </span>
-                          ) : (
-                            <span className="text-primary font-medium">
-                              Opp:{" "}
-                              {formatTime(opponentCompletion.timeToComplete)}
-                            </span>
-                          )
-                        ) : (
-                          <span>Opp: Racing...</span>
-                        )}
+          {/* Right Panel: Active Game Details */}
+          <div className="lg:col-span-7">
+            {activeGame && !activeGameCompletion ? (
+              <Card className="border-primary/20 bg-card shadow-lg">
+                <CardContent className="p-6 space-y-5">
+                  {/* Header */}
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <h2 className="text-2xl font-black tracking-tight">
+                        {activeGame.game.title}
+                      </h2>
+                      <a
+                        href={activeGame.game.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-muted-foreground flex items-center gap-1 hover:text-primary transition-colors"
+                      >
+                        {activeGame.game.link.replace(/^https?:\/\//, "")}
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                    <DlesBadge
+                      text={formatTopic(activeGame.game.topic)}
+                      color={activeGame.game.topic}
+                      size="sm"
+                    />
+                  </div>
+
+                  <div className="h-px bg-border/40" />
+
+                  {/* Status Section */}
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/50">
+                        You
+                      </span>
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span className="font-medium">Racing...</span>
                       </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="grid grid-cols-3 gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-9 text-[10px] font-bold uppercase tracking-wider"
-                        asChild
-                      >
-                        <a
-                          href={rg.game.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1.5" />
-                          Play
-                        </a>
-                      </Button>
-
-                      <Button
-                        size="sm"
-                        className="h-9 text-[10px] font-black uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white"
-                        onClick={() => handleCompleteGame(rg.id, false)}
-                      >
-                        <Check className="h-3 w-3 mr-1.5" />
-                        Done
-                      </Button>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-9 text-[10px] font-black uppercase tracking-wider border-rose-500/30 text-rose-500 hover:bg-rose-500/10"
-                        onClick={() => handleCompleteGame(rg.id, true)}
-                      >
-                        <SkipForward className="h-3 w-3 mr-1.5" />
-                        Lost
-                      </Button>
+                    <div className="space-y-2 border-l pl-6 border-border/40">
+                      <span className="text-[10px] uppercase tracking-wider font-bold text-muted-foreground/50">
+                        Opponent
+                      </span>
+                      {activeOpponentCompletion ? (
+                        activeOpponentCompletion.skipped ? (
+                          <div className="flex items-center gap-2 text-rose-500">
+                            <SkipForward className="h-4 w-4" />
+                            <span className="font-bold">Lost</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-primary">
+                            <Check className="h-4 w-4" />
+                            <span className="font-bold tabular-nums">
+                              {formatTime(
+                                activeOpponentCompletion.timeToComplete
+                              )}
+                            </span>
+                          </div>
+                        )
+                      ) : (
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="font-medium">Racing...</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
+
+                  <div className="h-px bg-border/40" />
+
+                  {/* Actions */}
+                  <div className="grid grid-cols-3 gap-3">
+                    <Button
+                      variant="outline"
+                      className="h-12 font-bold uppercase tracking-wider"
+                      asChild
+                    >
+                      <a
+                        href={activeGame.game.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Play
+                      </a>
+                    </Button>
+
+                    <Button
+                      className="h-12 font-black uppercase tracking-wider bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                      onClick={() => handleCompleteGame(activeGame.id, false)}
+                    >
+                      <Check className="h-4 w-4 mr-2" />
+                      Done
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="h-12 font-black uppercase tracking-wider border-rose-500/30 text-rose-500 hover:bg-rose-500/10"
+                      onClick={() => handleCompleteGame(activeGame.id, true)}
+                    >
+                      <SkipForward className="h-4 w-4 mr-2" />
+                      Lost
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="border-border/40 bg-card/50">
+                <CardContent className="p-8 flex flex-col items-center justify-center text-center min-h-[200px]">
+                  <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+                    <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                  </div>
+                  <h3 className="text-lg font-bold text-foreground mb-1">
+                    You&apos;re Done!
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Waiting for{" "}
+                    {opponent?.user?.name || opponent?.guestName || "opponent"}{" "}
+                    to finish...
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

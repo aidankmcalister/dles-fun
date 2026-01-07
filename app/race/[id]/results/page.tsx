@@ -6,7 +6,6 @@ import { useSession } from "@/lib/auth-client";
 import { DlesButton } from "@/components/design/dles-button";
 import { Race } from "@/app/race/[id]/page";
 import { Home, RotateCcw, Loader2 } from "lucide-react";
-import { ResultsHeader } from "@/components/features/race/results/results-header";
 import { WinnerCard } from "@/components/features/race/results/winner-card";
 import {
   ResultsList,
@@ -148,8 +147,6 @@ export default function RaceResultsPage() {
 
   return (
     <div className="container max-w-xl mx-auto py-8 space-y-6 px-4">
-      <ResultsHeader />
-
       <WinnerCard winner={winner} isWinner={isWinner} />
 
       <ResultsList
