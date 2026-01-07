@@ -2,7 +2,8 @@
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { formatTopic } from "@/lib/utils";
 import { DlesButton } from "@/components/design/dles-button";
 import { Gamepad, GripVertical, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -80,7 +81,11 @@ export function SelectedGamesList({
                           <span className="text-xs font-medium truncate flex-1">
                             {game.title}
                           </span>
-                          <DlesTopic topic={game.topic} />
+                          <DlesBadge
+                            text={formatTopic(game.topic)}
+                            color={game.topic}
+                            size="sm"
+                          />
                           <DlesButton
                             variant="ghost"
                             size="icon-sm"

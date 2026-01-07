@@ -9,6 +9,7 @@ import { GamesHeader } from "@/components/features/games/games-header";
 import type { Game } from "@/app/generated/prisma/client";
 import { usePlayedGames } from "@/lib/use-played-games";
 import { useLists } from "@/lib/use-lists";
+import { useStats } from "@/lib/stats-context";
 
 import { toast } from "sonner";
 import { DlesButton } from "@/components/design/dles-button";
@@ -52,6 +53,7 @@ export function GamesClient({
   const [isLuckyModalOpen, setIsLuckyModalOpen] = useState(false);
 
   const { lists } = useLists();
+  const { setStats } = useStats();
 
   const gameIds = useMemo(() => games.map((g) => g.id), [games]);
 
@@ -154,6 +156,28 @@ export function GamesClient({
       syncFromLocalStorage();
     }
   }, [isAuthenticated, isLoading, syncFromLocalStorage]);
+
+  // Populate global header stats
+  useEffect(() => {
+    if (!isLoading) {
+      setStats({
+        playedCount: playedIds.size,
+        totalCount: Math.max(0, games.length - hiddenIds.size),
+        currentStreak,
+        onClear: handleClear,
+        isAuthenticated,
+      });
+    }
+    return () => setStats(null); // Clear on unmount
+  }, [
+    playedIds.size,
+    games.length,
+    hiddenIds.size,
+    currentStreak,
+    isAuthenticated,
+    isLoading,
+    setStats,
+  ]);
 
   const handlePlay = async (id: string) => {
     await markAsPlayed(id);

@@ -17,7 +17,7 @@ import { cn, formatTopic } from "@/lib/utils";
 import { TOPIC_COLORS, TOPIC_SHADOWS, extractDomain } from "@/lib/constants";
 import { ExternalLink, EyeOff } from "lucide-react";
 import { ListsDropdown } from "../lists/lists-dropdown";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
 
 /**
  * Check if a date is within the last N minutes
@@ -157,7 +157,7 @@ export function GameCard({
         </div>
 
         <div className="pt-3 flex items-center justify-between gap-2">
-          <DlesTopic topic={topic} size="sm" />
+          <DlesBadge text={formatTopic(topic)} color={topic} size="sm" />
         </div>
       </CardHeader>
     </Card>

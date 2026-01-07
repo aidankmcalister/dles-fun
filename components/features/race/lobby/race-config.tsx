@@ -2,7 +2,8 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { formatTopic } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -93,7 +94,11 @@ export function RaceConfig({
                                 <span className="text-body-small font-bold truncate text-foreground/90">
                                   {rg.game.title}
                                 </span>
-                                <DlesTopic topic={rg.game.topic} />
+                                <DlesBadge
+                                  text={formatTopic(rg.game.topic)}
+                                  color={rg.game.topic}
+                                  size="sm"
+                                />
                               </div>
                             </TooltipTrigger>
                             {rg.game.description && (

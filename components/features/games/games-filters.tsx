@@ -7,12 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { DlesSelect } from "@/components/design/dles-select";
-import { DlesTopic } from "@/components/design/dles-topic";
-import { ListChip } from "@/components/features/lists/list-chip";
-import { TOPICS, LIST_CARD_STYLES } from "@/lib/constants";
-import { Tag, Library, ArrowDownAZ, LayoutGrid, Clock, X } from "lucide-react";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { TOPICS } from "@/lib/constants";
+import { ArrowDownAZ, LayoutGrid, Clock } from "lucide-react";
 import { GameList } from "@/lib/use-lists";
 import { cn, formatTopic } from "@/lib/utils";
 
@@ -67,11 +65,6 @@ export function HeaderFilters({
     onTopicFilterChange(newTopics);
   };
 
-  const topicOptions = [
-    { value: "all", label: "All Topics" },
-    ...TOPICS.map((t) => ({ value: t, label: formatTopic(t) })),
-  ];
-
   return (
     <div className="grid grid-cols-2 gap-2 w-full md:flex md:w-auto md:gap-2">
       {isAuthenticated && lists.length > 0 && (
@@ -80,8 +73,12 @@ export function HeaderFilters({
             value={listFilter}
             onChange={(val) => onListFilterChange(val)}
             options={[
-              { value: "all", label: "All Lists" },
-              ...lists.map((l) => ({ value: l.id, label: l.name })),
+              { value: "all", label: "All Lists", color: "brand" },
+              ...lists.map((l) => ({
+                value: l.id,
+                label: l.name,
+                color: l.color || "slate",
+              })),
             ]}
             placeholder="All Games"
             className={cn(
@@ -89,38 +86,28 @@ export function HeaderFilters({
               !isCompact && listFilter !== "all" && "bg-primary/5"
             )}
             renderSelected={(option) => {
-              if (option.value === "all") {
-                const totalGames = lists.reduce(
-                  (acc, l) => acc + (l.games?.length || 0),
-                  0
-                );
-                return <ListChip label="All Lists" color="brand" />;
-              }
               const list = lists.find((l) => l.id === option.value);
-              const color = list?.color || "slate";
               return (
-                <ListChip
-                  label={option.label}
-                  count={list?.games.length || 0}
-                  color={color}
+                <DlesBadge
+                  text={option.label}
+                  color={option.color || "brand"}
+                  count={
+                    option.value !== "all" ? list?.games.length : undefined
+                  }
+                  size="sm"
                 />
               );
             }}
             renderOption={(option) => {
-              if (option.value === "all") {
-                const totalGames = lists.reduce(
-                  (acc, l) => acc + (l.games?.length || 0),
-                  0
-                );
-                return <ListChip label="All Lists" color="brand" />;
-              }
               const list = lists.find((l) => l.id === option.value);
-              const color = list?.color || "slate";
               return (
-                <ListChip
-                  label={option.label}
-                  count={list?.games.length || 0}
-                  color={color}
+                <DlesBadge
+                  text={option.label}
+                  color={option.color || "brand"}
+                  count={
+                    option.value !== "all" ? list?.games.length : undefined
+                  }
+                  size="sm"
                 />
               );
             }}

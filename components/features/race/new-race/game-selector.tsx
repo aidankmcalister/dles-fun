@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DlesSelect } from "@/components/design/dles-select";
 import { HeaderSearch } from "@/components/header/header-search";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
 import { Loader2, Check } from "lucide-react";
 import { cn, formatTopic } from "@/lib/utils";
 import { Topic } from "@/app/generated/prisma/client";
@@ -112,7 +112,12 @@ export function GameSelector({
                 >
                   {game.title}
                 </span>
-                <DlesTopic topic={game.topic} className="ml-auto shrink-0" />
+                <DlesBadge
+                  text={formatTopic(game.topic)}
+                  color={game.topic}
+                  size="sm"
+                  className="ml-auto shrink-0"
+                />
               </div>
             );
           })}

@@ -19,7 +19,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { formatTopic } from "@/lib/utils";
 import { TOPICS, TOPIC_COLORS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Pencil, Trash2, Archive } from "lucide-react";
@@ -99,7 +100,7 @@ export function GameItem({
             <SelectContent>
               {TOPICS.map((t) => (
                 <SelectItem key={t} value={t}>
-                  <DlesTopic topic={t} />
+                  <DlesBadge text={formatTopic(t)} color={t} size="sm" />
                 </SelectItem>
               ))}
             </SelectContent>
@@ -155,7 +156,11 @@ export function GameItem({
 
       {/* Topic */}
       <div className="items-center hidden md:flex">
-        <DlesTopic topic={game.topic} />
+        <DlesBadge
+          text={formatTopic(game.topic)}
+          color={game.topic}
+          size="sm"
+        />
       </div>
 
       {/* Link */}

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { ChevronsUpDown, Check } from "lucide-react";
+import { ChevronsUpDown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Command,
@@ -19,12 +19,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn, formatTopic } from "@/lib/utils";
 import { TOPICS } from "@/lib/constants";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
 
 export interface DlesSelectOption {
   value: string;
   label: string;
   disabled?: boolean;
+  /** Color for DlesBadge - used when rendering as badge */
+  color?: string;
 }
 
 interface DlesSelectProps {
@@ -77,9 +79,13 @@ export function DlesSelect({
       const topicOptions = TOPICS.map((t) => ({
         value: t,
         label: formatTopic(t),
+        color: t,
       }));
       return multi
-        ? [{ value: "all", label: "All Topics" }, ...topicOptions]
+        ? [
+            { value: "all", label: "All Topics", color: "brand" },
+            ...topicOptions,
+          ]
         : topicOptions;
     }
     return providedOptions || [];
@@ -129,7 +135,7 @@ export function DlesSelect({
         {selectedValues.length > 0 && shouldCollapse ? (
           <Badge
             variant="secondary"
-            className="rounded-md px-2 h-6 font-medium bg-primary/5 text-primary border-primary/20 shrink-0"
+            className="rounded-full px-3 py-1 font-medium bg-primary/10 text-primary border-primary/20 shrink-0"
           >
             {selectedValues.length} selected
           </Badge>
@@ -146,18 +152,16 @@ export function DlesSelect({
               );
             }
 
-            if (topics || val === "all") {
-              return <DlesTopic key={val} topic={val} className="shrink-0" />;
-            }
-
+            // Use DlesBadge for consistent styling
+            const color = option.color || (topics ? val : "brand");
             return (
-              <Badge
+              <DlesBadge
                 key={val}
-                variant="secondary"
-                className="rounded-md px-2 h-6 font-medium bg-primary/5 text-primary border-primary/20 gap-1 shrink-0"
-              >
-                {option.label}
-              </Badge>
+                text={option.label}
+                color={color}
+                size="sm"
+                className="shrink-0"
+              />
             );
           })
         )}
@@ -199,10 +203,14 @@ export function DlesSelect({
                     <div className="flex-1 min-w-0">
                       {renderOption ? (
                         renderOption(option)
-                      ) : topics || option.value === "all" ? (
-                        <DlesTopic topic={option.value} size="md" />
                       ) : (
-                        <span className="text-sm">{option.label}</span>
+                        <DlesBadge
+                          text={option.label}
+                          color={
+                            option.color || (topics ? option.value : "brand")
+                          }
+                          size="sm"
+                        />
                       )}
                     </div>
                   </CommandItem>

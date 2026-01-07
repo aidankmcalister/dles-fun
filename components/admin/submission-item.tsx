@@ -1,7 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { formatTopic } from "@/lib/utils";
 import { DlesButton } from "@/components/design/dles-button";
 import { cn } from "@/lib/utils";
 import { ExternalLink, Check, X, Loader2, Clock } from "lucide-react";
@@ -58,7 +59,11 @@ export function SubmissionItem({
       <div className="flex-1 min-w-0 grid gap-1">
         <div className="flex items-center gap-3">
           <span className="text-sm font-bold truncate">{submission.title}</span>
-          <DlesTopic topic={submission.topic} size="sm" />
+          <DlesBadge
+            text={formatTopic(submission.topic)}
+            color={submission.topic}
+            size="sm"
+          />
         </div>
 
         <div className="flex items-center gap-2 text-xs text-muted-foreground/60">

@@ -35,6 +35,8 @@ export const metadata: Metadata = {
 
 import { ShortcutsHelp } from "@/components/shortcuts-help";
 import { SiteBanner } from "@/components/layout/site-banner";
+import { ClientLayout } from "@/components/layout/client-layout";
+import { StatsProvider } from "@/lib/stats-context";
 
 export default function RootLayout({
   children,
@@ -50,7 +52,11 @@ export default function RootLayout({
             <SpeedInsights />
             <SettingsProvider>
               <SiteBanner />
-              <ListsProvider>{children}</ListsProvider>
+              <ListsProvider>
+                <StatsProvider>
+                  <ClientLayout>{children}</ClientLayout>
+                </StatsProvider>
+              </ListsProvider>
             </SettingsProvider>
           </ImpersonationProvider>
           <Toaster />

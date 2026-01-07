@@ -21,7 +21,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Field, FieldLabel } from "@/components/ui/field";
-import { PageHeader } from "@/components/layout/page-header";
 import { TOPICS } from "@/lib/constants";
 import { Loader2, CheckCircle2, ChevronLeft } from "lucide-react";
 import type { Topic } from "@/app/generated/prisma/client";
@@ -124,20 +123,9 @@ export default function SubmitGamePage() {
 
   return (
     <div className="container py-8 max-w-2xl mx-auto">
-      <div className="mb-8">
-        <DlesButton
-          variant="ghost"
-          size="sm"
-          href="/"
-          className="-ml-4 mb-4 text-muted-foreground"
-        >
-          <ChevronLeft className="h-4 w-4 mr-1" /> Back to Games
-        </DlesButton>
-        <PageHeader
-          title="Submit a Game"
-          subtitle="Found a great game? Suggest it for the collection."
-        />
-      </div>
+      <p className="text-muted-foreground text-sm font-medium mb-8">
+        Found a great game? Suggest it for the collection.
+      </p>
 
       <Card>
         <form onSubmit={handleSubmit}>

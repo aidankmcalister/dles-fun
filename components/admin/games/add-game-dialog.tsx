@@ -20,7 +20,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { formatTopic } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
 import { Field } from "@/components/ui/field";
 import { TOPICS } from "@/lib/constants";
@@ -124,7 +125,7 @@ export function AddGameDialog({ onAdd }: AddGameDialogProps) {
               <SelectContent>
                 {TOPICS.map((t) => (
                   <SelectItem key={t} value={t}>
-                    <DlesTopic topic={t} size="lg" className="font-bold" />
+                    <DlesBadge text={formatTopic(t)} color={t} size="md" />
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -1,17 +1,13 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
-import { Eye, EyeOff, Dices, Flag } from "lucide-react";
+import { Eye, EyeOff, Dices } from "lucide-react";
 import { DlesButton } from "@/components/design/dles-button";
 import { cn } from "@/lib/utils";
 
-import { UserButton } from "@/components/layout/user-button";
 import { GameList } from "@/lib/use-lists";
 import { HeaderSearch } from "../../header/header-search";
 import { HeaderFilters } from "./games-filters";
-import { HeaderStats } from "../../header/header-stats";
-import { Logo } from "@/components/design/logo";
 
 type SortOption = "title" | "topic" | "played";
 
@@ -37,6 +33,10 @@ interface GamesHeaderProps {
   isAuthenticated?: boolean;
 }
 
+/**
+ * Games toolbar with search, filters, and actions.
+ * Logo/nav/user are now handled by the global SiteHeader.
+ */
 export function GamesHeader(props: GamesHeaderProps) {
   const {
     playedCount,
@@ -78,163 +78,92 @@ export function GamesHeader(props: GamesHeaderProps) {
 
   return (
     <div className="relative">
-      {/* FULL HEADER */}
-      <div ref={headerRef} className="py-4 mb-6">
-        <div className="-mx-4 px-4 md:-mx-8 md:px-8 lg:-mx-12 lg:px-12">
-          <div className="mx-auto max-w-7xl space-y-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <Logo size="lg" href="/" />
-                <p className="hidden sm:block text-muted-foreground text-body">
-                  A curated list of daily games my friends and I play.
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <HeaderStats
-                  playedCount={playedCount}
-                  totalCount={totalCount}
-                  currentStreak={currentStreak}
-                  onClear={onClear}
-                  isAuthenticated={isAuthenticated}
-                />
-                {isAuthenticated && (
-                  <span className="text-muted-foreground w-px h-4 bg-border hidden sm:block"></span>
+      {/* TOOLBAR */}
+      <div ref={headerRef} className="mb-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center">
+          {/* Search */}
+          <div className="w-full md:w-[280px] lg:w-[320px] shrink-0">
+            <HeaderSearch
+              query={searchQuery}
+              onChange={onSearchChange}
+              className="w-full"
+              id="search-input-main"
+              showKbd
+            />
+          </div>
+
+          {/* Filters */}
+          <HeaderFilters
+            topicFilter={topicFilter}
+            onTopicFilterChange={onTopicFilterChange}
+            listFilter={listFilter}
+            onListFilterChange={onListFilterChange}
+            lists={lists}
+            sortBy={sortBy}
+            onSortChange={onSortChange}
+            isAuthenticated={isAuthenticated}
+          />
+
+          {/* Right side actions */}
+          <div className="flex items-center gap-2 md:ml-auto">
+            {/* Show Hidden Toggle */}
+            {isAuthenticated && hiddenCount > 0 && onShowHiddenChange && (
+              <DlesButton
+                variant="ghost"
+                size="icon-sm"
+                onClick={() => onShowHiddenChange(!showHidden)}
+                className={cn(
+                  showHidden
+                    ? "text-primary bg-primary/10"
+                    : "text-muted-foreground"
                 )}
-                <UserButton />
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 md:flex-row md:items-center">
-              {/* Row 1/Col 1 on Desktop: Search */}
-              <div className="w-full md:w-[280px] lg:w-[400px] shrink-0">
-                <HeaderSearch
-                  query={searchQuery}
-                  onChange={onSearchChange}
-                  className="w-full"
-                  id="search-input-main"
-                  showKbd
-                />
-              </div>
-
-              {/* Row 2/Col 2 on Desktop: Filters */}
-              <HeaderFilters
-                topicFilter={topicFilter}
-                onTopicFilterChange={onTopicFilterChange}
-                listFilter={listFilter}
-                onListFilterChange={onListFilterChange}
-                lists={lists}
-                sortBy={sortBy}
-                onSortChange={onSortChange}
-                isAuthenticated={isAuthenticated}
-              />
-
-              {/* Row 3/Col 3 on Desktop: Actions */}
-              <div className="flex items-center gap-2 w-full md:w-auto md:ml-auto">
-                <DlesButton
-                  onClick={onRandom}
-                  className="flex-1 md:flex-none justify-center"
-                >
-                  <Dices className="h-4 w-4" />
-                  Feeling Lucky
-                </DlesButton>
-
-                <DlesButton
-                  className="flex-1 md:flex-none justify-center text-primary"
-                  href="/race/new"
-                >
-                  <Flag className="h-4 w-4" />
-                  Race
-                </DlesButton>
-
-                {isAuthenticated && hiddenCount > 0 && onShowHiddenChange && (
-                  <DlesButton
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => onShowHiddenChange(!showHidden)}
-                    className={cn(
-                      "w-10 shrink-0",
-                      showHidden
-                        ? "text-primary bg-primary/10"
-                        : "text-muted-foreground"
-                    )}
-                    title={
-                      showHidden ? "Hide hidden games" : "Show hidden games"
-                    }
-                  >
-                    {showHidden ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
-                  </DlesButton>
+                title={showHidden ? "Hide hidden games" : "Show hidden games"}
+              >
+                {showHidden ? (
+                  <EyeOff className="h-4 w-4" />
+                ) : (
+                  <Eye className="h-4 w-4" />
                 )}
-              </div>
-            </div>
+              </DlesButton>
+            )}
+
+            {/* Feeling Lucky */}
+            <DlesButton onClick={onRandom} className="gap-2">
+              <Dices className="h-4 w-4" />
+              <span className="hidden sm:inline">Feeling Lucky</span>
+              <span className="sm:hidden">Lucky</span>
+            </DlesButton>
           </div>
         </div>
       </div>
 
-      {/* COMPACT HEADER */}
+      {/* COMPACT TOOLBAR (on scroll) */}
       <div
-        className={`fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40 shadow-sm transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border/40 transition-transform duration-300 ease-in-out ${
           isScrolled ? "translate-y-0" : "-translate-y-full"
         }`}
       >
         <div className="px-4 md:px-8 lg:px-12">
           <div className="mx-auto max-w-7xl py-2">
             <div className="flex items-center gap-4">
+              {/* Search (compact) */}
               <HeaderSearch
                 query={searchQuery}
                 onChange={onSearchChange}
-                className="flex-1 max-w-md"
+                className="w-48 hidden md:flex"
               />
 
-              <div className="hidden md:flex items-center gap-2">
-                <HeaderFilters
-                  topicFilter={topicFilter}
-                  onTopicFilterChange={onTopicFilterChange}
-                  listFilter={listFilter}
-                  onListFilterChange={onListFilterChange}
-                  lists={lists}
-                  sortBy={sortBy}
-                  onSortChange={onSortChange}
-                  isAuthenticated={isAuthenticated}
-                  isCompact
-                />
-              </div>
-
-              <div className="h-4 w-px bg-border hidden md:block" />
-
+              {/* Right side */}
               <div className="flex items-center gap-3 ml-auto">
-                <HeaderStats
-                  playedCount={playedCount}
-                  totalCount={totalCount}
-                  currentStreak={currentStreak}
-                  onClear={onClear}
-                  isAuthenticated={isAuthenticated}
-                  isCompact
-                />
-                <div className="flex items-center gap-1">
-                  <DlesButton
-                    variant="ghost"
-                    size="icon"
-                    className="w-10 text-primary"
-                    onClick={onRandom}
-                    title="Feeling Lucky"
-                  >
-                    <Dices className="h-4 w-4" />
-                  </DlesButton>
-                  <DlesButton
-                    variant="ghost"
-                    size="icon"
-                    className="w-10 text-primary"
-                    onClick={onRandom}
-                    title="Race"
-                  >
-                    <Flag className="h-4 w-4" />
-                  </DlesButton>
-                  <UserButton />
-                </div>
+                <DlesButton
+                  variant="ghost"
+                  size="icon-sm"
+                  onClick={onRandom}
+                  title="Feeling Lucky"
+                  className="text-primary"
+                >
+                  <Dices className="h-4 w-4" />
+                </DlesButton>
               </div>
             </div>
           </div>

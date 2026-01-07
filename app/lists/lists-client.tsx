@@ -4,7 +4,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { formatTopic } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
@@ -397,7 +398,11 @@ export function ListsClient({ initialLists }: ListsClientProps) {
                             )}
                             <div className="flex items-center shrink-0 relative">
                               <div className="transition-transform duration-200 ease-out group-hover/item:-translate-x-6">
-                                <DlesTopic topic={game.topic} />
+                                <DlesBadge
+                                  text={formatTopic(game.topic)}
+                                  color={game.topic}
+                                  size="sm"
+                                />
                               </div>
                               <DlesButton
                                 variant="ghost"

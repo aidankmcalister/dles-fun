@@ -2,7 +2,8 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Clock, Check, SkipForward, ExternalLink } from "lucide-react";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { formatTopic } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { formatDuration } from "@/components/features/race/race-utils";
 import { RaceGame, Participant } from "@/app/race/[id]/page";
@@ -79,7 +80,11 @@ export function ResultsList({
                     >
                       {game.game.title}
                     </a>
-                    <DlesTopic topic={game.game.topic} size="xs" />
+                    <DlesBadge
+                      text={formatTopic(game.game.topic)}
+                      color={game.game.topic}
+                      size="xs"
+                    />
                   </div>
 
                   <div className="flex items-center gap-3 font-mono text-sm tabular-nums">

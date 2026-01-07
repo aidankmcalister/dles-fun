@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { List, Plus, Loader2, Gamepad } from "lucide-react";
-import { ListChip } from "@/components/features/lists/list-chip";
+import { DlesBadge } from "@/components/design/dles-badge";
 import { Button } from "@/components/ui/button"; // Note: Changed from Button to generic since DlesButton might not be used or standard button is needed. Reverting to project standard.
 // Actually project seems to use DlesButton or standard Button. The original file had Button import.
 // Checking imports: Input.
@@ -117,10 +117,11 @@ export function ListsDropdown({ gameId, className }: ListsDropdownProps) {
                 const color = list.color || "slate";
 
                 return (
-                  <ListChip
-                    label={option.label}
-                    count={list.games.length}
+                  <DlesBadge
+                    text={option.label}
                     color={color}
+                    count={list.games.length}
+                    size="sm"
                   />
                 );
               }}

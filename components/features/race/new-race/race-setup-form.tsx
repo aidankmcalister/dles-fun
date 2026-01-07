@@ -16,7 +16,7 @@ import { Tag, Library, Trophy, Dices, Gamepad, Globe } from "lucide-react";
 import { TOPIC_COLORS, LIST_CARD_STYLES } from "@/lib/constants";
 import { DlesSelect } from "@/components/design/dles-select";
 import { cn } from "@/lib/utils";
-import { ListChip } from "@/components/features/lists/list-chip";
+import { DlesBadge } from "@/components/design/dles-badge";
 
 export const SYSTEM_TEMPLATES = [
   {
@@ -209,10 +209,11 @@ export function RaceSetupForm({
                 const color = list?.color || "slate";
 
                 return (
-                  <ListChip
-                    label={option.label}
-                    count={list?.gameCount || 0}
+                  <DlesBadge
+                    text={option.label}
                     color={color}
+                    count={list?.gameCount || 0}
+                    size="sm"
                     className="w-full"
                   />
                 );

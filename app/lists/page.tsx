@@ -2,8 +2,6 @@ import { getSession } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { ListsClient } from "./lists-client";
-import { PageHeader } from "@/components/layout/page-header";
-import { UserButton } from "@/components/layout/user-button";
 
 export default async function ListsPage() {
   const session = await getSession();
@@ -30,14 +28,9 @@ export default async function ListsPage() {
   return (
     <main className="min-h-screen px-4 py-8 md:px-8 lg:px-12">
       <div className="mx-auto max-w-7xl">
-        <div className="flex items-start justify-between">
-          <PageHeader
-            title="Lists"
-            subtitle="Organize your games into custom collections."
-            backHref="/"
-          />
-          <UserButton />
-        </div>
+        <p className="text-muted-foreground text-sm font-medium mb-8">
+          Organize your games into custom collections.
+        </p>
         <ListsClient initialLists={lists} />
       </div>
     </main>

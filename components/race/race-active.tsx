@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DlesTopic } from "@/components/design/dles-topic";
+import { DlesBadge } from "@/components/design/dles-badge";
+import { formatTopic } from "@/lib/utils";
 import { MicroLabel } from "@/components/design/micro-label";
 import { Race, Participant, RaceGame } from "@/app/race/[id]/page";
 import {
@@ -255,7 +256,11 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
                       </div>
                     </div>
 
-                    <DlesTopic topic={rg.game.topic} size="sm" />
+                    <DlesBadge
+                      text={formatTopic(rg.game.topic)}
+                      color={rg.game.topic}
+                      size="sm"
+                    />
                   </div>
                 ) : (
                   <div className="space-y-3">
@@ -265,7 +270,11 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
                         <h3 className="text-xl font-black tracking-tight">
                           {rg.game.title}
                         </h3>
-                        <DlesTopic topic={rg.game.topic} size="sm" />
+                        <DlesBadge
+                          text={formatTopic(rg.game.topic)}
+                          color={rg.game.topic}
+                          size="sm"
+                        />
                       </div>
                       <a
                         href={rg.game.link}

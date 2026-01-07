@@ -1,0 +1,71 @@
+"use client";
+
+import { usePathname } from "next/navigation";
+import { SiteHeader } from "@/components/layout/site-header";
+
+/**
+ * Routes that should NOT show the global header.
+ * These pages have their own specialized headers or layouts.
+ */
+const EXCLUDED_ROUTES = ["/race/new"];
+
+/**
+ * Page title mappings based on route patterns.
+ * If no match, header shows without a page title (just logo).
+ */
+const PAGE_TITLES: Record<string, string> = {
+  "/lists": "Lists",
+  "/race/stats": "Race Stats",
+  "/dashboard": "Dashboard",
+  "/dashboard/races": "Race History",
+  "/admin": "Admin",
+  "/submit": "Submit a Game",
+};
+
+/**
+ * Client layout wrapper that conditionally renders the SiteHeader
+ * based on the current pathname.
+ */
+export function ClientLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  // Check if we should hide the header entirely
+  const hideHeader = EXCLUDED_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(route + "/")
+  );
+
+  // Determine page title based on route
+  const getPageTitle = () => {
+    // Exact match first
+    if (PAGE_TITLES[pathname]) {
+      return PAGE_TITLES[pathname];
+    }
+
+    // Check for prefix matches (for nested routes like /admin/*)
+    for (const [route, title] of Object.entries(PAGE_TITLES)) {
+      if (pathname.startsWith(route + "/")) {
+        return title;
+      }
+    }
+
+    // Home page or unknown routes - no title
+    if (pathname === "/") {
+      return undefined;
+    }
+
+    // For race lobby/active/results pages, we'll let them handle their own layout
+    // but still show the nav
+    if (pathname.startsWith("/race/")) {
+      return undefined;
+    }
+
+    return undefined;
+  };
+
+  return (
+    <>
+      {!hideHeader && <SiteHeader pageTitle={getPageTitle()} />}
+      {children}
+    </>
+  );
+}

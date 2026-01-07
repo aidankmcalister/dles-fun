@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DlesSelect } from "@/components/design/dles-select";
-import { DlesTopic } from "@/components/design/dles-topic";
 import { TOPICS } from "@/lib/constants";
 import { cn, formatTopic } from "@/lib/utils";
 import type { Topic } from "@/app/generated/prisma/client";
