@@ -100,22 +100,20 @@ export function GameCard({
         </div>
       )}
 
-      <CardHeader className="p-3 pb-2">
-        <div className="flex items-start justify-between gap-2">
-          <div className="space-y-0.5 flex-1 min-w-0">
-            <CardTitle className="flex items-center gap-2 pr-2 text-heading-card leading-tight justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="truncate">{title}</span>
-                <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-all" />
-              </div>
-            </CardTitle>
-            <CardDescription className="truncate font-mono text-xs">
-              {extractDomain(link)}
-            </CardDescription>
-          </div>
-        </div>
+      <CardHeader className="p-3 h-full flex flex-col justify-between">
+        {/* Title row */}
+        <CardTitle className="flex items-center gap-2 text-heading-card leading-tight">
+          <span className="truncate">{title}</span>
+          <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-all" />
+        </CardTitle>
 
-        <div className="pt-1.5 flex items-center justify-between gap-2 min-h-[26px]">
+        {/* Link row */}
+        <CardDescription className="truncate font-mono text-xs">
+          {extractDomain(link)}
+        </CardDescription>
+
+        {/* Badge and actions row */}
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <DlesBadge text={formatTopic(topic)} color={topic} size="sm" />
             {isPlayed && (
@@ -126,7 +124,7 @@ export function GameCard({
             )}
           </div>
 
-          {/* Actions moved to bottom right */}
+          {/* Actions */}
           {!minimal && (
             <div
               className="flex items-center gap-1"
