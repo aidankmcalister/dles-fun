@@ -1,20 +1,17 @@
 import "@testing-library/jest-dom";
 import { act } from "react";
-import * as React from "react";
+import { vi } from "vitest";
 
-// Polyfill for React 19 compatibility
-// Many testing libraries expect React.act to be available from the 'react' default export
-// or the global React object.
+// Polyfill for React 19 / Testing Library compatibility
+// The issue is that some environments (like Vercel CI) might have a version of React or
+// Testing Library where `act` is missing from the default export or global React object,
+// or the React object is frozen and cannot be mutated.
+// We use vi.mock to safely intercept the 'react' module and ensure 'act' is present.
 
-// 1. Shim on the default export
-if (React && !(React as any).act) {
-  (React as any).act = act;
-}
-
-// 2. Ensure global usage works if environment is set up that way
-if (typeof globalThis !== "undefined" && !(globalThis as any).React) {
-  (globalThis as any).React = React;
-}
-if ((globalThis as any).React && !(globalThis as any).React.act) {
-  (globalThis as any).React.act = act;
-}
+vi.mock("react", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("react")>();
+  return {
+    ...actual,
+    act: actual.act || act,
+  };
+});
