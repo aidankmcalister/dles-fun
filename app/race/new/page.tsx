@@ -16,7 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { HeaderSearch } from "@/components/header/header-search";
 import { DlesSelect } from "@/components/design/dles-select";
-import { Flag } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { AlertTriangle, Flag } from "lucide-react";
 
 interface Game {
   id: string;
@@ -40,6 +41,7 @@ export default function NewRacePage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedListId, setSelectedListId] = useState<string>("");
+  const [onlyEmbeddable, setOnlyEmbeddable] = useState(true);
   const [, setActiveStep] = useState<1 | 2>(1);
 
   useEffect(() => {
@@ -71,9 +73,10 @@ export default function NewRacePage() {
         selectedTopics.length === 0 ||
         selectedTopics.includes("all") ||
         selectedTopics.includes(game.topic);
-      return matchesSearch && matchesTopic;
+      const matchesEmbed = !onlyEmbeddable || game.embedSupported !== false;
+      return matchesSearch && matchesTopic && matchesEmbed;
     });
-  }, [allGames, searchQuery, selectedTopics]);
+  }, [allGames, searchQuery, selectedTopics, onlyEmbeddable]);
 
   const topics = useMemo(
     () => Array.from(new Set(allGames.map((g) => g.topic))).sort(),
@@ -198,7 +201,11 @@ export default function NewRacePage() {
           )}
 
           {/* Search */}
-          <div className={session?.user ? "md:col-span-6" : "md:col-span-4"}>
+          <div
+            className={
+              session?.user && !guestName ? "md:col-span-5" : "md:col-span-3"
+            }
+          >
             <Label className="text-micro text-muted-foreground mb-2 block">
               SEARCH GAMES
             </Label>
@@ -209,21 +216,49 @@ export default function NewRacePage() {
             />
           </div>
 
-          {/* Topic Filter */}
-          <div className="md:col-span-3">
-            <Label className="text-micro text-muted-foreground mb-2 block">
-              FILTER BY TOPIC
-            </Label>
-            <DlesSelect
-              multi
-              topics
-              value={selectedTopics.length === 0 ? ["all"] : selectedTopics}
-              onChange={setSelectedTopics}
-              placeholder="All Topics"
-              className="w-full"
-            />
+          {/* Filters Group (Topic + Toggle) */}
+          <div className="md:col-span-4 flex items-end gap-3">
+            <div className="flex-1">
+              <Label className="text-micro text-muted-foreground mb-2 block">
+                FILTER BY TOPIC
+              </Label>
+              <DlesSelect
+                multi
+                topics
+                value={selectedTopics.length === 0 ? ["all"] : selectedTopics}
+                onChange={setSelectedTopics}
+                placeholder="All Topics"
+                className="w-full"
+              />
+            </div>
+
+            <div className="h-10 flex items-center justify-center bg-muted/30 px-3 rounded-lg border border-border/50 shrink-0">
+              <Label
+                htmlFor="modal-only"
+                className="text-[10px] font-bold text-muted-foreground cursor-pointer mr-2 uppercase tracking-wide"
+              >
+                Modal Only
+              </Label>
+              <Switch
+                id="modal-only"
+                checked={onlyEmbeddable}
+                onCheckedChange={setOnlyEmbeddable}
+                className="scale-75 origin-right"
+              />
+            </div>
           </div>
         </div>
+
+        {/* Warning for non-modal games */}
+        {!onlyEmbeddable && (
+          <div className="mb-6 rounded-lg border border-yellow-500/20 bg-yellow-500/10 p-4 text-sm text-yellow-500 flex items-center gap-3">
+            <AlertTriangle className="h-4 w-4 shrink-0" />
+            <p>
+              Warning: You have enabled games that cannot be played inside the
+              race modal. These games will open in a new tab.
+            </p>
+          </div>
+        )}
 
         {/* Two-column layout: Quick Picks + Game Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

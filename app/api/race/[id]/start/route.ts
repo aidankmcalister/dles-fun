@@ -33,7 +33,14 @@ export async function POST(
     }
 
     if (race.status !== "ready") {
-      return new NextResponse("Race not ready to start", { status: 400 });
+      // Allow force start if status is waiting and user is creator
+      const isCreator = user
+        ? race.createdBy === user.id
+        : race.participants[0]?.id === guestId;
+
+      if (race.status !== "waiting" || !isCreator) {
+        return new NextResponse("Race not ready to start", { status: 400 });
+      }
     }
 
     let isAuthorized = false;

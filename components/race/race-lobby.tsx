@@ -38,7 +38,7 @@ export function RaceLobby({ race, currentUser, onRefresh }: RaceLobbyProps) {
 
   const isCreator = currentUser
     ? race.createdBy === currentUser.id
-    : race.participants.some((p) => p.id === localGuestId && p.guestName);
+    : race.participants[0]?.id === localGuestId;
 
   const isParticipant = currentUser
     ? race.participants.some((p) => p.userId === currentUser.id)
@@ -212,9 +212,20 @@ export function RaceLobby({ race, currentUser, onRefresh }: RaceLobbyProps) {
                   <Loader2 className="h-4 w-4 animate-spin" />
                   Waiting for Opponent...
                 </Button>
-                <p className="text-micro text-muted-foreground/60 italic">
-                  Invite a friend with the link above
-                </p>
+                <div className="flex flex-col items-center gap-1 w-full">
+                  <p className="text-micro text-muted-foreground/60 italic">
+                    Invite a friend with the link above
+                  </p>
+                  {isCreator && (
+                    <button
+                      onClick={handleStart}
+                      disabled={isStarting}
+                      className="text-[10px] text-muted-foreground/40 hover:text-primary transition-colors underline decoration-dotted underline-offset-2"
+                    >
+                      (Owner) Force Start Race
+                    </button>
+                  )}
+                </div>
               </div>
             ) : (
               <Button

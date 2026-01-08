@@ -23,6 +23,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ReactNode } from "react";
 
 interface GameModalProps {
   game: {
@@ -35,6 +36,8 @@ interface GameModalProps {
   onOpenChange: (open: boolean) => void;
   onMarkPlayed: (id: string) => void;
   onMarkUnsupported: (id: string) => void;
+  locked?: boolean;
+  footer?: ReactNode;
 }
 
 const ZOOM_LEVELS = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0];
@@ -46,6 +49,8 @@ export function GameModal({
   onOpenChange,
   onMarkPlayed,
   onMarkUnsupported,
+  locked = false,
+  footer,
 }: GameModalProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
@@ -106,7 +111,9 @@ export function GameModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         className="max-w-[95vw] sm:max-w-[95vw] h-[90vh] flex flex-col p-0 gap-0"
-        showCloseButton={true}
+        showCloseButton={!locked}
+        onInteractOutside={(e) => locked && e.preventDefault()}
+        onEscapeKeyDown={(e) => locked && e.preventDefault()}
       >
         {/* Header */}
         <DialogHeader className="p-3 pb-2 border-b border-border shrink-0">
@@ -232,20 +239,26 @@ export function GameModal({
           </div>
         </div>
 
-        {/* Footer with fallback button */}
-        <div className="p-2 px-3 border-t border-border shrink-0 flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">
-            Not loading? Some sites don't allow embedding.
-          </span>
-          <DlesButton
-            variant="outline"
-            size="sm"
-            onClick={handleOpenInNewTab}
-            className="gap-1.5 text-xs"
-          >
-            <ExternalLink className="h-3 w-3" />
-            Open in New Tab
-          </DlesButton>
+        {/* Footer with fallback button or custom footer */}
+        <div className="p-2 px-3 border-t border-border shrink-0 flex items-center justify-between gap-4">
+          {footer ? (
+            footer
+          ) : (
+            <>
+              <span className="text-xs text-muted-foreground truncate">
+                Not loading? Some sites don't allow embedding.
+              </span>
+              <DlesButton
+                variant="outline"
+                size="sm"
+                onClick={handleOpenInNewTab}
+                className="gap-1.5 text-xs whitespace-nowrap"
+              >
+                <ExternalLink className="h-3 w-3" />
+                Open in New Tab
+              </DlesButton>
+            </>
+          )}
         </div>
       </DialogContent>
     </Dialog>

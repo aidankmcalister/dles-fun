@@ -8,7 +8,14 @@ import { Badge } from "@/components/ui/badge";
 import { DlesSelect } from "@/components/design/dles-select";
 import { HeaderSearch } from "@/components/header/header-search";
 import { DlesBadge } from "@/components/design/dles-badge";
-import { Loader2, Check } from "lucide-react";
+import { Loader2, Check, AlertTriangle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
 import { cn, formatTopic } from "@/lib/utils";
 import { Topic } from "@/app/generated/prisma/client";
 
@@ -18,6 +25,7 @@ interface Game {
   description: string;
   topic: Topic;
   archived?: boolean;
+  embedSupported?: boolean;
 }
 
 interface GameSelectorProps {
@@ -130,14 +138,31 @@ export function GameSelector({
                       <Check className="h-3 w-3 text-primary-foreground" />
                     )}
                   </div>
-                  <span
-                    className={cn(
-                      "text-body font-medium truncate flex-1",
-                      isSelected ? "text-primary" : "text-foreground"
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span
+                      className={cn(
+                        "text-body font-medium truncate",
+                        isSelected ? "text-primary" : "text-foreground"
+                      )}
+                    >
+                      {game.title}
+                    </span>
+                    {game.embedSupported === false && (
+                      <TooltipProvider>
+                        <Tooltip delayDuration={0}>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center justify-center h-6 w-6 p-1 rounded-full text-yellow-500 hover:bg-yellow-500/20 shrink-0">
+                              <AlertTriangle className="h-3 w-3" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-[200px] text-xs">
+                            This game cannot be played inside the modal and will
+                            open in a new tab.
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     )}
-                  >
-                    {game.title}
-                  </span>
+                  </div>
                   <DlesBadge
                     text={formatTopic(game.topic)}
                     color={game.topic}
