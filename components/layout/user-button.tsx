@@ -32,6 +32,7 @@ import {
   BarChart3,
   TrendingUp,
   List,
+  Github,
 } from "lucide-react";
 import type { Role } from "@/app/generated/prisma/client";
 import { GameSubmissionDialog } from "@/components/game-submission-dialog";
@@ -241,6 +242,19 @@ export function UserButton() {
           <LogOut className="mr-2 h-4 w-4" />
           Sign out
         </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <div className="flex justify-center p-1">
+          <a
+            href="https://github.com/aidankmcalister/dles-fun"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-muted-foreground/50 hover:text-foreground transition-colors p-1"
+          >
+            <Github className="h-4 w-4" />
+          </a>
+        </div>
       </DropdownMenuContent>
 
       <GameSubmissionDialog
