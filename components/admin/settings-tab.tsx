@@ -31,36 +31,11 @@ import {
 } from "@/components/ui/alert-dialog";
 import { cn } from "@/lib/utils";
 
-interface SiteConfig {
-  id: string;
-  newGameMinutes: number;
-  topicColors: Record<string, string> | null;
-  maintenanceMode: boolean;
-  welcomeMessage: string | null;
-  showWelcomeMessage: boolean;
-  featuredGameIds: string[];
-  minPlayStreak: number;
-  enableCommunitySubmissions: boolean;
-  defaultSort: string;
-  showPresetLists: boolean;
-  maxSubmissionsPerDay: number;
-  enableLeaderboards: boolean;
-  updatedAt: string;
-}
-
-const DEFAULT_CONFIG = {
-  newGameMinutes: 10080,
-  maintenanceMode: false,
-  welcomeMessage: null,
-  showWelcomeMessage: false,
-  minPlayStreak: 1,
-  enableCommunitySubmissions: false,
-  defaultSort: "title",
-  maxCustomLists: 10,
-  showPresetLists: true,
-  maxSubmissionsPerDay: 5,
-  enableLeaderboards: false,
-};
+import {
+  calculateSettingsDiff,
+  DEFAULT_CONFIG,
+  SiteConfig,
+} from "@/lib/settings-utils";
 
 const settingsSchema = z.object({
   newGameMinutes: z.number().min(-1).max(525600),
@@ -237,25 +212,11 @@ export function SettingsTab() {
                     {(() => {
                       if (!config) return null;
 
-                      const changes = Object.keys(DEFAULT_CONFIG).reduce(
-                        (acc, key) => {
-                          const k = key as keyof typeof DEFAULT_CONFIG;
-                          const current = config[k as keyof SiteConfig];
-                          const def = DEFAULT_CONFIG[k];
+                      if (!config) return null;
 
-                          // Loose comparison to handle potential null/undefined vs default mismatches
-                          if (current != def) {
-                            acc.push({
-                              key: k
-                                .replace(/([A-Z])/g, " $1")
-                                .replace(/^./, (str) => str.toUpperCase()),
-                              old: String(current),
-                              new: String(def),
-                            });
-                          }
-                          return acc;
-                        },
-                        [] as { key: string; old: string; new: string }[]
+                      const changes = calculateSettingsDiff(
+                        config,
+                        DEFAULT_CONFIG
                       );
 
                       if (changes.length === 0) {

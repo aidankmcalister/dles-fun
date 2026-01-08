@@ -19,6 +19,8 @@ import { DlesSelect } from "@/components/design/dles-select";
 import { Switch } from "@/components/ui/switch";
 import { AlertTriangle, Flag } from "lucide-react";
 
+import { filterGames } from "@/lib/game-filter";
+
 interface Game {
   id: string;
   title: string;
@@ -65,16 +67,10 @@ export default function NewRacePage() {
   }, []);
 
   const filteredGames = useMemo(() => {
-    return allGames.filter((game) => {
-      const matchesSearch = game.title
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesTopic =
-        selectedTopics.length === 0 ||
-        selectedTopics.includes("all") ||
-        selectedTopics.includes(game.topic);
-      const matchesEmbed = !onlyEmbeddable || game.embedSupported !== false;
-      return matchesSearch && matchesTopic && matchesEmbed;
+    return filterGames(allGames, {
+      searchQuery,
+      selectedTopics,
+      onlyEmbeddable,
     });
   }, [allGames, searchQuery, selectedTopics, onlyEmbeddable]);
 
