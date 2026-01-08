@@ -229,14 +229,68 @@ export function SettingsTab() {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Reset to Defaults?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will reset all settings to their default values.
+                  <AlertDialogDescription className="space-y-3">
+                    <p>
+                      This will reset the following settings to their default
+                      values:
+                    </p>
+                    {(() => {
+                      if (!config) return null;
+
+                      const changes = Object.keys(DEFAULT_CONFIG).reduce(
+                        (acc, key) => {
+                          const k = key as keyof typeof DEFAULT_CONFIG;
+                          const current = config[k as keyof SiteConfig];
+                          const def = DEFAULT_CONFIG[k];
+
+                          // Loose comparison to handle potential null/undefined vs default mismatches
+                          if (current != def) {
+                            acc.push({
+                              key: k
+                                .replace(/([A-Z])/g, " $1")
+                                .replace(/^./, (str) => str.toUpperCase()),
+                              old: String(current),
+                              new: String(def),
+                            });
+                          }
+                          return acc;
+                        },
+                        [] as { key: string; old: string; new: string }[]
+                      );
+
+                      if (changes.length === 0) {
+                        return (
+                          <p className="italic text-muted-foreground">
+                            No changes needed - settings already match defaults.
+                          </p>
+                        );
+                      }
+
+                      return (
+                        <div className="rounded-md bg-muted/50 p-3 text-xs font-mono border border-border/50 max-h-[200px] overflow-y-auto">
+                          {changes.map((change) => (
+                            <div key={change.key} className="flex gap-2">
+                              <span className="font-semibold text-muted-foreground">
+                                {change.key}:
+                              </span>
+                              <span className="text-rose-500 line-through opacity-70">
+                                {change.old}
+                              </span>
+                              <span className="text-muted-foreground">→</span>
+                              <span className="text-emerald-500 font-bold">
+                                {change.new}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction onClick={handleReset}>
-                    Reset
+                    Confirm Reset
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
