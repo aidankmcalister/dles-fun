@@ -30,14 +30,6 @@ const FeelingLuckyModal = dynamic(
   }
 );
 
-const GuestSyncBanner = dynamic(
-  () =>
-    import("@/components/guest-sync-banner").then((mod) => mod.GuestSyncBanner),
-  {
-    ssr: false,
-  }
-);
-
 type SortOption = "title" | "topic" | "played" | "playCount";
 
 export function GamesClient({
@@ -372,8 +364,6 @@ export function GamesClient({
 
   return (
     <div className="space-y-6">
-      {!isAuthenticated && <GuestSyncBanner />}
-
       <GamesHeader
         playedCount={playedIds.size}
         totalCount={Math.max(0, games.length - hiddenIds.size)}

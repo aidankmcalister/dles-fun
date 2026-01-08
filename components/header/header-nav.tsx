@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { DlesButton } from "@/components/design/dles-button";
 import { Home, List, Flag, Trophy } from "lucide-react";
+import { useSession } from "@/lib/auth-client";
 
 interface NavItem {
   label: string;
@@ -45,8 +46,11 @@ interface HeaderNavProps {
 
 export function HeaderNav({ className }: HeaderNavProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const isAuthenticated = !!session?.user;
 
   const isActive = (item: NavItem) => {
+    // ... existing isActive logic ... (copy it here or reference it if I can adjust the replace range, but better to include it for clarity if I replace the whole function body or similar)
     if (item.matchPaths) {
       return item.matchPaths.some((path) => {
         if (path === "/") return pathname === "/";
@@ -64,9 +68,16 @@ export function HeaderNav({ className }: HeaderNavProps) {
     return pathname === item.href;
   };
 
+  const visibleItems = NAV_ITEMS.filter((item) => {
+    if (item.label === "Lists" || item.label === "Stats") {
+      return isAuthenticated;
+    }
+    return true;
+  });
+
   return (
     <nav className={cn("flex items-center gap-1", className)}>
-      {NAV_ITEMS.map((item) => {
+      {visibleItems.map((item) => {
         const active = isActive(item);
         const Icon = item.icon;
 
