@@ -16,7 +16,7 @@ export default function Loading() {
             {Array.from({ length: 20 }).map((_, i) => (
               <div
                 key={i}
-                className="aspect-[4/3] rounded-lg bg-muted animate-pulse"
+                className="aspect-4/3 rounded-lg bg-muted animate-pulse"
               />
             ))}
           </div>
