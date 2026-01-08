@@ -50,9 +50,6 @@ export function GamesClient({
 
   // Lazy Rendering State
   const [visibleCount, setVisibleCount] = useState(24);
-  const { ref: loadMoreRef, inView } = useInView({
-    rootMargin: "500px",
-  });
 
   // Filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -79,12 +76,16 @@ export function GamesClient({
     clearLocalPlayed,
   } = usePlayedGames(gameIds);
 
-  // Load more when scrolling to bottom
-  useEffect(() => {
-    if (inView) {
-      setVisibleCount((prev) => prev + 24);
-    }
-  }, [inView]);
+  // Load more when scrolling to bottom - using onChange for repeated triggers
+  const { ref: loadMoreRef } = useInView({
+    rootMargin: "200px",
+    threshold: 0,
+    onChange: (inView) => {
+      if (inView) {
+        setVisibleCount((prev) => prev + 24);
+      }
+    },
+  });
 
   // Reset filtered/visible count when filters change
   useEffect(() => {

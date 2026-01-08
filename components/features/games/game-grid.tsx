@@ -15,7 +15,7 @@ interface GameGridProps {
 }
 
 const GRID_CLASSES =
-  "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
+  "grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6";
 
 export function GameGrid({ games, playedIds, onPlay, onHide }: GameGridProps) {
   return (
@@ -43,13 +43,13 @@ export function GameGridSkeleton({ count = 12 }: { count?: number }) {
           className="animate-in fade-in slide-in-from-bottom-2 fill-mode-both"
           style={{ animationDelay: `${i * 30}ms`, animationDuration: "300ms" }}
         >
-          <CardHeader className="p-4 pb-3">
-            <div className="space-y-1.5">
-              <Skeleton className="h-5 w-3/4" />
-              <Skeleton className="h-3 w-1/2" />
+          <CardHeader className="p-1.5">
+            <div className="space-y-0.5">
+              <Skeleton className="h-3 w-3/4" />
+              <Skeleton className="h-2 w-1/2" />
             </div>
-            <div className="pt-3">
-              <Skeleton className="h-5 w-16 rounded-full" />
+            <div className="pt-1.5">
+              <Skeleton className="h-3 w-10 rounded-full" />
             </div>
           </CardHeader>
         </Card>

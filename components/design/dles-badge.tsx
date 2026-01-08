@@ -20,7 +20,7 @@ export interface DlesBadgeProps {
 }
 
 const SIZE_CLASSES: Record<BadgeSize, string> = {
-  xs: "text-[10px] px-2 py-0.5 font-bold",
+  xs: "text-[8px] px-1.5 py-0.5 font-bold",
   sm: "text-[10px] px-2.5 py-1 font-bold",
   md: "text-body-small px-3 py-1.5 font-semibold",
   lg: "text-sm px-4 py-2 font-semibold",

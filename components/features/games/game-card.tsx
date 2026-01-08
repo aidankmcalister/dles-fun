@@ -92,7 +92,7 @@ export function GameCard({
       {isNew && !isPlayed && (
         <div
           className={cn(
-            "absolute top-2 -right-11 w-32 h-6 text-white text-xs font-bold flex items-center justify-center rotate-45",
+            "absolute top-1 -right-8 w-24 h-4 text-white text-[8px] font-bold flex items-center justify-center rotate-45",
             TOPIC_COLORS[topic]
           )}
         >
@@ -100,60 +100,53 @@ export function GameCard({
         </div>
       )}
 
-      <CardHeader className="p-3 h-full flex flex-col justify-between">
+      <CardHeader className="p-2 py-1 h-full flex flex-col justify-evenly overflow-hidden">
         {/* Title row */}
-        <CardTitle className="flex items-center gap-2 text-heading-card leading-tight">
-          <span className="truncate">{title}</span>
-          <ExternalLink className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-all" />
-        </CardTitle>
+        <div className="flex items-center gap-1 w-full">
+          <CardTitle
+            className="text-xs font-semibold leading-tight truncate w-0 flex-grow"
+            title={title}
+          >
+            {title}
+          </CardTitle>
+          {isPlayed && (
+            <span className="flex items-center text-muted-foreground shrink-0">
+              <Check className="h-2.5 w-2.5" />
+            </span>
+          )}
+          <ExternalLink className="h-2.5 w-2.5 shrink-0 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-all" />
+        </div>
 
         {/* Link row */}
-        <CardDescription className="truncate font-mono text-xs">
+        <CardDescription className="truncate font-mono text-[9px]">
           {extractDomain(link)}
         </CardDescription>
 
         {/* Badge and actions row */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <DlesBadge text={formatTopic(topic)} color={topic} size="sm" />
-            {isPlayed && (
-              <div className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400">
-                <Check className="h-3 w-3" />
-                Played Today
-              </div>
-            )}
-          </div>
+        <div className="flex items-center justify-between gap-0.5">
+          <DlesBadge text={formatTopic(topic)} color={topic} size="xs" />
 
           {/* Actions */}
           {!minimal && (
             <div
-              className="flex items-center gap-1"
+              className="flex items-center gap-0.5"
               onClick={(e) => e.stopPropagation()}
             >
               <ListsDropdown
                 gameId={id}
-                className="opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity"
+                className="opacity-0 group-hover:opacity-100 transition-opacity"
               />
               {onHide && (
-                <TooltipProvider delayDuration={200}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        onClick={handleHide}
-                        className={cn(
-                          "p-1 rounded-md text-muted-foreground shrink-0",
-                          "opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity",
-                          "hover:bg-muted hover:text-foreground"
-                        )}
-                      >
-                        <EyeOff className="h-3.5 w-3.5" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="text-xs">
-                      Hide game
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <button
+                  onClick={handleHide}
+                  className={cn(
+                    "p-0.5 rounded-md text-muted-foreground shrink-0",
+                    "opacity-0 group-hover:opacity-100 transition-opacity",
+                    "hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <EyeOff className="h-2.5 w-2.5" />
+                </button>
               )}
             </div>
           )}
