@@ -102,19 +102,21 @@ export function GameCard({
 
       <CardHeader className="p-2 py-1 h-full flex flex-col justify-evenly overflow-hidden">
         {/* Title row */}
-        <div className="flex items-center gap-1 w-full">
-          <CardTitle
-            className="text-xs font-semibold leading-tight truncate w-0 flex-grow"
-            title={title}
-          >
-            {title}
-          </CardTitle>
+        <div className="flex items-center justify-between w-full">
+          <span className="inline-flex items-center gap-1 min-w-0">
+            <CardTitle
+              className="text-xs font-semibold leading-tight truncate"
+              title={title}
+            >
+              {title}
+            </CardTitle>
+            <ExternalLink className="h-2.5 w-2.5 shrink-0 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-all" />
+          </span>
           {isPlayed && (
             <span className="flex items-center text-muted-foreground shrink-0">
               <Check className="h-2.5 w-2.5" />
             </span>
           )}
-          <ExternalLink className="h-2.5 w-2.5 shrink-0 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-all" />
         </div>
 
         {/* Link row */}
