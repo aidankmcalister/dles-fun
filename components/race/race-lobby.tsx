@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +14,8 @@ import { InviteLink } from "@/components/features/race/lobby/invite-link";
 import { ParticipantList } from "@/components/features/race/lobby/participant-list";
 import { RaceConfig } from "@/components/features/race/lobby/race-config";
 
+import { useImpersonation } from "@/components/impersonation-provider";
+
 interface RaceLobbyProps {
   race: Race;
   currentUser: { id: string; name: string } | null;
@@ -19,6 +23,8 @@ interface RaceLobbyProps {
 }
 
 export function RaceLobby({ race, currentUser, onRefresh }: RaceLobbyProps) {
+  const router = useRouter();
+  const { effectiveRole } = useImpersonation();
   const [isJoining, setIsJoining] = useState(false);
   const [isStarting, setIsStarting] = useState(false);
   const [guestName, setGuestName] = useState("");
@@ -216,13 +222,13 @@ export function RaceLobby({ race, currentUser, onRefresh }: RaceLobbyProps) {
                   <p className="text-micro text-muted-foreground/60 italic">
                     Invite a friend with the link above
                   </p>
-                  {isCreator && (
+                  {["admin", "owner"].includes(effectiveRole || "") && (
                     <button
                       onClick={handleStart}
                       disabled={isStarting}
                       className="text-[10px] text-muted-foreground/40 hover:text-primary transition-colors underline decoration-dotted underline-offset-2"
                     >
-                      (Owner) Force Start Race
+                      (Dev) Force Start Race
                     </button>
                   )}
                 </div>

@@ -274,11 +274,12 @@ export default function NewRacePage() {
               selectedListId={selectedListId}
               onTemplateSelect={selectList}
               onRandomSelect={(count) => {
-                // Only select games that support embedding
-                const embeddableGames = allGames.filter(
-                  (g) => g.embedSupported !== false
-                );
-                const randomGames = [...embeddableGames]
+                // Determine pool based on toggle
+                const pool = onlyEmbeddable
+                  ? allGames.filter((g) => g.embedSupported !== false)
+                  : allGames;
+
+                const randomGames = [...pool]
                   .sort(() => 0.5 - Math.random())
                   .slice(0, count);
                 setSelectedGameIds(randomGames.map((g) => g.id));
