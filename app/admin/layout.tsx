@@ -15,6 +15,8 @@ import {
 } from "lucide-react";
 import { DlesButton } from "@/components/design/dles-button";
 
+import { AdminSkeleton } from "@/components/skeletons/admin-skeleton";
+
 export default function AdminLayout({
   children,
 }: {
@@ -47,8 +49,10 @@ export default function AdminLayout({
   // Loading state
   if (impersonationLoading || isLoading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <main className="min-h-screen px-4 py-8 md:px-8 lg:px-12">
+        <div className="mx-auto max-w-7xl">
+          <AdminSkeleton />
+        </div>
       </main>
     );
   }

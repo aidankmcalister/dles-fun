@@ -65,12 +65,18 @@ export interface Race {
   raceGames: RaceGame[];
 }
 
+import { RaceSkeleton } from "@/components/skeletons/race-skeleton";
+
+// ... existing imports
+
 export default function RacePage() {
   const { id } = useParams() as { id: string };
   const router = useRouter();
   const { data: session, isPending: sessionLoading } = useSession();
   const [race, setRace] = useState<Race | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // ... (keeping fetchRace, useEffects, etc.)
 
   const fetchRace = useCallback(async () => {
     try {
@@ -197,11 +203,7 @@ export default function RacePage() {
   }, [race, id, router]);
 
   if (loading || sessionLoading) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
+    return <RaceSkeleton />;
   }
 
   if (!race) {
@@ -224,9 +226,5 @@ export default function RacePage() {
   }
 
   // Show loading while redirecting to the appropriate route
-  return (
-    <div className="flex h-[50vh] items-center justify-center">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-    </div>
-  );
+  return <RaceSkeleton />;
 }
