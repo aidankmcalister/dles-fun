@@ -9,7 +9,7 @@ import { GamesHeader } from "@/components/features/games/games-header";
 import { GameModal } from "@/components/features/games/game-modal";
 import type { Game } from "@/app/generated/prisma/client";
 import { usePlayedGames } from "@/lib/use-played-games";
-import { useLists } from "@/lib/use-lists";
+import { useLists, GameList } from "@/lib/use-lists";
 import { useStats } from "@/lib/stats-context";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import { DlesButton } from "@/components/design/dles-button";
 import { Search } from "lucide-react";
 import { useInView } from "react-intersection-observer";
+import { useSearchParams } from "next/navigation";
 
 import dynamic from "next/dynamic";
 
@@ -53,6 +54,45 @@ export function GamesClient({
 
   const { lists } = useLists();
   const { setStats } = useStats();
+  const searchParams = useSearchParams();
+
+  const [presetLists, setPresetLists] = useState<GameList[]>([]);
+
+  // Sync URL list param to filter
+  useEffect(() => {
+    const listParam = searchParams.get("list");
+    if (listParam) {
+      setListFilter(listParam);
+    }
+  }, [searchParams]);
+
+  // Fetch preset lists
+  useEffect(() => {
+    const fetchPresetLists = async () => {
+      try {
+        const res = await fetch("/api/preset-lists");
+        if (res.ok) {
+          const data = await res.json();
+          const formattedPresets: GameList[] = data.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            color: p.color,
+            gameCount: p.games.length,
+            games: p.games.map((g: any) => g.id),
+          }));
+          setPresetLists(formattedPresets);
+        }
+      } catch (error) {
+        console.error("Failed to fetch preset lists:", error);
+      }
+    };
+    fetchPresetLists();
+  }, []);
+
+  const allLists = useMemo(
+    () => [...presetLists, ...lists],
+    [presetLists, lists]
+  );
 
   const gameIds = useMemo(() => games.map((g) => g.id), [games]);
 
@@ -287,8 +327,8 @@ export function GamesClient({
         if (!showHidden && hiddenIds.has(g.id)) return false;
 
         // Filter by list
-        if (listFilter !== "all" && lists.length > 0) {
-          const list = lists.find((l) => l.id === listFilter);
+        if (listFilter !== "all" && allLists.length > 0) {
+          const list = allLists.find((l) => l.id === listFilter);
           if (list && !list.games.includes(g.id)) {
             return false;
           }
@@ -333,7 +373,7 @@ export function GamesClient({
     searchQuery,
     topicFilter,
     listFilter,
-    lists,
+    allLists,
     sortBy,
     playedIds,
     hiddenIds,
@@ -368,7 +408,7 @@ export function GamesClient({
         onTopicFilterChange={setTopicFilter}
         listFilter={listFilter}
         onListFilterChange={setListFilter}
-        lists={lists}
+        lists={allLists}
         sortBy={sortBy}
         onSortChange={setSortBy}
         onClear={handleClear}

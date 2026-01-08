@@ -65,8 +65,8 @@ export function HeaderFilters({
 
   return (
     <div className="flex flex-wrap gap-2 flex-1 md:flex-initial">
-      {/* Lists (authenticated only) */}
-      {isAuthenticated && lists.length > 0 && (
+      {/* Lists */}
+      {lists.length > 0 && (
         <DlesSelect
           value={listFilter}
           onChange={(val) => onListFilterChange(val)}
