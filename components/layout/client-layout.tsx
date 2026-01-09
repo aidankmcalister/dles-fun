@@ -34,7 +34,9 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
   const hideHeader =
     EXCLUDED_ROUTES.some(
       (route) => pathname === route || pathname.startsWith(route + "/")
-    ) || !!pathname.match(/^\/race\/[^/]+$/);
+    ) ||
+    (!!pathname.match(/^\/race\/[^/]+$/) &&
+      !["/race/new", "/race/stats"].includes(pathname));
 
   // Determine page title based on route
   const getPageTitle = () => {

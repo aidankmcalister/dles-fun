@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useInView } from "react-intersection-observer";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +25,7 @@ interface Game {
   topic: Topic;
   archived?: boolean;
   embedSupported?: boolean;
+  plays?: number;
 }
 
 interface GameSelectorProps {
@@ -58,24 +58,20 @@ export function GameSelector({
   topics,
   hideFilters = false,
 }: GameSelectorProps) {
-  // Lazy Rendering
-  const [visibleCount, setVisibleCount] = useState(24);
-  const { ref: loadMoreRef, inView } = useInView({
-    rootMargin: "500px",
-  });
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 39;
 
+  // Reset page when filters change
   useEffect(() => {
-    if (inView) {
-      setVisibleCount((prev) => prev + 24);
-    }
-  }, [inView]);
-
-  // Reset visible count when filters change
-  useEffect(() => {
-    setVisibleCount(24);
+    setCurrentPage(1);
   }, [searchQuery, selectedTopics]);
 
-  const displayedGames = filteredGames.slice(0, visibleCount);
+  const totalPages = Math.ceil(filteredGames.length / itemsPerPage);
+
+  const displayedGames = filteredGames
+    .sort((a, b) => (b.plays || 0) - (a.plays || 0))
+    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <section className="space-y-4">
@@ -112,7 +108,7 @@ export function GameSelector({
         </div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {displayedGames.map((game) => {
               const isSelected = selectedGameIds.includes(game.id);
               return (
@@ -122,8 +118,8 @@ export function GameSelector({
                   className={cn(
                     "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all select-none relative overflow-hidden",
                     isSelected
-                      ? "border-primary bg-primary/5"
-                      : "border-border hover:border-primary/30 hover:bg-muted/30"
+                      ? "border-primary/30 bg-primary/10"
+                      : "border-border hover:border-primary/30 hover:bg-muted/30 bg-card"
                   )}
                 >
                   <div
@@ -174,10 +170,37 @@ export function GameSelector({
             })}
           </div>
 
-          {/* Lazy Loader Trigger */}
-          {visibleCount < filteredGames.length && (
-            <div ref={loadMoreRef} className="py-4 flex justify-center w-full">
-              <div className="h-4" />
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 py-4">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="h-8"
+              >
+                Previous
+              </Button>
+              <div className="flex items-center gap-1.5 mx-2">
+                <span className="text-sm font-medium text-white">
+                  Page {currentPage}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  of {totalPages}
+                </span>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(totalPages, p + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="h-8"
+              >
+                Next
+              </Button>
             </div>
           )}
         </>

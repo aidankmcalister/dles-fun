@@ -149,10 +149,9 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
       <div className="flex w-full max-w-[1800px] h-[92vh] gap-6">
         {isAllFinished && race.status === "active" ? (
           // Waiting Screen - Centered floating card
-          <div className="flex-1 flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-500 rounded-3xl border border-white/10 bg-zinc-900/50 backdrop-blur-md shadow-2xl">
+          <div className="flex-1 flex flex-col items-center justify-center animate-in fade-in zoom-in-95 duration-500">
             <div className="relative mb-12">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full animate-pulse" />
-              <div className="relative bg-black/40 border border-white/10 p-10 rounded-3xl shadow-2xl flex flex-col items-center gap-6 min-w-[380px] backdrop-blur-md">
+              <div className="relative p-10 flex flex-col items-center gap-6 min-w-[380px]">
                 <Loader2 className="h-16 w-16 text-primary animate-spin" />
                 <h2 className="text-3xl font-bold mt-2 text-center text-white">
                   Waiting on{" "}

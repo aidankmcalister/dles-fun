@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { DlesButton } from "@/components/design/dles-button";
 import { Race } from "@/app/race/[id]/page";
-import { Home, RotateCcw, Loader2 } from "lucide-react";
+import { Home, Loader2 } from "lucide-react";
 import { WinnerCard } from "@/components/features/race/results/winner-card";
 import {
   ResultsList,
@@ -146,31 +146,86 @@ export default function RaceResultsPage() {
   }
 
   return (
-    <div className="container max-w-xl mx-auto py-8 space-y-6 px-4">
-      <WinnerCard winner={winner} isWinner={isWinner} />
+    <div className="container max-w-5xl mx-auto py-8 space-y-8 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8 items-start">
+        {/* Left Sidebar: Results Summary */}
+        <div className="lg:sticky lg:top-8 order-1 lg:order-none">
+          <WinnerCard
+            winner={winner}
+            isWinner={isWinner}
+            totalGames={race.raceGames.length}
+            sortedGames={sortedGames}
+            myResults={sortedParticipants.find((p) => p.id === myParticipantId)}
+          />
+        </div>
 
-      <ResultsList
-        sortedGames={sortedGames}
-        participantsWithSplits={participantsWithSplits}
-        sortedParticipants={sortedParticipants}
-        myParticipantId={myParticipantId}
-      />
+        {/* Right Content: Game List + Actions */}
+        <div className="space-y-12 order-2 lg:order-none min-w-0">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-1">
+              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
+                Race Breakdown
+              </h3>
+              <span className="text-xs font-mono text-white/30">
+                {sortedGames.length} GAMES
+              </span>
+            </div>
+            <ResultsList
+              sortedGames={sortedGames}
+              participantsWithSplits={participantsWithSplits}
+              sortedParticipants={sortedParticipants}
+              myParticipantId={myParticipantId}
+            />
+          </div>
 
-      {/* Actions */}
-      <div className="grid grid-cols-2 gap-4">
-        <DlesButton
-          href="/race/new"
-          className="h-12 border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 text-primary"
-        >
-          <RotateCcw className="h-4 w-4 mr-2" /> New Race
-        </DlesButton>
-        <DlesButton
-          href="/"
-          variant="outline"
-          className="h-12 border-border/40 hover:bg-muted/5 hover:border-border/60"
-        >
-          <Home className="h-4 w-4 mr-2" /> Home
-        </DlesButton>
+          {/* Actions (Moved here) */}
+          <div className="flex flex-col items-center gap-6 pb-20">
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
+              <DlesButton
+                href="/race/new"
+                className="h-14 px-10 font-bold text-lg w-full sm:w-auto min-w-[220px]"
+              >
+                Start New Race
+              </DlesButton>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <DlesButton
+                onClick={() => {
+                  const wins =
+                    winner?.splits.filter(
+                      (s) => s.duration !== null && !s.skipped
+                    ).length || 0;
+                  const text = `🏁 Race Results 🏁\n\n${
+                    isWinner ? "🏆 I Won!" : "🥈 Race Complete"
+                  }\n⏱️ Time: ${Math.floor((winner?.totalTime || 0) / 60)}:${(
+                    (winner?.totalTime || 0) % 60
+                  )
+                    .toString()
+                    .padStart(2, "0")}\n🎯 Score: ${wins}/${
+                    race.raceGames.length
+                  }\n\nPlay at dles.fun`;
+                  navigator.clipboard.writeText(text);
+                  toast.success("Results copied to clipboard!");
+                }}
+                variant="ghost"
+                className="text-muted-foreground hover:text-white"
+              >
+                Share Results
+              </DlesButton>
+
+              <div className="h-4 w-px bg-white/10" />
+
+              <DlesButton
+                href="/"
+                variant="ghost"
+                className="text-muted-foreground hover:text-white"
+              >
+                <Home className="h-4 w-4 mr-2" /> Home
+              </DlesButton>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
