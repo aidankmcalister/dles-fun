@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getCurrentUser, canManageGames } from "@/lib/auth-helpers";
-import type { Topic } from "@/app/generated/prisma/client";
+import type { Topic, Prisma } from "@/app/generated/prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const sortOrder =
       (searchParams.get("sortOrder") as "asc" | "desc") || "asc";
 
-    let where: any = {};
+    const where: Prisma.GameWhereInput = {};
 
     // Archival check
     if (!includeArchived) {
@@ -35,21 +35,20 @@ export async function GET(request: Request) {
       where.OR = [
         { title: { contains: search, mode: "insensitive" } },
         { description: { contains: search, mode: "insensitive" } },
-        { topic: { contains: search, mode: "insensitive" } },
       ];
     }
 
     // Topic filter
     if (topic && topic !== "all") {
-      // Handle multiple topics if needed, but simple string for now or comma separated
-      const topics = topic.split(",").filter(Boolean);
+      // Handle multiple topics - cast to Topic enum array
+      const topics = topic.split(",").filter(Boolean) as Topic[];
       if (topics.length > 0) {
         where.topic = { in: topics };
       }
     }
 
     // Determine sort
-    let orderBy: any = {};
+    let orderBy: Prisma.GameOrderByWithRelationInput = {};
     if (sortBy === "topic") {
       orderBy = { topic: sortOrder };
     } else if (sortBy === "playCount") {

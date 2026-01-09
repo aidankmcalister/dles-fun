@@ -2,7 +2,13 @@ import { getSession } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { ListsClient } from "./lists-client";
+import type { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: "Lists | dles.fun",
+  description:
+    "Organize your daily games into custom collections. Create and manage personalized playlists of your favorite games.",
+};
 export default async function ListsPage() {
   const session = await getSession();
 

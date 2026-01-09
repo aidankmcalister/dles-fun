@@ -212,8 +212,6 @@ export function SettingsTab() {
                     {(() => {
                       if (!config) return null;
 
-                      if (!config) return null;
-
                       const changes = calculateSettingsDiff(
                         config,
                         DEFAULT_CONFIG

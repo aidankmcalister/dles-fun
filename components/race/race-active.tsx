@@ -104,10 +104,10 @@ export function RaceActive({ race, currentUser, onRefresh }: RaceActiveProps) {
 
   const activeGame = race.raceGames.find((rg) => rg.id === activeGameId);
 
-  // Mark unsupported handler (optional for now, can implement if needed)
-  const handleMarkUnsupported = async (id: string) => {
-    // Implement if needed for races
-    console.log("Mark unsupported", id);
+  // Mark unsupported handler - no-op for races since game embed status
+  // doesn't need to persist from race context
+  const handleMarkUnsupported = async (_id: string) => {
+    // No-op for races
   };
 
   return (

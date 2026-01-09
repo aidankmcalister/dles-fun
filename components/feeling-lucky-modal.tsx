@@ -7,7 +7,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import type { Game } from "@/app/generated/prisma/client";
-import { cn } from "@/lib/utils";
 import { Dices } from "lucide-react";
 import { useFeelingLucky } from "./feeling-lucky/use-feeling-lucky";
 import { FeelingLuckyWinner } from "./feeling-lucky/feeling-lucky-winner";

@@ -146,13 +146,14 @@ export const GameCard = React.memo(function GameCard({
               {onHide && (
                 <button
                   onClick={handleHide}
+                  aria-label="Hide game"
                   className={cn(
                     "p-0.5 rounded-md text-muted-foreground shrink-0",
                     "opacity-0 group-hover:opacity-100 transition-opacity",
                     "hover:bg-muted hover:text-foreground"
                   )}
                 >
-                  <EyeOff className="h-2.5 w-2.5" />
+                  <EyeOff className="h-2.5 w-2.5" aria-hidden="true" />
                 </button>
               )}
             </div>

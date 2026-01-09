@@ -77,7 +77,7 @@ export async function POST(
 
     let updatedParticipant = participant;
     if (finishedAll) {
-      updatedParticipant = (await prisma.raceParticipant.update({
+      updatedParticipant = await prisma.raceParticipant.update({
         where: { id: participant.id },
         data: {
           finishedAt: now,
@@ -86,7 +86,7 @@ export async function POST(
         include: {
           completions: true,
         },
-      })) as any;
+      });
     }
 
     const allFinished = race.participants.every((p) =>

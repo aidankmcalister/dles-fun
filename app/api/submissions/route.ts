@@ -21,6 +21,26 @@ export async function POST(request: Request) {
       );
     }
 
+    // Enforce daily submission rate limit
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const submissionCount = await prisma.gameSubmission.count({
+      where: {
+        submittedBy: session.user.id,
+        createdAt: { gte: today },
+      },
+    });
+
+    const maxPerDay = config?.maxSubmissionsPerDay ?? 5;
+    if (submissionCount >= maxPerDay) {
+      return NextResponse.json(
+        {
+          error: `Daily submission limit (${maxPerDay}) reached. Try again tomorrow.`,
+        },
+        { status: 429 }
+      );
+    }
+
     const { title, link, topic, description } = await request.json();
 
     if (!title || !link || !topic) {

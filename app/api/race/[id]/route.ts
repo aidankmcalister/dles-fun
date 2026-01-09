@@ -113,8 +113,6 @@ export async function PATCH(
 
     // Trigger Pusher update if needed in future
     return NextResponse.json({ success: true });
-
-    return NextResponse.json({ success: true });
   } catch (error) {
     if (error instanceof z.ZodError) {
       return new NextResponse(JSON.stringify(error.issues), { status: 400 });

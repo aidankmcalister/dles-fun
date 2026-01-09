@@ -1,0 +1,12 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /api
+
+# Host
+Host: https://dles.fun
+
+# Sitemaps
+Sitemap: https://dles.fun/sitemap.xml

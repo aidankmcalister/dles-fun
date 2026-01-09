@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useSession } from "@/lib/auth-client";
 import { getPlayedIds, savePlayedIds } from "@/lib/played-state";
 import { getCurrentStreak, getLongestStreak } from "@/lib/streaks";
@@ -34,6 +34,9 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!session?.user;
+
+  // Create a stable key for gameIds to avoid re-renders from array reference changes
+  const gameIdsKey = useMemo(() => gameIds.slice().sort().join(","), [gameIds]);
 
   // Fetch user games from API if authenticated
   useEffect(() => {
@@ -98,7 +101,7 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
     };
 
     fetchData();
-  }, [isAuthenticated, isPending, JSON.stringify([...gameIds].sort())]);
+  }, [isAuthenticated, isPending, gameIdsKey]);
 
   const markAsPlayed = useCallback(
     async (gameId: string) => {
