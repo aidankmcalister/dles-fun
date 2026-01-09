@@ -245,14 +245,15 @@ export function UserButton() {
 
         <DropdownMenuSeparator />
 
-        <div className="flex justify-center p-1">
+        <div className="flex items-center justify-center gap-1.5 p-1">
           <a
             href="https://github.com/aidankmcalister/dles-fun"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground/50 hover:text-foreground transition-colors p-1"
+            className="flex items-center gap-1.5 text-xs text-muted-foreground/70 hover:text-foreground transition-colors"
           >
-            <Github className="h-4 w-4" />
+            <Github className="h-3.5 w-3.5" />
+            <span>Open Source</span>
           </a>
         </div>
       </DropdownMenuContent>
