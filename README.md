@@ -15,9 +15,12 @@
   - **Lobby System**: Create a lobby, invite friends via link.
   - **Live Progress**: See opponent progress in real-time.
   - **Modal Play**: Play compatible games directly inside the race interface without leaving.
-- **📊 Stats & Streaks**: Automatically track which games you've played.
+- **📊 Stats & Streaks**: Automatically track which games you've played with visual indicators and history.
 - **📝 Custom Lists**: Organize games into routine-based lists (e.g., "Morning Coffee", "Speedrun").
-- **🎲 Feeling Lucky**: Let the randomizer pick a game for you.
+- **🎲 Feeling Lucky**: Let the randomizer pick a game for you (Press `K`).
+- **⌨️ Keyboard Shortcuts**: Navigate the grid, launch games, and search without leaving the keyboard. Press `?` to view the cheat sheet.
+- **🖱️ Quick Actions**: Right-click any game for instant options like "Mark as Played" or "Copy Link".
+- **🔍 Smart Filtering**: Sort by "Last Played", filter by topic, or hide games you've already finished today.
 
 ### 🎥 For Streamers
 

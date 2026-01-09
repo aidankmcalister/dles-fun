@@ -66,6 +66,7 @@ export interface GameCardProps {
   onPlay: (id: string) => void;
   onHide?: (id: string) => void;
   onMarkPlayed?: (id: string) => void;
+  onUnmarkPlayed?: (id: string) => void;
   createdAt?: Date;
   index?: number;
   minimal?: boolean;
@@ -86,6 +87,7 @@ export const GameCard = React.memo(function GameCard({
   onPlay,
   onHide,
   onMarkPlayed,
+  onUnmarkPlayed,
   createdAt,
   index = 0,
   minimal = false,
@@ -172,19 +174,6 @@ export const GameCard = React.memo(function GameCard({
                 gameId={id}
                 className="opacity-0 group-hover:opacity-100 transition-opacity"
               />
-              {onHide && (
-                <button
-                  onClick={handleHide}
-                  aria-label="Hide game"
-                  className={cn(
-                    "p-0.5 rounded-md text-muted-foreground shrink-0",
-                    "opacity-0 group-hover:opacity-100 transition-opacity",
-                    "hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <EyeOff className="h-2.5 w-2.5" aria-hidden="true" />
-                </button>
-              )}
             </div>
           )}
         </div>
@@ -206,6 +195,13 @@ export const GameCard = React.memo(function GameCard({
     }
   };
 
+  const handleUnmarkPlayed = () => {
+    if (onUnmarkPlayed && isPlayed) {
+      onUnmarkPlayed(id);
+      toast.info("Unmarked as played", { description: title });
+    }
+  };
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
@@ -213,20 +209,26 @@ export const GameCard = React.memo(function GameCard({
       </ContextMenuTrigger>
       <ContextMenuContent className="w-48">
         {!isPlayed && onMarkPlayed && (
-          <ContextMenuItem onClick={handleMarkPlayed}>
-            <CheckCircle className="h-4 w-4 mr-2" />
+          <ContextMenuItem className="text-xs" onClick={handleMarkPlayed}>
+            <CheckCircle className="h-2 w-2 mr-2" />
             Mark as Played
           </ContextMenuItem>
         )}
-        <ContextMenuItem onClick={handleCopyUrl}>
-          <Copy className="h-4 w-4 mr-2" />
+        {isPlayed && onUnmarkPlayed && (
+          <ContextMenuItem className="text-xs" onClick={handleUnmarkPlayed}>
+            <CheckCircle className="h-2 w-2 mr-2 opacity-50" />
+            Unmark as Played
+          </ContextMenuItem>
+        )}
+        <ContextMenuItem className="text-xs" onClick={handleCopyUrl}>
+          <Copy className="h-2 w-2 mr-2" />
           Copy URL
         </ContextMenuItem>
         {onHide && (
           <>
             <ContextMenuSeparator />
-            <ContextMenuItem onClick={() => onHide(id)}>
-              <EyeOff className="h-4 w-4 mr-2" />
+            <ContextMenuItem className="text-xs" onClick={() => onHide(id)}>
+              <EyeOff className="h-2 w-2 mr-2" />
               {isPlayed ? "Hide Game" : "Hide Game"}
             </ContextMenuItem>
           </>

@@ -14,7 +14,7 @@ export async function PATCH(
     }
 
     const { gameId } = await params;
-    const { hidden } = await request.json();
+    const { hidden, played } = await request.json();
 
     // Check if record exists to preserve played status
     const existing = await prisma.userGame.findUnique({
@@ -34,12 +34,15 @@ export async function PATCH(
           gameId,
         },
       },
-      update: { hidden },
+      update: {
+        hidden: hidden !== undefined ? hidden : undefined,
+        played: played !== undefined ? played : undefined,
+      },
       create: {
         userId: session.user.id,
         gameId,
-        hidden,
-        played: false, // Hidden-only, not played
+        hidden: hidden || false,
+        played: played || false,
       },
     });
 

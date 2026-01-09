@@ -107,6 +107,7 @@ export function GamesClient({
     isLoading: isStatsLoading,
     isAuthenticated,
     markAsPlayed,
+    unmarkAsPlayed,
     toggleHidden,
     syncFromLocalStorage,
     clearLocalPlayed,
@@ -524,6 +525,7 @@ export function GamesClient({
           onPlay={handlePlay}
           onHide={isAuthenticated ? handleHide : undefined}
           onMarkPlayed={handleModalPlay}
+          onUnmarkPlayed={unmarkAsPlayed}
         />
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">

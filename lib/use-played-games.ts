@@ -21,6 +21,7 @@ interface UsePlayedGamesResult {
   isLoading: boolean;
   isAuthenticated: boolean;
   markAsPlayed: (gameId: string) => Promise<void>;
+  unmarkAsPlayed: (gameId: string) => Promise<void>;
   toggleHidden: (gameId: string, hidden: boolean) => Promise<void>;
   syncFromLocalStorage: () => Promise<void>;
   clearLocalPlayed: () => void;
@@ -203,6 +204,40 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
     [isAuthenticated]
   );
 
+  const unmarkAsPlayed = useCallback(
+    async (gameId: string) => {
+      // Optimistic update
+      setPlayedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(gameId);
+        return next;
+      });
+
+      if (isAuthenticated) {
+        try {
+          await fetch(`/api/user-games/${gameId}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ played: false }),
+          });
+        } catch (error) {
+          console.error("Failed to unmark as played:", error);
+          // Revert on failure
+          setPlayedIds((prev) => new Set(prev).add(gameId));
+        }
+      } else {
+        // Save to localStorage for guests
+        setPlayedIds((prev) => {
+          const next = new Set(prev);
+          next.delete(gameId);
+          savePlayedIds(next);
+          return next;
+        });
+      }
+    },
+    [isAuthenticated]
+  );
+
   const syncFromLocalStorage = useCallback(async () => {
     if (!isAuthenticated) return;
 
@@ -243,6 +278,7 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
     isLoading,
     isAuthenticated,
     markAsPlayed,
+    unmarkAsPlayed,
     toggleHidden,
     syncFromLocalStorage,
     clearLocalPlayed,
