@@ -47,12 +47,12 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
 
       if (isAuthenticated) {
         try {
+          // Fetch user games for today's played status and hidden status
           const res = await fetch("/api/user-games");
           if (res.ok) {
             const userGames: UserGame[] = await res.json();
             const played = new Set<string>();
             const hidden = new Set<string>();
-            const dates: Date[] = [];
 
             const today = new Date().toISOString().split("T")[0];
             userGames.forEach((ug) => {
@@ -65,11 +65,6 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
                   played.add(ug.gameId);
                 }
 
-                // Still add all dates for streak purposes
-                if (ug.played) {
-                  dates.push(new Date(ug.playedAt));
-                }
-
                 if (ug.hidden) {
                   hidden.add(ug.gameId);
                 }
@@ -78,6 +73,13 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
 
             setPlayedIds(played);
             setHiddenIds(hidden);
+          }
+
+          // Fetch play history from GamePlayLog for accurate streak calculation
+          const historyRes = await fetch("/api/user-games/history");
+          if (historyRes.ok) {
+            const { dates: dateStrings } = await historyRes.json();
+            const dates = dateStrings.map((d: string) => new Date(d));
             setPlayedDates(dates);
           }
         } catch (error) {

@@ -189,6 +189,14 @@ export function GamesClient({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  // Define handleClear before using it in useEffect
+  const handleClear = useCallback(() => {
+    clearLocalPlayed();
+    toast.success("Progress reset", {
+      description: "All daily progress has been cleared.",
+    });
+  }, [clearLocalPlayed]);
+
   // Sync localStorage to server on sign-in
   useEffect(() => {
     if (isAuthenticated && !isStatsLoading) {
@@ -216,6 +224,7 @@ export function GamesClient({
     isAuthenticated,
     isStatsLoading,
     setStats,
+    handleClear,
   ]);
 
   const handlePlay = async (id: string) => {
@@ -247,22 +256,26 @@ export function GamesClient({
     }
   };
 
-  const handleModalPlay = async (id: string) => {
-    await markAsPlayed(id);
+  const handleModalPlay = useCallback(
+    async (id: string) => {
+      await markAsPlayed(id);
 
-    const gameIndex = games.findIndex((g) => g.id === id);
-    if (gameIndex !== -1) {
-      const game = games[gameIndex];
-
-      // Optimistic update for play count
-      const updatedGames = [...games];
-      updatedGames[gameIndex] = {
-        ...game,
-        playCount: (game.playCount || 0) + 1,
-      };
-      setGames(updatedGames);
-    }
-  };
+      setGames((prevGames) => {
+        const gameIndex = prevGames.findIndex((g) => g.id === id);
+        if (gameIndex !== -1) {
+          const game = prevGames[gameIndex];
+          const updatedGames = [...prevGames];
+          updatedGames[gameIndex] = {
+            ...game,
+            playCount: (game.playCount || 0) + 1,
+          };
+          return updatedGames;
+        }
+        return prevGames;
+      });
+    },
+    [markAsPlayed]
+  );
 
   const handleMarkUnsupported = useCallback(async (id: string) => {
     try {
@@ -292,13 +305,6 @@ export function GamesClient({
         }.`,
       });
     }
-  };
-
-  const handleClear = () => {
-    clearLocalPlayed();
-    toast.success("Progress reset", {
-      description: "All daily progress has been cleared.",
-    });
   };
 
   const handleClearFilters = () => {
