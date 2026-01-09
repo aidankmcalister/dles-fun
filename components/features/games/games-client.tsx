@@ -31,7 +31,9 @@ const FeelingLuckyModal = dynamic(
   }
 );
 
-type SortOption = "title" | "topic" | "played" | "playCount";
+import { KeyboardShortcutsModal } from "@/components/keyboard-shortcuts-modal";
+
+type SortOption = "title" | "topic" | "playCount" | "lastPlayed";
 
 export function GamesClient({
   games: initialGames,
@@ -49,7 +51,9 @@ export function GamesClient({
   const [listFilter, setListFilter] = useState("all");
   const [showHidden, setShowHidden] = useState(false);
   const [embedOnly, setEmbedOnly] = useState(false);
+  const [hidePlayedToday, setHidePlayedToday] = useState(false);
   const [isLuckyModalOpen, setIsLuckyModalOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
   const [openGame, setOpenGame] = useState<Game | null>(null);
 
   const { lists } = useLists();
@@ -106,6 +110,7 @@ export function GamesClient({
     toggleHidden,
     syncFromLocalStorage,
     clearLocalPlayed,
+    playedDates,
   } = usePlayedGames(gameIds);
 
   // Keyboard shortcuts
@@ -332,6 +337,9 @@ export function GamesClient({
         // Hide games if not showing hidden
         if (!showHidden && hiddenIds.has(g.id)) return false;
 
+        // Hide played games if toggle is on
+        if (hidePlayedToday && playedIds.has(g.id)) return false;
+
         // Filter by list
         if (listFilter !== "all" && allLists.length > 0) {
           const list = allLists.find((l) => l.id === listFilter);
@@ -367,11 +375,16 @@ export function GamesClient({
           return (
             a.topic.localeCompare(b.topic) || a.title.localeCompare(b.title)
           );
-        if (sortBy === "played")
-          return (
-            (playedIds.has(a.id) ? 1 : 0) - (playedIds.has(b.id) ? 1 : 0) ||
-            a.title.localeCompare(b.title)
-          );
+
+        if (sortBy === "lastPlayed") {
+          const dateA = playedDates[a.id]?.[0]
+            ? new Date(playedDates[a.id][0]).getTime()
+            : 0;
+          const dateB = playedDates[b.id]?.[0]
+            ? new Date(playedDates[b.id][0]).getTime()
+            : 0;
+          return dateB - dateA || a.title.localeCompare(b.title);
+        }
         return a.title.localeCompare(b.title);
       });
   }, [
@@ -385,6 +398,7 @@ export function GamesClient({
     hiddenIds,
     showHidden,
     embedOnly,
+    hidePlayedToday,
   ]);
 
   const mappedGames = useMemo(
@@ -401,6 +415,55 @@ export function GamesClient({
       })),
     [filteredGames, newGameMinutes]
   );
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if input/textarea is focused
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        if (e.key === "Escape") {
+          (document.activeElement as HTMLElement).blur();
+        }
+        return;
+      }
+
+      // Help
+      if (e.key === "?") {
+        e.preventDefault();
+        setIsShortcutsOpen((prev) => !prev);
+      }
+
+      // Search
+      if (e.key === "/") {
+        e.preventDefault();
+        const searchInput = document.querySelector(
+          'input[placeholder*="Search"]'
+        ) as HTMLInputElement;
+        searchInput?.focus();
+      }
+
+      // Number keys 1-9
+      const num = parseInt(e.key);
+      if (!isNaN(num) && num >= 1 && num <= 9) {
+        const game = filteredGames[num - 1]; // Use filtered games instead of mappedGames to avoid complexity
+        if (game) {
+          handlePlay(game.id);
+        }
+      }
+
+      // Random
+      if (e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        handleRandomGame();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [filteredGames, handlePlay]);
 
   return (
     <div className="space-y-6">
@@ -426,6 +489,8 @@ export function GamesClient({
         isAuthenticated={isAuthenticated}
         embedOnly={embedOnly}
         onEmbedOnlyChange={setEmbedOnly}
+        hidePlayedToday={hidePlayedToday}
+        onHidePlayedTodayChange={setHidePlayedToday}
       />
 
       <FeelingLuckyModal
@@ -434,6 +499,11 @@ export function GamesClient({
         games={games}
         playedIds={playedIds}
         onPlay={handlePlay}
+      />
+
+      <KeyboardShortcutsModal
+        open={isShortcutsOpen}
+        onOpenChange={setIsShortcutsOpen}
       />
 
       <GameModal
@@ -451,6 +521,7 @@ export function GamesClient({
           playedIds={playedIds}
           onPlay={handlePlay}
           onHide={isAuthenticated ? handleHide : undefined}
+          onMarkPlayed={handleModalPlay}
         />
       ) : (
         <div className="flex flex-col items-center justify-center py-16 text-center">

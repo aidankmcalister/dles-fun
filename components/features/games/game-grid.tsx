@@ -10,10 +10,14 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useInView } from "react-intersection-observer";
 
 interface GameGridProps {
-  games: Omit<GameCardProps, "isPlayed" | "onPlay" | "onHide">[];
+  games: Omit<
+    GameCardProps,
+    "isPlayed" | "onPlay" | "onHide" | "onMarkPlayed"
+  >[];
   playedIds: Set<string>;
   onPlay: (id: string) => void;
   onHide?: (id: string) => void;
+  onMarkPlayed?: (id: string) => void;
 }
 
 const GRID_CLASSES =
@@ -28,6 +32,7 @@ export const GameGrid = React.memo(function GameGrid({
   playedIds,
   onPlay,
   onHide,
+  onMarkPlayed,
 }: GameGridProps) {
   const [visibleCount, setVisibleCount] = useState(INITIAL_BATCH);
   const { ref, inView } = useInView({
@@ -61,6 +66,7 @@ export const GameGrid = React.memo(function GameGrid({
           isPlayed={playedIds.has(game.id)}
           onPlay={onPlay}
           onHide={onHide}
+          onMarkPlayed={onMarkPlayed}
         />
       ))}
 

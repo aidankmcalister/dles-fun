@@ -13,7 +13,7 @@ import { ArrowDownAZ, LayoutGrid, Clock, TrendingUp } from "lucide-react";
 import { GameList } from "@/lib/use-lists";
 import { cn } from "@/lib/utils";
 
-type SortOption = "title" | "topic" | "played" | "playCount";
+type SortOption = "title" | "topic" | "playCount" | "lastPlayed";
 
 interface HeaderFiltersProps {
   topicFilter: string[];
@@ -164,10 +164,10 @@ export function HeaderFilters({
               <span>Category</span>
             </div>
           </SelectItem>
-          <SelectItem value="played">
+          <SelectItem value="lastPlayed">
             <div className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
-              <span>Unplayed</span>
+              <span>Last Played</span>
             </div>
           </SelectItem>
         </SelectContent>

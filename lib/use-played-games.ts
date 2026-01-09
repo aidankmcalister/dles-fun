@@ -24,13 +24,18 @@ interface UsePlayedGamesResult {
   toggleHidden: (gameId: string, hidden: boolean) => Promise<void>;
   syncFromLocalStorage: () => Promise<void>;
   clearLocalPlayed: () => void;
+  playedDates: Record<string, string[]>;
 }
 
 export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
   const { data: session, isPending } = useSession();
   const [playedIds, setPlayedIds] = useState<Set<string>>(new Set());
   const [hiddenIds, setHiddenIds] = useState<Set<string>>(new Set());
-  const [playedDates, setPlayedDates] = useState<Date[]>([]);
+  // Store played dates as map: gameId -> array of ISO date strings
+  const [playedDatesMap, setPlayedDatesMap] = useState<
+    Record<string, string[]>
+  >({});
+  const [historyDates, setHistoryDates] = useState<Date[]>([]); // For streak calculation
   const [isLoading, setIsLoading] = useState(true);
 
   const isAuthenticated = !!session?.user;
@@ -73,6 +78,13 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
 
             setPlayedIds(played);
             setHiddenIds(hidden);
+
+            const map: Record<string, string[]> = {};
+            userGames.forEach((ug) => {
+              if (!map[ug.gameId]) map[ug.gameId] = [];
+              map[ug.gameId].push(ug.playedAt);
+            });
+            setPlayedDatesMap(map);
           }
 
           // Fetch play history from GamePlayLog for accurate streak calculation
@@ -80,7 +92,7 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
           if (historyRes.ok) {
             const { dates: dateStrings } = await historyRes.json();
             const dates = dateStrings.map((d: string) => new Date(d));
-            setPlayedDates(dates);
+            setHistoryDates(dates);
           }
         } catch (error) {
           console.error("Failed to fetch user games:", error);
@@ -96,7 +108,7 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
         });
         setPlayedIds(validIds);
         setHiddenIds(new Set()); // Guests can't hide
-        setPlayedDates([]); // No streak tracking for guests
+        setHistoryDates([]); // No streak tracking for guests
       }
 
       setIsLoading(false);
@@ -117,7 +129,11 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ gameId }),
           });
-          setPlayedDates((prev) => [...prev, new Date()]);
+          setHistoryDates((prev) => [...prev, new Date()]);
+          setPlayedDatesMap((prev) => ({
+            ...prev,
+            [gameId]: [...(prev[gameId] || []), new Date().toISOString()],
+          }));
         } catch (error) {
           console.error("Failed to mark as played:", error);
           // Revert on failure
@@ -134,6 +150,12 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
           savePlayedIds(next);
           return next;
         });
+        // Update local map (optional, but good for immediate sort update for guests)
+        setPlayedDatesMap((prev) => ({
+          ...prev,
+          [gameId]: [...(prev[gameId] || []), new Date().toISOString()],
+        }));
+
         // Still update play count
         fetch(`/api/games/${gameId}/play`, { method: "PATCH" }).catch(
           console.error
@@ -216,13 +238,14 @@ export function usePlayedGames(gameIds: string[]): UsePlayedGamesResult {
   return {
     playedIds,
     hiddenIds,
-    currentStreak: getCurrentStreak(playedDates),
-    longestStreak: getLongestStreak(playedDates),
+    currentStreak: getCurrentStreak(historyDates),
+    longestStreak: getLongestStreak(historyDates),
     isLoading,
     isAuthenticated,
     markAsPlayed,
     toggleHidden,
     syncFromLocalStorage,
     clearLocalPlayed,
+    playedDates: playedDatesMap,
   };
 }

@@ -9,17 +9,27 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { cn, formatTopic } from "@/lib/utils";
 import { TOPIC_COLORS, TOPIC_SHADOWS, extractDomain } from "@/lib/constants";
-import { ExternalLink, EyeOff, Check } from "lucide-react";
+import {
+  ExternalLink,
+  EyeOff,
+  Check,
+  Copy,
+  CheckCircle,
+  ListPlus,
+} from "lucide-react";
 import { ListsDropdown } from "../lists/lists-dropdown";
 import { DlesBadge } from "@/components/design/dles-badge";
+import { toast } from "sonner";
 
 /**
  * Check if a date is within the last N minutes
@@ -28,6 +38,21 @@ function isWithinMinutes(date: Date, minutes: number): boolean {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   return diff < minutes * 60 * 1000;
+}
+
+/**
+ * Format relative time for display
+ */
+function formatRelativeTime(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - new Date(date).getTime();
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (diffDays === 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
+  return `${Math.floor(diffDays / 30)} months ago`;
 }
 
 export interface GameCardProps {
@@ -40,11 +65,15 @@ export interface GameCardProps {
   isPlayed: boolean;
   onPlay: (id: string) => void;
   onHide?: (id: string) => void;
+  onMarkPlayed?: (id: string) => void;
   createdAt?: Date;
   index?: number;
   minimal?: boolean;
   newGameMinutes?: number;
   embedSupported?: boolean;
+  // Stats for tooltip
+  lastPlayed?: Date | null;
+  totalPlays?: number;
 }
 
 export const GameCard = React.memo(function GameCard({
@@ -56,11 +85,14 @@ export const GameCard = React.memo(function GameCard({
   isPlayed,
   onPlay,
   onHide,
+  onMarkPlayed,
   createdAt,
   index = 0,
   minimal = false,
   newGameMinutes = 10080, // Default 7 days
   embedSupported = true,
+  lastPlayed,
+  totalPlays,
 }: GameCardProps) {
   const handleClick = () => {
     if (minimal) return;
@@ -113,15 +145,13 @@ export const GameCard = React.memo(function GameCard({
             >
               {title}
             </CardTitle>
+            {isPlayed && (
+              <Check className="h-3 w-3 p-0.5 rounded-full bg-emerald-500/80 text-white shrink-0" />
+            )}
             {embedSupported === false && (
               <ExternalLink className="h-2.5 w-2.5 shrink-0 text-muted-foreground/50 opacity-0 group-hover:opacity-100 transition-all" />
             )}
           </span>
-          {isPlayed && (
-            <span className="flex items-center text-muted-foreground shrink-0">
-              <Check className="h-2.5 w-2.5" />
-            </span>
-          )}
         </div>
 
         {/* Link row */}
@@ -130,9 +160,8 @@ export const GameCard = React.memo(function GameCard({
         </CardDescription>
 
         {/* Badge and actions row */}
-        <div className="flex items-center justify-between gap-0.5">
+        <div className="flex items-center gap-0.5 justify-between w-full">
           <DlesBadge text={formatTopic(topic)} color={topic} size="xs" />
-
           {/* Actions */}
           {!minimal && (
             <div
@@ -163,5 +192,46 @@ export const GameCard = React.memo(function GameCard({
     </Card>
   );
 
-  return cardContent;
+  // Removed tooltip as requested
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(link);
+    toast.success("URL copied", { description: link });
+  };
+
+  const handleMarkPlayed = () => {
+    if (onMarkPlayed && !isPlayed) {
+      onMarkPlayed(id);
+      toast.success("Marked as played", { description: title });
+    }
+  };
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <div>{cardContent}</div>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-48">
+        {!isPlayed && onMarkPlayed && (
+          <ContextMenuItem onClick={handleMarkPlayed}>
+            <CheckCircle className="h-4 w-4 mr-2" />
+            Mark as Played
+          </ContextMenuItem>
+        )}
+        <ContextMenuItem onClick={handleCopyUrl}>
+          <Copy className="h-4 w-4 mr-2" />
+          Copy URL
+        </ContextMenuItem>
+        {onHide && (
+          <>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={() => onHide(id)}>
+              <EyeOff className="h-4 w-4 mr-2" />
+              {isPlayed ? "Hide Game" : "Hide Game"}
+            </ContextMenuItem>
+          </>
+        )}
+      </ContextMenuContent>
+    </ContextMenu>
+  );
 });

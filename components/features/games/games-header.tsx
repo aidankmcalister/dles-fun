@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Dices, Eye, EyeOff, MonitorPlay } from "lucide-react";
+import { Dices, Eye, EyeOff, MonitorPlay, CheckCircle } from "lucide-react";
 import { DlesButton } from "@/components/design/dles-button";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
@@ -16,7 +16,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-type SortOption = "title" | "topic" | "played" | "playCount";
+type SortOption = "title" | "topic" | "playCount" | "lastPlayed";
 
 interface GamesHeaderProps {
   playedCount: number;
@@ -40,6 +40,8 @@ interface GamesHeaderProps {
   isAuthenticated?: boolean;
   embedOnly?: boolean;
   onEmbedOnlyChange?: (embedOnly: boolean) => void;
+  hidePlayedToday?: boolean;
+  onHidePlayedTodayChange?: (hide: boolean) => void;
 }
 
 /**
@@ -63,6 +65,9 @@ export function GamesHeader(props: GamesHeaderProps) {
     isAuthenticated = false,
     embedOnly = false,
     onEmbedOnlyChange,
+    hidePlayedToday = false,
+    onHidePlayedTodayChange,
+    playedCount,
   } = props;
 
   const headerRef = useRef<HTMLDivElement>(null);
@@ -115,6 +120,41 @@ export function GamesHeader(props: GamesHeaderProps) {
             {/* Actions */}
             <div className="flex items-center gap-2 md:ml-auto shrink-0">
               <TooltipProvider delayDuration={200}>
+                {/* Hide Played Today Toggle */}
+                {onHidePlayedTodayChange && playedCount > 0 && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={cn(
+                          "flex items-center gap-2 px-3 h-10 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer select-none",
+                          hidePlayedToday && "border-primary/50 bg-primary/5"
+                        )}
+                        onClick={() =>
+                          onHidePlayedTodayChange(!hidePlayedToday)
+                        }
+                      >
+                        <CheckCircle className="h-3.5 w-3.5" />
+                        <span className="text-xs font-medium hidden sm:inline">
+                          Played
+                        </span>
+                        <span className="text-[10px] opacity-70">
+                          {playedCount}
+                        </span>
+                        <Switch
+                          checked={hidePlayedToday}
+                          className="scale-75 ml-1 origin-center pointer-events-none"
+                          aria-label="Hide played games"
+                        />
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      {hidePlayedToday
+                        ? "Showing all games"
+                        : `Hide ${playedCount} played games`}
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+
                 {/* In-Modal Toggle */}
                 {onEmbedOnlyChange && (
                   <Tooltip>
