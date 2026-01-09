@@ -149,7 +149,7 @@ export default function RaceResultsPage() {
     <div className="container max-w-5xl mx-auto py-8 space-y-8 px-4">
       <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-8 items-start">
         {/* Left Sidebar: Results Summary */}
-        <div className="lg:sticky lg:top-8 order-1 lg:order-none">
+        <div className="lg:sticky lg:top-8 order-1 lg:order-0">
           <WinnerCard
             winner={winner}
             isWinner={isWinner}
@@ -160,7 +160,7 @@ export default function RaceResultsPage() {
         </div>
 
         {/* Right Content: Game List + Actions */}
-        <div className="space-y-12 order-2 lg:order-none min-w-0">
+        <div className="space-y-12 order-2 lg:order-0 min-w-0">
           <div className="space-y-4">
             <div className="flex items-center justify-between px-1">
               <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">

@@ -101,7 +101,13 @@ export function RaceResults({ race, currentUser }: RaceResultsProps) {
     <div className="container max-w-xl mx-auto py-8 space-y-6 px-4">
       <ResultsHeader />
 
-      <WinnerCard winner={winner} isWinner={isWinner} />
+      <WinnerCard
+        winner={winner}
+        isWinner={isWinner}
+        totalGames={sortedGames.length}
+        sortedGames={sortedGames}
+        myResults={sortedParticipants.find((p) => p.id === myParticipantId)}
+      />
 
       <ResultsList
         sortedGames={sortedGames}
